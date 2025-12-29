@@ -7,6 +7,7 @@ import { useI18n } from 'vue-i18n';
 // Components
 import HomeView from './components/HomeView.vue';
 import AnalyticsView from './components/AnalyticsView.vue';
+import RewardStore from './components/RewardStore.vue';
 import SettingsView from './components/SettingsView.vue';
 
 const { t, locale } = useI18n();
@@ -16,10 +17,24 @@ const userName = ref('Hero');
 
 // Live Query for Points
 const pointsSubscription = liveQuery(async () => {
-  const allTasks = await db.tasks.toArray();
-  return allTasks
-    .filter(task => task.completed)
-    .reduce((sum, task) => sum + (Number(task.points) || 0), 0);
+  try {
+    const allTasks = await db.tasks.toArray();
+    let spent = 0;
+    
+    if (db.redemptionLogs) {
+      const spentPointsLogs = await db.redemptionLogs.toArray();
+      spent = spentPointsLogs.reduce((sum, log) => sum + (log.spentPoints || 0), 0);
+    }
+    
+    const earned = allTasks
+      .filter(task => task.completed)
+      .reduce((sum, task) => sum + (Number(task.points) || 0), 0);
+      
+    return earned - spent;
+  } catch (err) {
+    console.warn('Points sync error:', err);
+    return 0;
+  }
 }).subscribe(value => {
   totalPoints.value = value;
 });
@@ -44,6 +59,7 @@ onUnmounted(() => {
 const navItems = computed(() => [
   { name: 'home', icon: 'wb_sunny', label: t('app.nav.tasks') },
   { name: 'analytics', icon: 'monitoring', label: t('app.nav.analytics') },
+  { name: 'rewards', icon: 'redeem', label: t('app.nav.rewards') },
   { name: 'settings', icon: 'settings', label: t('app.nav.settings') },
 ]);
 
@@ -125,7 +141,10 @@ onMounted(() => {
     <main class="flex-1 overflow-y-auto lg:h-screen relative w-full bg-background-light dark:bg-background-dark transition-colors duration-200">
       <div class="p-4 pb-28 lg:p-10 lg:pb-10 max-w-5xl mx-auto min-h-full">
         <Transition name="page" mode="out-in">
-          <component :key="currentView" :is="currentView === 'home' ? HomeView : currentView === 'analytics' ? AnalyticsView : SettingsView" />
+          <component 
+            :key="currentView" 
+            :is="currentView === 'home' ? HomeView : currentView === 'analytics' ? AnalyticsView : currentView === 'rewards' ? RewardStore : SettingsView" 
+          />
         </Transition>
       </div>
     </main>

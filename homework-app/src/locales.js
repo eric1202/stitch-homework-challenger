@@ -5,11 +5,54 @@ export const en = {
         nav: {
             tasks: 'Tasks',
             analytics: 'Analytics',
+            rewards: 'Rewards',
             settings: 'Settings'
         },
         totalPoints: 'Total Points',
+        remainingPoints: 'Points Balance',
         points: 'Points',
         offlineReady: 'v1.0.0 • Offline Ready'
+    },
+    rewards: {
+        title: 'Reward Store',
+        manageTitle: 'Manage Rewards',
+        subtitle: 'Spend your hard-earned points on cool prizes! 🎁',
+        parentMode: 'Parent Mode',
+        exitParentMode: 'Exit Parent Mode',
+        addNew: 'Add New',
+        noRewards: 'No rewards available yet.',
+        addFirst: 'Add the first reward ✨',
+        availableBalance: 'Available Balance',
+        history: 'Redemption History',
+        emptyHistory: 'No redemption history yet. Time to earn some points!',
+        expired: 'Expired',
+        soldOut: 'Sold Out',
+        left: '{count} left',
+        ends: 'Ends {date}',
+        redeem: 'Redeem Now',
+        needPoints: 'Need more points',
+        deleteConfirm: 'Are you sure you want to delete this reward?',
+        redeemFail: 'Redemption failed: ',
+        outOfStock: 'Out of stock!',
+        table: {
+            reward: 'Reward',
+            cost: 'Cost',
+            date: 'Date',
+            status: 'Status',
+            success: 'Successfully Redeemed'
+        },
+        modal: {
+            create: 'Create Reward',
+            edit: 'Edit Reward',
+            name: 'Reward Name',
+            namePlaceholder: 'e.g. Extra 1hr Gaming',
+            price: 'Price (Pts)',
+            stock: 'Stock',
+            icon: 'Choose Icon',
+            expiry: 'Expiry Date (Optional)',
+            btnCreate: 'Create Reward',
+            btnUpdate: 'Update Reward'
+        }
     },
     home: {
         title: "Today's Tasks",
@@ -101,11 +144,54 @@ export const zh = {
         nav: {
             tasks: '今日作业',
             analytics: '统计报表',
+            rewards: '积分商城',
             settings: '设置管理'
         },
         totalPoints: '总积分',
+        remainingPoints: '当前余额',
         points: '积分',
         offlineReady: 'v1.0.0 • 支持离线使用'
+    },
+    rewards: {
+        title: '积分商城',
+        manageTitle: '管理礼品',
+        subtitle: '用你努力赚来的积分兑换愿望吧！🎁',
+        parentMode: '家长模式',
+        exitParentMode: '退出家长模式',
+        addNew: '新增礼品',
+        noRewards: '商城里还没有礼品哦。',
+        addFirst: '添加第一个礼品 ✨',
+        availableBalance: '当前可用积分',
+        history: '兑换记录',
+        emptyHistory: '还没有兑换过礼品，快去赚积分吧！',
+        expired: '已过期',
+        soldOut: '已售罄',
+        left: '剩余 {count}',
+        ends: '{date} 截止',
+        redeem: '立即兑换',
+        needPoints: '积分不足',
+        deleteConfirm: '确定要删除这个礼品吗？',
+        redeemFail: '兑换失败: ',
+        outOfStock: '库存不足！',
+        table: {
+            reward: '礼品名称',
+            cost: '消费积分',
+            date: '兑换时间',
+            status: '状态',
+            success: '兑换成功'
+        },
+        modal: {
+            create: '新增礼品',
+            edit: '编辑礼品',
+            name: '礼品名称',
+            namePlaceholder: '例如：多玩1小时游戏',
+            price: '所需积分',
+            stock: '库存数量',
+            icon: '选择图标',
+            expiry: '有效期 (可选)',
+            btnCreate: '确认新增',
+            btnUpdate: '保存修改'
+        }
     },
     home: {
         title: "今日作业",

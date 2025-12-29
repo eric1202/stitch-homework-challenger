@@ -48,10 +48,13 @@ const exportData = async () => {
   try {
     const tasks = await db.tasks.toArray();
     const settings = await db.settings.toArray();
+    const rewards = await db.rewards.toArray();
+    const redemptionLogs = await db.redemptionLogs.toArray();
+    
     const backup = {
-      version: 2,
+      version: 2.1,
       timestamp: new Date().toISOString(),
-      data: { tasks, settings }
+      data: { tasks, settings, rewards, redemptionLogs }
     };
     
     const blob = new Blob([JSON.stringify(backup, null, 2)], { type: "application/json" });
@@ -93,6 +96,12 @@ const importData = async (event) => {
         if (backup.data.settings) {
           await db.settings.bulkPut(backup.data.settings);
         }
+        if (backup.data.rewards) {
+          await db.rewards.bulkPut(backup.data.rewards);
+        }
+        if (backup.data.redemptionLogs) {
+          await db.redemptionLogs.bulkPut(backup.data.redemptionLogs);
+        }
         alert(t('settings.alerts.importSuccess', { count: (backup.data.tasks?.length || 0) }));
       } else {
         throw new Error(t('settings.alerts.invalidFormat'));
@@ -110,6 +119,8 @@ const clearAllData = async () => {
     if (confirm(t('settings.alerts.deleteConfirm2'))) {
       await db.tasks.clear();
       await db.settings.clear();
+      await db.rewards.clear();
+      await db.redemptionLogs.clear();
       alert(t('settings.alerts.resetSuccess'));
       window.location.reload(); // Refresh to clear state
     }

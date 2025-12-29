@@ -28,3 +28,5 @@ npm run dev
 ```
 
 For more detailed information about the web app, please refer to the [homework-app README](./homework-app/README.md).
+
+# Triggering initial action

@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Homework Hero - Rewards</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Theme Config -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#4bee2b",
+                        "primary-dark": "#3bc920",
+                        "background-light": "#f6f8f6",
+                        "background-dark": "#132210",
+                        "surface-light": "#ffffff",
+                        "surface-dark": "#1c3016",
+                    },
+                    fontFamily: {
+                        "display": ["Lexend", "sans-serif"]
+                    },
+                    borderRadius: { "DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Lexend', sans-serif;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-white h-screen flex overflow-hidden">
+<!-- Mobile Header (Visible only on small screens) -->
+<div class="md:hidden fixed top-0 w-full z-20 bg-surface-light dark:bg-surface-dark border-b border-gray-200 dark:border-gray-800 px-4 py-3 flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="bg-center bg-no-repeat bg-cover rounded-full size-8" data-alt="Abstract colorful avatar circle" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAzgC7obQsryzhuUvfQtFVv0QjTwJw2Qant_J5izvkiJV9WY0makDIYavgblBJLsWksbSFQagHcSj8fz1LB1DNDHwoXUl-zJEjzOQvhOHcgy8w6Mwv_ZrT4nImdeiEA_Gz05qpjJib3USOuqJjhG4bRQWcbpmByJ2SCVoJNuC8qtu2VR6fj_qgH6WU84150SwU82nUoQGYjsDT9F4p52eSt2loaln0eUfyVkF6A1MOw4-Zg9SE7MVihdo5D_MBqN2YGpBPBIOzTW4Ym");'></div>
+<span class="font-bold text-lg">Homework Hero</span>
+</div>
+<button class="text-slate-900 dark:text-white">
+<span class="material-symbols-outlined">menu</span>
+</button>
+</div>
+<!-- Sidebar (Desktop) -->
+<aside class="hidden md:flex flex-col w-64 bg-surface-light dark:bg-surface-dark border-r border-gray-200 dark:border-gray-800 h-full p-6 justify-between flex-shrink-0">
+<div class="flex flex-col gap-8">
+<!-- User Profile Summary -->
+<div class="flex items-center gap-3">
+<div class="bg-center bg-no-repeat bg-cover rounded-full size-12 shadow-sm" data-alt="Student avatar with smiling face illustration" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCKro3ZTDSyUs8fNgoUMfQiOyJ8mhZfWGlAgirUvtAqrydYV5nUqgzp-UVakyyYdB2Dg6N6f8Yl0ZJpeYbLEjNuK9dzEb8bgulhK0OVFqxBYwy9Jt8gP22BDJazCiWbISamS-2C6KWomhjkFCwTE_unCuqJBqcTVGK5mwlp8HePxYEnbYCfw2k9PWIvUxDJbBCup2Z6A6deZSOMaX9fDKP9fF1vMWZIox7p1Qf49hIwWfTvrKaJFyZWXYT9eaGFLprk5VJQaRIYDAgy");'></div>
+<div class="flex flex-col">
+<h1 class="text-base font-bold leading-tight">Alex Smith</h1>
+<p class="text-green-600 dark:text-primary text-sm font-medium">Level 5 Scholar</p>
+</div>
+</div>
+<!-- Navigation -->
+<nav class="flex flex-col gap-2">
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group" href="#">
+<span class="material-symbols-outlined text-gray-500 group-hover:text-slate-900 dark:text-gray-400 dark:group-hover:text-white">check_circle</span>
+<span class="text-sm font-medium text-gray-600 group-hover:text-slate-900 dark:text-gray-300 dark:group-hover:text-white">Check-in</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl bg-primary/20 dark:bg-primary/10 transition-colors" href="#">
+<span class="material-symbols-outlined text-green-700 dark:text-primary">stars</span>
+<span class="text-sm font-bold text-green-900 dark:text-white">Rewards</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group" href="#">
+<span class="material-symbols-outlined text-gray-500 group-hover:text-slate-900 dark:text-gray-400 dark:group-hover:text-white">settings</span>
+<span class="text-sm font-medium text-gray-600 group-hover:text-slate-900 dark:text-gray-300 dark:group-hover:text-white">Settings</span>
+</a>
+</nav>
+</div>
+<!-- Bottom Actions -->
+<div class="pt-6 border-t border-gray-100 dark:border-gray-800">
+<button class="flex items-center gap-2 text-sm text-gray-500 hover:text-slate-900 dark:text-gray-400 dark:hover:text-white transition-colors">
+<span class="material-symbols-outlined text-[20px]">logout</span>
+                Log Out
+            </button>
+</div>
+</aside>
+<!-- Main Content -->
+<main class="flex-1 overflow-y-auto pt-16 md:pt-0">
+<div class="max-w-5xl mx-auto p-4 md:p-8 lg:p-12 flex flex-col gap-8">
+<!-- Page Heading -->
+<header class="flex flex-col gap-2">
+<div class="flex justify-between items-start">
+<div>
+<h1 class="text-3xl md:text-4xl font-black tracking-tight text-slate-900 dark:text-white mb-2">我的奖励 (My Rewards)</h1>
+<p class="text-slate-500 dark:text-slate-400 text-base md:text-lg">Keep up the great work! You're doing amazing.</p>
+</div>
+<!-- Quick action for mobile potentially, hidden for now -->
+</div>
+</header>
+<!-- Stats & Progress Section -->
+<section class="grid grid-cols-1 md:grid-cols-12 gap-6">
+<!-- Hero Stat Card: Total Points -->
+<div class="md:col-span-5 lg:col-span-4 flex flex-col justify-between rounded-2xl p-6 md:p-8 bg-surface-light dark:bg-surface-dark border border-green-100 dark:border-green-900 shadow-xl shadow-green-100/50 dark:shadow-none relative overflow-hidden group">
+<!-- Decorational BG Glow -->
+<div class="absolute -right-10 -top-10 w-40 h-40 bg-primary/20 rounded-full blur-3xl group-hover:bg-primary/30 transition-all duration-500"></div>
+<div class="relative z-10">
+<div class="flex items-center gap-2 mb-4">
+<span class="material-symbols-outlined text-green-600 dark:text-primary">trophy</span>
+<h3 class="text-slate-600 dark:text-slate-300 text-sm font-bold uppercase tracking-wider">Total Points</h3>
+</div>
+<div class="flex items-baseline gap-1">
+<span class="text-6xl font-black text-slate-900 dark:text-white tracking-tighter">1,250</span>
+<span class="text-green-600 dark:text-primary font-bold text-xl">pts</span>
+</div>
+<div class="mt-4 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-sm font-semibold">
+<span class="material-symbols-outlined text-[18px]">trending_up</span>
+                            +15 today
+                        </div>
+</div>
+</div>
+<!-- Level Progress Card -->
+<div class="md:col-span-7 lg:col-span-8 flex flex-col justify-center rounded-2xl p-6 md:p-8 bg-surface-light dark:bg-surface-dark border border-gray-100 dark:border-gray-800 shadow-sm">
+<div class="flex flex-col h-full justify-center gap-6">
+<div class="flex justify-between items-end">
+<div>
+<h3 class="text-xl font-bold text-slate-900 dark:text-white mb-1">Level 5 Scholar</h3>
+<p class="text-slate-500 dark:text-slate-400 text-sm">You are crushing it! Almost to Level 6.</p>
+</div>
+<div class="text-right">
+<span class="text-3xl font-black text-primary">85%</span>
+</div>
+</div>
+<!-- Progress Bar -->
+<div class="relative w-full h-4 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
+<div class="absolute top-0 left-0 h-full bg-primary rounded-full" style="width: 85%">
+<div class="w-full h-full opacity-30 bg-[url('https://www.transparenttextures.com/patterns/diagonal-stripes.png')] animate-pulse"></div>
+</div>
+</div>
+<div class="flex justify-between text-sm font-medium text-slate-400 dark:text-slate-500">
+<span>Level 5</span>
+<span>50 pts to Level 6</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Main Interactive Content Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+<!-- Redeem Rewards Column -->
+<div class="lg:col-span-2 flex flex-col gap-6">
+<div class="flex items-center gap-3 px-1">
+<span class="material-symbols-outlined text-primary text-3xl">redeem</span>
+<h2 class="text-2xl font-bold text-slate-900 dark:text-white">Redeem Rewards</h2>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+<!-- Reward Card 1 -->
+<button class="group flex flex-col items-start gap-4 p-5 rounded-2xl bg-surface-light dark:bg-surface-dark border-2 border-transparent hover:border-primary dark:hover:border-primary transition-all shadow-sm hover:shadow-lg hover:shadow-primary/10 text-left relative overflow-hidden">
+<div class="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
+<span class="material-symbols-outlined text-6xl rotate-12">gamepad</span>
+</div>
+<div class="p-3 rounded-xl bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-300">
+<span class="material-symbols-outlined text-3xl">gamepad</span>
+</div>
+<div>
+<h4 class="font-bold text-lg text-slate-900 dark:text-white group-hover:text-primary transition-colors">15 Mins Screen Time</h4>
+<p class="text-slate-500 dark:text-slate-400 text-sm mt-1">Play your favorite game.</p>
+</div>
+<div class="mt-auto pt-2 w-full flex justify-between items-center border-t border-gray-100 dark:border-gray-800">
+<span class="text-sm font-bold text-slate-900 dark:text-white">100 pts</span>
+<span class="text-xs font-semibold px-2 py-1 rounded bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-300 group-hover:bg-primary group-hover:text-black transition-colors">Redeem</span>
+</div>
+</button>
+<!-- Reward Card 2 -->
+<button class="group flex flex-col items-start gap-4 p-5 rounded-2xl bg-surface-light dark:bg-surface-dark border-2 border-transparent hover:border-primary dark:hover:border-primary transition-all shadow-sm hover:shadow-lg hover:shadow-primary/10 text-left relative overflow-hidden">
+<div class="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
+<span class="material-symbols-outlined text-6xl rotate-12">icecream</span>
+</div>
+<div class="p-3 rounded-xl bg-pink-100 dark:bg-pink-900/30 text-pink-600 dark:text-pink-300">
+<span class="material-symbols-outlined text-3xl">icecream</span>
+</div>
+<div>
+<h4 class="font-bold text-lg text-slate-900 dark:text-white group-hover:text-primary transition-colors">Special Treat</h4>
+<p class="text-slate-500 dark:text-slate-400 text-sm mt-1">Ice cream or snack.</p>
+</div>
+<div class="mt-auto pt-2 w-full flex justify-between items-center border-t border-gray-100 dark:border-gray-800">
+<span class="text-sm font-bold text-slate-900 dark:text-white">250 pts</span>
+<span class="text-xs font-semibold px-2 py-1 rounded bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-300 group-hover:bg-primary group-hover:text-black transition-colors">Redeem</span>
+</div>
+</button>
+<!-- Reward Card 3 -->
+<button class="group flex flex-col items-start gap-4 p-5 rounded-2xl bg-surface-light dark:bg-surface-dark border-2 border-transparent hover:border-primary dark:hover:border-primary transition-all shadow-sm hover:shadow-lg hover:shadow-primary/10 text-left relative overflow-hidden">
+<div class="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
+<span class="material-symbols-outlined text-6xl rotate-12">local_activity</span>
+</div>
+<div class="p-3 rounded-xl bg-yellow-100 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-300">
+<span class="material-symbols-outlined text-3xl">local_activity</span>
+</div>
+<div>
+<h4 class="font-bold text-lg text-slate-900 dark:text-white group-hover:text-primary transition-colors">Movie Night Pick</h4>
+<p class="text-slate-500 dark:text-slate-400 text-sm mt-1">You choose the movie!</p>
+</div>
+<div class="mt-auto pt-2 w-full flex justify-between items-center border-t border-gray-100 dark:border-gray-800">
+<span class="text-sm font-bold text-slate-900 dark:text-white">500 pts</span>
+<span class="text-xs font-semibold px-2 py-1 rounded bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-300 group-hover:bg-primary group-hover:text-black transition-colors">Redeem</span>
+</div>
+</button>
+<!-- Reward Card 4 (Locked) -->
+<div class="flex flex-col items-center justify-center gap-2 p-5 rounded-2xl bg-gray-50 dark:bg-white/5 border border-dashed border-gray-300 dark:border-gray-700 text-center opacity-75">
+<span class="material-symbols-outlined text-4xl text-gray-400">lock</span>
+<h4 class="font-bold text-md text-gray-500 dark:text-gray-400">Unlock Level 6 to see more rewards!</h4>
+</div>
+</div>
+</div>
+<!-- Recent Activity Column -->
+<div class="flex flex-col gap-4">
+<h2 class="text-xl font-bold text-slate-900 dark:text-white px-1 pt-2">Recent Activity</h2>
+<div class="bg-surface-light dark:bg-surface-dark rounded-2xl shadow-sm p-2 flex flex-col gap-1">
+<!-- Activity Item 1 -->
+<div class="flex items-center gap-4 p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors cursor-default">
+<div class="p-2 rounded-lg bg-green-100 dark:bg-green-900/20 text-green-600 dark:text-green-400">
+<span class="material-symbols-outlined text-[20px]">calculate</span>
+</div>
+<div class="flex-1 min-w-0">
+<p class="text-sm font-bold text-slate-900 dark:text-white truncate">Math Worksheet</p>
+<p class="text-xs text-slate-500 dark:text-slate-400">Today, 4:30 PM</p>
+</div>
+<span class="text-sm font-black text-primary whitespace-nowrap">+10 pts</span>
+</div>
+<!-- Activity Item 2 -->
+<div class="flex items-center gap-4 p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors cursor-default">
+<div class="p-2 rounded-lg bg-purple-100 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400">
+<span class="material-symbols-outlined text-[20px]">menu_book</span>
+</div>
+<div class="flex-1 min-w-0">
+<p class="text-sm font-bold text-slate-900 dark:text-white truncate">Reading Log (20m)</p>
+<p class="text-xs text-slate-500 dark:text-slate-400">Today, 5:15 PM</p>
+</div>
+<span class="text-sm font-black text-primary whitespace-nowrap">+5 pts</span>
+</div>
+<!-- Activity Item 3 -->
+<div class="flex items-center gap-4 p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors cursor-default">
+<div class="p-2 rounded-lg bg-orange-100 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400">
+<span class="material-symbols-outlined text-[20px]">science</span>
+</div>
+<div class="flex-1 min-w-0">
+<p class="text-sm font-bold text-slate-900 dark:text-white truncate">Science Project</p>
+<p class="text-xs text-slate-500 dark:text-slate-400">Yesterday</p>
+</div>
+<span class="text-sm font-black text-primary whitespace-nowrap">+15 pts</span>
+</div>
+<!-- Activity Item 4 -->
+<div class="flex items-center gap-4 p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors cursor-default opacity-60">
+<div class="p-2 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400">
+<span class="material-symbols-outlined text-[20px]">redeem</span>
+</div>
+<div class="flex-1 min-w-0">
+<p class="text-sm font-bold text-slate-900 dark:text-white truncate">Redeemed Screen Time</p>
+<p class="text-xs text-slate-500 dark:text-slate-400">2 days ago</p>
+</div>
+<span class="text-sm font-bold text-red-400 whitespace-nowrap">-100 pts</span>
+</div>
+</div>
+<button class="w-full py-3 rounded-xl border border-gray-200 dark:border-gray-700 text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                        View Full History
+                    </button>
+</div>
+</div>
+<!-- Footer Quote (Playful touch) -->
+<div class="mt-8 text-center pb-8 opacity-60">
+<p class="text-sm italic text-slate-500 dark:text-slate-400">"The more you learn, the more you earn!" 🚀</p>
+</div>
+</div>
+</main>
+</body></html>

@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Monthly Analytics - Homework Tracker</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#4bee2b",
+                        "background-light": "#f6f8f6",
+                        "background-dark": "#132210",
+                    },
+                    fontFamily: {
+                        "display": ["Lexend", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+</head>
+<body class="font-display bg-background-light dark:bg-background-dark text-[#101b0d] dark:text-gray-100 transition-colors duration-200">
+<div class="relative flex min-h-screen w-full flex-col overflow-x-hidden">
+<!-- Header -->
+<header class="sticky top-0 z-10 flex items-center justify-between whitespace-nowrap border-b border-solid border-gray-200 dark:border-gray-800 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-sm px-6 py-4 md:px-10">
+<div class="flex items-center gap-4">
+<div class="size-8 text-primary">
+<svg fill="currentColor" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<path clip-rule="evenodd" d="M24 4H42V17.3333V30.6667H24V44H6V30.6667V17.3333H24V4Z" fill-rule="evenodd"></path>
+</svg>
+</div>
+<h2 class="text-lg md:text-xl font-bold leading-tight tracking-tight">Homework Tracker</h2>
+</div>
+<div class="flex gap-3">
+<button class="flex items-center justify-center overflow-hidden rounded-xl size-10 bg-white dark:bg-gray-800 shadow-sm border border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+<span class="material-symbols-outlined text-gray-700 dark:text-gray-300">settings</span>
+</button>
+<button class="flex items-center justify-center overflow-hidden rounded-xl size-10 bg-primary text-[#101b0d] shadow-sm hover:brightness-105 transition-all">
+<span class="material-symbols-outlined">person</span>
+</button>
+</div>
+</header>
+<main class="flex-1 w-full max-w-[1200px] mx-auto p-4 md:p-8 lg:p-12">
+<!-- Page Heading & Motivation -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
+<div class="flex flex-col gap-2">
+<h1 class="text-3xl md:text-4xl lg:text-5xl font-black leading-tight tracking-[-0.033em]">Your Progress</h1>
+<p class="text-gray-600 dark:text-gray-400 text-lg font-medium">Keep up the great work! You are on fire! 🔥</p>
+</div>
+<div class="flex gap-2">
+<button class="bg-primary hover:bg-[#3cd620] text-[#101b0d] px-6 py-3 rounded-xl font-bold text-sm shadow-lg shadow-primary/20 transition-all flex items-center gap-2">
+<span class="material-symbols-outlined text-xl">edit_calendar</span>
+                        Log Today
+                    </button>
+</div>
+</div>
+<!-- Stats Overview -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+<!-- Card 1 -->
+<div class="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-100 dark:border-gray-700 shadow-sm flex flex-col gap-4 relative overflow-hidden group">
+<div class="absolute right-0 top-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+<span class="material-symbols-outlined text-6xl text-primary">verified</span>
+</div>
+<div>
+<p class="text-gray-500 dark:text-gray-400 text-sm font-semibold uppercase tracking-wider">Perfect Days</p>
+<p class="text-4xl font-bold mt-1 text-[#101b0d] dark:text-white">12</p>
+</div>
+<div class="flex items-center gap-2 text-green-600 dark:text-green-400 text-sm font-medium bg-green-50 dark:bg-green-900/20 w-fit px-2 py-1 rounded-lg">
+<span class="material-symbols-outlined text-base">trending_up</span>
+<span>+2 from last month</span>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-100 dark:border-gray-700 shadow-sm flex flex-col gap-4 relative overflow-hidden group">
+<div class="absolute right-0 top-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+<span class="material-symbols-outlined text-6xl text-orange-500">local_fire_department</span>
+</div>
+<div>
+<p class="text-gray-500 dark:text-gray-400 text-sm font-semibold uppercase tracking-wider">Current Streak</p>
+<p class="text-4xl font-bold mt-1 text-[#101b0d] dark:text-white">5 Days</p>
+</div>
+<div class="flex items-center gap-2 text-orange-600 dark:text-orange-400 text-sm font-medium bg-orange-50 dark:bg-orange-900/20 w-fit px-2 py-1 rounded-lg">
+<span class="material-symbols-outlined text-base">arrow_upward</span>
+<span>Personal Best!</span>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-100 dark:border-gray-700 shadow-sm flex flex-col gap-4 relative overflow-hidden group">
+<div class="absolute right-0 top-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+<span class="material-symbols-outlined text-6xl text-blue-500">pie_chart</span>
+</div>
+<div>
+<p class="text-gray-500 dark:text-gray-400 text-sm font-semibold uppercase tracking-wider">Completion Rate</p>
+<p class="text-4xl font-bold mt-1 text-[#101b0d] dark:text-white">95%</p>
+</div>
+<div class="flex items-center gap-2 text-blue-600 dark:text-blue-400 text-sm font-medium bg-blue-50 dark:bg-blue-900/20 w-fit px-2 py-1 rounded-lg">
+<span class="material-symbols-outlined text-base">trending_up</span>
+<span>Top 10% of class</span>
+</div>
+</div>
+</div>
+<!-- Content Area: Calendar + Details -->
+<div class="grid lg:grid-cols-3 gap-8">
+<!-- Main Calendar Section -->
+<div class="lg:col-span-2 flex flex-col bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm p-6 md:p-8">
+<!-- Calendar Header -->
+<div class="flex items-center justify-between mb-8">
+<h2 class="text-2xl font-bold text-[#101b0d] dark:text-white">August 2023</h2>
+<div class="flex items-center gap-2 bg-background-light dark:bg-gray-900 rounded-xl p-1">
+<button class="p-2 hover:bg-white dark:hover:bg-gray-700 rounded-lg shadow-sm transition-all text-gray-600 dark:text-gray-300">
+<span class="material-symbols-outlined">chevron_left</span>
+</button>
+<span class="text-sm font-bold px-2 text-gray-600 dark:text-gray-300">Today</span>
+<button class="p-2 hover:bg-white dark:hover:bg-gray-700 rounded-lg shadow-sm transition-all text-gray-600 dark:text-gray-300">
+<span class="material-symbols-outlined">chevron_right</span>
+</button>
+</div>
+</div>
+<!-- Calendar Grid -->
+<div class="w-full">
+<!-- Days of Week -->
+<div class="grid grid-cols-7 mb-4">
+<div class="text-center text-xs font-bold text-gray-400 uppercase tracking-widest">Sun</div>
+<div class="text-center text-xs font-bold text-gray-400 uppercase tracking-widest">Mon</div>
+<div class="text-center text-xs font-bold text-gray-400 uppercase tracking-widest">Tue</div>
+<div class="text-center text-xs font-bold text-gray-400 uppercase tracking-widest">Wed</div>
+<div class="text-center text-xs font-bold text-gray-400 uppercase tracking-widest">Thu</div>
+<div class="text-center text-xs font-bold text-gray-400 uppercase tracking-widest">Fri</div>
+<div class="text-center text-xs font-bold text-gray-400 uppercase tracking-widest">Sat</div>
+</div>
+<!-- Days -->
+<div class="grid grid-cols-7 gap-2 md:gap-4">
+<!-- Empty / Prev Month -->
+<div class="aspect-square"></div>
+<div class="aspect-square"></div>
+<!-- Day 1 (Partial) -->
+<button class="aspect-square rounded-xl bg-gray-50 dark:bg-gray-700/50 hover:bg-gray-100 dark:hover:bg-gray-700 flex flex-col items-center justify-center relative transition-all group">
+<span class="text-sm font-medium text-gray-500 dark:text-gray-400">1</span>
+<div class="mt-1 size-2 rounded-full bg-orange-400"></div>
+</button>
+<!-- Day 2 (Complete) -->
+<button class="aspect-square rounded-xl bg-primary hover:bg-[#3cd620] shadow-md shadow-primary/20 flex flex-col items-center justify-center relative transition-all scale-100 hover:scale-105">
+<span class="text-sm font-bold text-[#101b0d]">2</span>
+<span class="material-symbols-outlined text-[#101b0d] text-lg mt-1">star</span>
+</button>
+<!-- Day 3 (Complete) -->
+<button class="aspect-square rounded-xl bg-primary hover:bg-[#3cd620] shadow-md shadow-primary/20 flex flex-col items-center justify-center relative transition-all scale-100 hover:scale-105">
+<span class="text-sm font-bold text-[#101b0d]">3</span>
+<span class="material-symbols-outlined text-[#101b0d] text-lg mt-1">star</span>
+</button>
+<!-- Day 4 (Partial) -->
+<button class="aspect-square rounded-xl bg-gray-50 dark:bg-gray-700/50 hover:bg-gray-100 dark:hover:bg-gray-700 flex flex-col items-center justify-center relative transition-all">
+<span class="text-sm font-medium text-gray-500 dark:text-gray-400">4</span>
+<div class="mt-1 w-1/2 h-1.5 rounded-full bg-gray-200 dark:bg-gray-600 overflow-hidden">
+<div class="h-full bg-primary w-1/2"></div>
+</div>
+</button>
+<!-- Day 5 (Complete - Weekend) -->
+<button class="aspect-square rounded-xl bg-primary hover:bg-[#3cd620] shadow-md shadow-primary/20 flex flex-col items-center justify-center relative transition-all scale-100 hover:scale-105">
+<span class="text-sm font-bold text-[#101b0d]">5</span>
+<span class="material-symbols-outlined text-[#101b0d] text-lg mt-1">check_circle</span>
+</button>
+<!-- Day 6 (Missed) -->
+<button class="aspect-square rounded-xl bg-gray-50 dark:bg-gray-700/50 hover:bg-gray-100 dark:hover:bg-gray-700 flex flex-col items-center justify-center relative transition-all">
+<span class="text-sm font-medium text-gray-400">6</span>
+</button>
+<!-- Day 7 -->
+<button class="aspect-square rounded-xl bg-gray-50 dark:bg-gray-700/50 hover:bg-gray-100 dark:hover:bg-gray-700 flex flex-col items-center justify-center relative transition-all">
+<span class="text-sm font-medium text-gray-400">7</span>
+</button>
+<!-- Day 8 (Complete) -->
+<button class="aspect-square rounded-xl bg-primary hover:bg-[#3cd620] shadow-md shadow-primary/20 flex flex-col items-center justify-center relative transition-all scale-100 hover:scale-105">
+<span class="text-sm font-bold text-[#101b0d]">8</span>
+<span class="material-symbols-outlined text-[#101b0d] text-lg mt-1">star</span>
+</button>
+<!-- Day 9 (Complete) -->
+<button class="aspect-square rounded-xl bg-primary hover:bg-[#3cd620] shadow-md shadow-primary/20 flex flex-col items-center justify-center relative transition-all scale-100 hover:scale-105">
+<span class="text-sm font-bold text-[#101b0d]">9</span>
+<span class="material-symbols-outlined text-[#101b0d] text-lg mt-1">star</span>
+</button>
+<!-- Day 10 (Complete) -->
+<button class="aspect-square rounded-xl bg-primary hover:bg-[#3cd620] shadow-md shadow-primary/20 flex flex-col items-center justify-center relative transition-all scale-100 hover:scale-105">
+<span class="text-sm font-bold text-[#101b0d]">10</span>
+<span class="material-symbols-outlined text-[#101b0d] text-lg mt-1">star</span>
+</button>
+<!-- Day 11 (Complete) -->
+<button class="aspect-square rounded-xl bg-primary hover:bg-[#3cd620] shadow-md shadow-primary/20 flex flex-col items-center justify-center relative transition-all scale-100 hover:scale-105">
+<span class="text-sm font-bold text-[#101b0d]">11</span>
+<span class="material-symbols-outlined text-[#101b0d] text-lg mt-1">star</span>
+</button>
+<!-- Day 12 (Complete) -->
+<button class="aspect-square rounded-xl bg-primary hover:bg-[#3cd620] shadow-md shadow-primary/20 flex flex-col items-center justify-center relative transition-all scale-100 hover:scale-105">
+<span class="text-sm font-bold text-[#101b0d]">12</span>
+<span class="material-symbols-outlined text-[#101b0d] text-lg mt-1">check_circle</span>
+</button>
+<!-- Day 13 (Current Selection) -->
+<button class="aspect-square rounded-xl bg-white dark:bg-gray-800 border-2 border-primary shadow-lg shadow-primary/10 flex flex-col items-center justify-center relative transition-all z-10 scale-105">
+<span class="text-sm font-bold text-[#101b0d] dark:text-white">13</span>
+<div class="mt-1 size-1.5 rounded-full bg-primary"></div>
+</button>
+<!-- Day 14 -->
+<button class="aspect-square rounded-xl bg-gray-50 dark:bg-gray-700/50 hover:bg-gray-100 dark:hover:bg-gray-700 flex flex-col items-center justify-center relative transition-all">
+<span class="text-sm font-medium text-gray-500 dark:text-gray-400">14</span>
+</button>
+<!-- Day 15-31 Placeholder loop concept -->
+<!-- Example Loop for simplicity in this artifact -->
+<button class="aspect-square rounded-xl bg-gray-50 dark:bg-gray-700/50 hover:bg-gray-100 dark:hover:bg-gray-700 flex flex-col items-center justify-center relative transition-all text-gray-400">15</button>
+<button class="aspect-square rounded-xl bg-gray-50 dark:bg-gray-700/50 hover:bg-gray-100 dark:hover:bg-gray-700 flex flex-col items-center justify-center relative transition-all text-gray-400">16</button>
+<button class="aspect-square rounded-xl bg-gray-50 dark:bg-gray-700/50 hover:bg-gray-100 dark:hover:bg-gray-700 flex flex-col items-center justify-center relative transition-all text-gray-400">17</button>
+<button class="aspect-square rounded-xl bg-gray-50 dark:bg-gray-700/50 hover:bg-gray-100 dark:hover:bg-gray-700 flex flex-col items-center justify-center relative transition-all text-gray-400">18</button>
+<button class="aspect-square rounded-xl bg-gray-50 dark:bg-gray-700/50 hover:bg-gray-100 dark:hover:bg-gray-700 flex flex-col items-center justify-center relative transition-all text-gray-400">19</button>
+<button class="aspect-square rounded-xl bg-gray-50 dark:bg-gray-700/50 hover:bg-gray-100 dark:hover:bg-gray-700 flex flex-col items-center justify-center relative transition-all text-gray-400">20</button>
+<button class="aspect-square rounded-xl bg-gray-50 dark:bg-gray-700/50 hover:bg-gray-100 dark:hover:bg-gray-700 flex flex-col items-center justify-center relative transition-all text-gray-400">21</button>
+<button class="aspect-square rounded-xl bg-gray-50 dark:bg-gray-700/50 hover:bg-gray-100 dark:hover:bg-gray-700 flex flex-col items-center justify-center relative transition-all text-gray-400">22</button>
+<button class="aspect-square rounded-xl bg-gray-50 dark:bg-gray-700/50 hover:bg-gray-100 dark:hover:bg-gray-700 flex flex-col items-center justify-center relative transition-all text-gray-400">23</button>
+<button class="aspect-square rounded-xl bg-gray-50 dark:bg-gray-700/50 hover:bg-gray-100 dark:hover:bg-gray-700 flex flex-col items-center justify-center relative transition-all text-gray-400">24</button>
+<button class="aspect-square rounded-xl bg-gray-50 dark:bg-gray-700/50 hover:bg-gray-100 dark:hover:bg-gray-700 flex flex-col items-center justify-center relative transition-all text-gray-400">25</button>
+<button class="aspect-square rounded-xl bg-gray-50 dark:bg-gray-700/50 hover:bg-gray-100 dark:hover:bg-gray-700 flex flex-col items-center justify-center relative transition-all text-gray-400">26</button>
+<button class="aspect-square rounded-xl bg-gray-50 dark:bg-gray-700/50 hover:bg-gray-100 dark:hover:bg-gray-700 flex flex-col items-center justify-center relative transition-all text-gray-400">27</button>
+<button class="aspect-square rounded-xl bg-gray-50 dark:bg-gray-700/50 hover:bg-gray-100 dark:hover:bg-gray-700 flex flex-col items-center justify-center relative transition-all text-gray-400">28</button>
+<button class="aspect-square rounded-xl bg-gray-50 dark:bg-gray-700/50 hover:bg-gray-100 dark:hover:bg-gray-700 flex flex-col items-center justify-center relative transition-all text-gray-400">29</button>
+<button class="aspect-square rounded-xl bg-gray-50 dark:bg-gray-700/50 hover:bg-gray-100 dark:hover:bg-gray-700 flex flex-col items-center justify-center relative transition-all text-gray-400">30</button>
+<button class="aspect-square rounded-xl bg-gray-50 dark:bg-gray-700/50 hover:bg-gray-100 dark:hover:bg-gray-700 flex flex-col items-center justify-center relative transition-all text-gray-400">31</button>
+</div>
+<!-- Legend -->
+<div class="flex flex-wrap items-center justify-center md:justify-start gap-4 mt-8 pt-6 border-t border-gray-100 dark:border-gray-700">
+<div class="flex items-center gap-2">
+<div class="size-3 bg-primary rounded-full"></div>
+<span class="text-xs text-gray-500 font-medium">Completed</span>
+</div>
+<div class="flex items-center gap-2">
+<div class="size-3 bg-orange-400 rounded-full"></div>
+<span class="text-xs text-gray-500 font-medium">Incomplete</span>
+</div>
+<div class="flex items-center gap-2">
+<div class="size-3 bg-gray-200 dark:bg-gray-700 rounded-full"></div>
+<span class="text-xs text-gray-500 font-medium">No Homework</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Daily Detail Panel (Sidebar) -->
+<div class="lg:col-span-1">
+<div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm h-full flex flex-col">
+<div class="p-6 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center">
+<div>
+<h3 class="text-xl font-bold text-[#101b0d] dark:text-white">Sunday, Aug 13</h3>
+<p class="text-sm text-gray-500 dark:text-gray-400">3 Tasks Assigned</p>
+</div>
+<div class="size-10 bg-gray-50 dark:bg-gray-700 rounded-full flex items-center justify-center text-gray-400">
+<span class="material-symbols-outlined">calendar_today</span>
+</div>
+</div>
+<div class="flex-1 p-6 flex flex-col gap-4 overflow-y-auto">
+<!-- Task Item 1 -->
+<div class="flex items-start gap-3 p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors group cursor-pointer border border-transparent hover:border-gray-200 dark:hover:border-gray-600">
+<div class="mt-1">
+<div class="size-6 rounded-lg bg-primary/20 flex items-center justify-center text-green-700 dark:text-green-400">
+<span class="material-symbols-outlined text-base">check</span>
+</div>
+</div>
+<div class="flex-1">
+<p class="font-bold text-[#101b0d] dark:text-white group-hover:text-primary transition-colors">Math Worksheet</p>
+<p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Chapter 4: Long Division</p>
+</div>
+</div>
+<!-- Task Item 2 -->
+<div class="flex items-start gap-3 p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors group cursor-pointer border border-transparent hover:border-gray-200 dark:hover:border-gray-600">
+<div class="mt-1">
+<div class="size-6 rounded-lg bg-primary/20 flex items-center justify-center text-green-700 dark:text-green-400">
+<span class="material-symbols-outlined text-base">check</span>
+</div>
+</div>
+<div class="flex-1">
+<p class="font-bold text-[#101b0d] dark:text-white group-hover:text-primary transition-colors">Science Reading</p>
+<p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Pages 42-45: Photosynthesis</p>
+</div>
+</div>
+<!-- Task Item 3 (Incomplete) -->
+<div class="flex items-start gap-3 p-3 rounded-xl bg-orange-50 dark:bg-orange-900/10 border border-orange-100 dark:border-orange-900/30 group cursor-pointer">
+<div class="mt-1">
+<div class="size-6 rounded-lg bg-orange-100 dark:bg-orange-800/50 flex items-center justify-center text-orange-600 dark:text-orange-300">
+<span class="material-symbols-outlined text-base">schedule</span>
+</div>
+</div>
+<div class="flex-1">
+<p class="font-bold text-orange-900 dark:text-orange-200">History Essay</p>
+<p class="text-xs text-orange-700 dark:text-orange-400 mt-0.5">Draft 1: The American Revolution</p>
+<button class="mt-3 w-full py-2 bg-white dark:bg-gray-800 text-orange-600 dark:text-orange-300 text-xs font-bold rounded-lg shadow-sm border border-orange-200 dark:border-orange-800/50 hover:bg-orange-50 dark:hover:bg-gray-700">
+                                        Mark Complete
+                                    </button>
+</div>
+</div>
+</div>
+<div class="p-6 pt-0 mt-auto">
+<div class="bg-gradient-to-br from-primary/10 to-primary/5 rounded-xl p-4 flex gap-3 items-start">
+<span class="material-symbols-outlined text-primary mt-0.5">lightbulb</span>
+<div>
+<p class="text-sm font-bold text-[#101b0d] dark:text-white">Pro Tip:</p>
+<p class="text-xs text-gray-600 dark:text-gray-400 mt-1">Completing assignments before 6PM increases retention by 20%!</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>

@@ -270,6 +270,10 @@ const exportData = () => {
   background: transparent;
 }
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  @apply bg-gray-200 dark:bg-gray-800 rounded-full;
+  background-color: #e5e7eb;
+  border-radius: 9999px;
+}
+:where(.dark) .custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #1f2937;
 }
 </style>

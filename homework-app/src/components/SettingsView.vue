@@ -9,11 +9,23 @@ const fileInput = ref(null);
 const isEditingName = ref(false);
 const editNameValue = ref('');
 
+// Change language and persist
+const changeLanguage = async (lang) => {
+  locale.value = lang;
+  await db.settings.put({ key: 'language', value: lang });
+};
+
 // Live reactive username
 const userName = ref('Hero');
-const settingsSubscription = liveQuery(() => db.settings.get('userName'))
-    .subscribe(result => {
-      if (result) userName.value = result.value;
+const settingsSubscription = liveQuery(() => db.settings.toArray())
+    .subscribe(results => {
+      const nameSetting = results.find(s => s.key === 'userName');
+      if (nameSetting) userName.value = nameSetting.value;
+      
+      const langSetting = results.find(s => s.key === 'language');
+      if (langSetting && langSetting.value !== locale.value) {
+        locale.value = langSetting.value;
+      }
     });
 
 onMounted(() => {
@@ -134,12 +146,12 @@ const clearAllData = async () => {
              <button 
               class="px-4 py-1.5 font-bold rounded-xl text-xs transition-all" 
               :class="locale === 'zh' ? 'bg-primary text-black shadow-lg shadow-primary/20' : 'bg-gray-100 dark:bg-gray-800 text-text-sub-light'" 
-              @click="locale = 'zh'"
+              @click="changeLanguage('zh')"
              >中文</button>
              <button 
               class="px-4 py-1.5 font-bold rounded-xl text-xs transition-all" 
               :class="locale === 'en' ? 'bg-primary text-black shadow-lg shadow-primary/20' : 'bg-gray-100 dark:bg-gray-800 text-text-sub-light'" 
-              @click="locale = 'en'"
+              @click="changeLanguage('en')"
              >EN</button>
            </div>
         </div>

@@ -16,6 +16,7 @@ export const en = {
         progress: 'Progress',
         noTasksTitle: 'No tasks for today',
         noTasksDesc: 'Add a new task to get started!',
+        greeting: 'Hi {name},<br/>here is your mission! 🚀',
         taskNameDisplay: 'Task Name',
         addTaskTitle: 'Add New Task',
         inputs: {
@@ -42,6 +43,8 @@ export const en = {
     analytics: {
         title: 'Analytics',
         subtitle: 'Track your progress over time',
+        tipTitle: 'Hero Tip!',
+        tipDesc: '{name}, your speed is increasing! Every mission completed gets you closer to greatness. 🚀',
         exportCsv: 'Export CSV',
         weekActivity: "This Week's Activity",
         history: 'History',
@@ -109,6 +112,7 @@ export const zh = {
         progress: '今日进度',
         noTasksTitle: '今天还没有作业哦',
         noTasksDesc: '快添加一项新任务开始吧！',
+        greeting: '你好 {name}，<br/>这是你的今日挑战！🚀',
         taskNameDisplay: '任务名称',
         addTaskTitle: '添加新作业',
         inputs: {
@@ -135,6 +139,8 @@ export const zh = {
     analytics: {
         title: '统计报表',
         subtitle: '记录你的每一次进步',
+        tipTitle: '小英雄提示！',
+        tipDesc: '{name}，你的完成效率正在提高！每一次挑战都让你离伟大更近一步。🚀',
         exportCsv: '导出表格',
         weekActivity: "本周表现",
         history: '历史记录',

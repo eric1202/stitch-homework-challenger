@@ -80,8 +80,7 @@ const deleteTask = async (id) => {
     <!-- Header -->
     <header class="flex flex-col md:flex-row md:items-end justify-between gap-6">
       <div class="flex flex-col gap-2">
-        <h2 class="text-4xl md:text-5xl font-black tracking-tight leading-tight">
-          Hi {{ userName }},<br/>here is your mission! 🚀
+        <h2 class="text-4xl md:text-5xl font-black tracking-tight leading-tight" v-html="t('home.greeting', { name: userName })">
         </h2>
         <div class="flex items-center gap-2 text-text-sub-light dark:text-text-sub-dark">
           <span class="material-symbols-outlined text-primary text-xl">calendar_today</span>

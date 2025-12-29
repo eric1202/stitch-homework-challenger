@@ -232,8 +232,8 @@ const exportData = () => {
               <span class="material-symbols-outlined text-primary text-3xl">star</span>
             </div>
             <div>
-              <h3 class="font-black text-xl text-primary">Hero Tip!</h3>
-              <p class="text-sm text-gray-300 mt-2 leading-relaxed"> {{ userName }}, your speed is increasing! Every mission completed gets you closer to greatness. 🚀</p>
+              <h3 class="font-black text-xl text-primary">{{ t('analytics.tipTitle') }}</h3>
+              <p class="text-sm text-gray-300 mt-2 leading-relaxed"> {{ t('analytics.tipDesc', { name: userName }) }}</p>
             </div>
           </div>
         </div>

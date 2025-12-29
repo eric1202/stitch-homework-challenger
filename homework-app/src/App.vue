@@ -9,7 +9,7 @@ import HomeView from './components/HomeView.vue';
 import AnalyticsView from './components/AnalyticsView.vue';
 import SettingsView from './components/SettingsView.vue';
 
-const { t } = useI18n();
+const { t, locale } = useI18n();
 const currentView = ref('home');
 const totalPoints = ref(0);
 const userName = ref('Hero');
@@ -24,15 +24,21 @@ const pointsSubscription = liveQuery(async () => {
   totalPoints.value = value;
 });
 
-// Live Query for Name
-const nameSubscription = liveQuery(() => db.settings.get('userName'))
-  .subscribe(result => {
-    if (result) userName.value = result.value;
+// Live Query for Name & Language
+const settingsSubscription = liveQuery(() => db.settings.toArray())
+  .subscribe(results => {
+    const nameSetting = results.find(s => s.key === 'userName');
+    if (nameSetting) userName.value = nameSetting.value;
+
+    const langSetting = results.find(s => s.key === 'language');
+    if (langSetting && langSetting.value !== locale.value) {
+      locale.value = langSetting.value;
+    }
   });
 
 onUnmounted(() => {
   pointsSubscription.unsubscribe();
-  nameSubscription.unsubscribe();
+  settingsSubscription.unsubscribe();
 });
 
 const navItems = computed(() => [

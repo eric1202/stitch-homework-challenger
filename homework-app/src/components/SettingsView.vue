@@ -11,8 +11,14 @@ const editNameValue = ref('');
 
 // Change language and persist
 const changeLanguage = async (lang) => {
+  console.log('Changing language to:', lang);
   locale.value = lang;
-  await db.settings.put({ key: 'language', value: lang });
+  try {
+    await db.settings.put({ key: 'language', value: lang });
+    console.log('Language saved to DB');
+  } catch (err) {
+    console.error('Failed to save language:', err);
+  }
 };
 
 // Live reactive username
@@ -140,19 +146,20 @@ const clearAllData = async () => {
            </button>
         </div>
         
-        <div class="bg-background-light dark:bg-background-dark p-4 rounded-2xl flex flex-col items-center border border-gray-100 dark:border-gray-800">
-           <span class="text-[10px] font-black uppercase text-text-sub-light opacity-60">Language</span>
-           <div class="flex gap-2 mt-2">
-             <button 
-              class="px-4 py-1.5 font-bold rounded-xl text-xs transition-all" 
-              :class="locale === 'zh' ? 'bg-primary text-black shadow-lg shadow-primary/20' : 'bg-gray-100 dark:bg-gray-800 text-text-sub-light'" 
-              @click="changeLanguage('zh')"
-             >中文</button>
-             <button 
-              class="px-4 py-1.5 font-bold rounded-xl text-xs transition-all" 
-              :class="locale === 'en' ? 'bg-primary text-black shadow-lg shadow-primary/20' : 'bg-gray-100 dark:bg-gray-800 text-text-sub-light'" 
-              @click="changeLanguage('en')"
-             >EN</button>
+        <div class="bg-background-light dark:bg-background-dark p-4 rounded-2xl flex flex-col items-center border border-gray-100 dark:border-gray-800 shrink-0 min-w-[120px]">
+           <span class="text-[10px] font-black uppercase text-text-sub-light opacity-60 mb-2">Language</span>
+           <div class="relative w-full">
+             <select 
+               :value="locale"
+               @change="e => changeLanguage(e.target.value)"
+               class="w-full bg-surface-light dark:bg-surface-dark border-2 border-primary/20 rounded-xl px-4 py-2 font-bold text-xs appearance-none cursor-pointer focus:outline-none focus:border-primary transition-all pr-10"
+             >
+               <option value="zh">简体中文</option>
+               <option value="en">English (US)</option>
+             </select>
+             <div class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-primary">
+               <span class="material-symbols-outlined text-lg">expand_more</span>
+             </div>
            </div>
         </div>
       </section>

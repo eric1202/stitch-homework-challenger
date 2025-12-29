@@ -1,18 +1,48 @@
-@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700;800;900&family=Noto+Sans:wght@400;500;600;700&display=swap');
 @import "tailwindcss";
 
 @theme {
-  --color-primary: #FF6B6B;
-  --color-secondary: #4ECDC4;
-  --color-accent: #FFE66D;
-  --color-dark: #292F36;
-  --color-light: #F7FFF7;
+  --color-primary: #4bee2b;
+  --color-primary-dark: #3bc920;
 
-  --font-sans: 'Nunito', sans-serif;
+  --color-background-light: #f6f8f6;
+  --color-background-dark: #132210;
+
+  --color-surface-light: #ffffff;
+  --color-surface-dark: #1c2e18;
+
+  --color-text-main-light: #101b0d;
+  --color-text-main-dark: #f0fdf4;
+
+  --color-text-sub-light: #599a4c;
+  --color-text-sub-dark: #8fc685;
+
+  --font-display: 'Lexend', sans-serif;
+  --font-body: 'Noto Sans', sans-serif;
 }
 
 body {
-  font-family: 'Nunito', sans-serif;
-  background-color: var(--color-light);
-  color: var(--color-dark);
+  font-family: 'Lexend', sans-serif;
+  @apply bg-background-light text-text-main-light transition-colors duration-200;
+}
+
+.dark body {
+  @apply bg-background-dark text-text-main-dark;
+}
+
+/* Material Symbols variation settings */
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+.material-symbols-outlined.fill-1 {
+  font-variation-settings: 'FILL' 1;
+}
+
+/* Custom checkbox animation from design */
+.custom-checkbox:checked {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='black'%3E%3Cpath d='M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z'/%3E%3C/svg%3E");
+  background-size: 100% 100%;
+  background-position: center;
+  background-repeat: no-repeat;
 }

@@ -1,44 +1,36 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, onUnmounted } from 'vue';
 import { db } from '../db';
 import { liveQuery } from 'dexie';
 import { useI18n } from 'vue-i18n';
 
 import { getTodayDateString, formatDateDisplay } from '../utils/date';
 import { triggerConfetti } from '../utils/confetti';
-import { PlusIcon, TrashIcon, CheckCircleIcon, BookOpenIcon, StarIcon } from '@heroicons/vue/24/solid';
 
 const { t } = useI18n();
 const today = getTodayDateString();
 const newTaskTitle = ref('');
 const newTaskSubject = ref('Math'); 
 const newTaskPoints = ref(10);
-const isAddingCallback = ref(false); // for simple animation
+const isAddingFormOpen = ref(false);
 
 const subjects = ['Math', 'English', 'Science', 'Art', 'Reading', 'Sports', 'Other'];
 const subjectColors = {
-  Math: 'text-blue-500 bg-blue-50 border-blue-100',
-  English: 'text-emerald-500 bg-emerald-50 border-emerald-100',
-  Science: 'text-violet-500 bg-violet-50 border-violet-100',
-  Art: 'text-rose-500 bg-rose-50 border-rose-100',
-  Reading: 'text-amber-500 bg-amber-50 border-amber-100',
-  Sports: 'text-orange-500 bg-orange-50 border-orange-100',
-  Other: 'text-slate-500 bg-slate-50 border-slate-100',
+  Math: 'text-purple-600 bg-purple-100 dark:bg-purple-900/30 dark:text-purple-300',
+  English: 'text-blue-600 bg-blue-100 dark:bg-blue-900/30 dark:text-blue-300',
+  Science: 'text-green-700 bg-green-100 dark:bg-green-900/30 dark:text-green-300',
+  Art: 'text-rose-600 bg-rose-100 dark:bg-rose-900/30 dark:text-rose-300',
+  Reading: 'text-amber-600 bg-amber-100 dark:bg-amber-900/30 dark:text-amber-300',
+  Sports: 'text-orange-600 bg-orange-100 dark:bg-orange-900/30 dark:text-orange-400',
+  Other: 'text-slate-600 bg-slate-100 dark:bg-slate-800 dark:text-slate-300',
 };
 
-// Live query needs to be wrapped properly if using simple ref.
-// Or we can use useObservable if installed (I didn't install vueuse/rxjs), 
-// so I'll stick to the manual onMounted/onUnmounted or use a simple ref update pattern 
-// or the `liveQuery` return value is just a promise-like observable, not a Vue ref.
-// The easiest pattern without extra libs:
 const tasks = ref([]);
 const subscription = liveQuery(() => db.tasks.where('date').equals(today).toArray())
     .subscribe(result => {
       tasks.value = result;
     });
 
-// To be safe clean up
-import { onUnmounted } from 'vue';
 onUnmounted(() => {
   subscription.unsubscribe();
 });
@@ -46,7 +38,6 @@ onUnmounted(() => {
 const addTask = async () => {
   if (!newTaskTitle.value.trim()) return;
   
-  isAddingCallback.value = true;
   await db.tasks.add({
     title: newTaskTitle.value,
     subject: newTaskSubject.value,
@@ -57,7 +48,7 @@ const addTask = async () => {
   });
   
   newTaskTitle.value = '';
-  setTimeout(() => { isAddingCallback.value = false }, 300);
+  isAddingFormOpen.value = false;
 };
 
 const toggleTask = async (task) => {
@@ -70,7 +61,6 @@ const toggleTask = async (task) => {
 };
 
 const deleteTask = async (id) => {
-  // Simple confirmation as requested
   if (confirm(t('home.deleteConfirm'))) {
     await db.tasks.delete(id);
   }
@@ -78,133 +68,163 @@ const deleteTask = async (id) => {
 </script>
 
 <template>
-  <div class="space-y-8">
+  <div class="flex flex-col gap-8 pb-10">
     <!-- Header -->
-    <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
-      <div>
-        <h2 class="text-3xl font-black text-dark tracking-tight">{{ t('home.title') }}</h2>
-        <p class="text-gray-400 font-bold mt-1">{{ formatDateDisplay(today) }}</p>
+    <header class="flex flex-col md:flex-row md:items-end justify-between gap-6">
+      <div class="flex flex-col gap-2">
+        <h2 class="text-4xl md:text-5xl font-black tracking-tight leading-tight">
+          Hi Sam,<br/>here is your mission! 🚀
+        </h2>
+        <div class="flex items-center gap-2 text-text-sub-light dark:text-text-sub-dark">
+          <span class="material-symbols-outlined text-primary text-xl">calendar_today</span>
+          <p class="text-lg font-medium">{{ formatDateDisplay(today) }}</p>
+        </div>
       </div>
+      <button 
+        @click="isAddingFormOpen = !isAddingFormOpen"
+        class="hidden md:flex items-center gap-2 bg-primary hover:bg-primary-dark text-black font-bold py-4 px-8 rounded-2xl shadow-lg shadow-primary/30 transition-all hover:-translate-y-1 active:scale-95 duration-200"
+      >
+        <span class="material-symbols-outlined font-bold">add</span>
+        <span>{{ isAddingFormOpen ? t('settings.danger.resetBtn') : t('home.addTaskTitle') }}</span>
+      </button>
+    </header>
+
+    <!-- Progress Card -->
+    <section v-if="tasks.length > 0" class="bg-surface-light dark:bg-surface-dark p-6 px-7 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-800 relative overflow-hidden group">
+      <div class="absolute -right-10 -top-10 size-40 bg-primary/10 rounded-full blur-3xl group-hover:bg-primary/20 transition-all duration-500"></div>
       
-      <!-- Progress Bar (calculated from tasks) -->
-      <div v-if="tasks.length > 0" class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-4 min-w-[240px]">
-        <div class="flex-1">
-          <div class="flex justify-between text-xs font-bold mb-2">
-            <span class="text-gray-400">{{ t('home.progress') }}</span>
-            <span class="text-primary">{{ Math.round((tasks.filter(t => t.completed).length / tasks.length) * 100) }}%</span>
+      <div class="flex flex-col gap-5 relative z-10">
+        <div class="flex justify-between items-end">
+          <div>
+            <h3 class="text-xl font-bold mb-1">{{ t('home.progress') }}</h3>
+            <p v-if="tasks.filter(t => t.completed).length === tasks.length" class="text-text-sub-light dark:text-text-sub-dark text-sm font-medium">Mission Accomplished! 🏆</p>
+            <p v-else class="text-text-sub-light dark:text-text-sub-dark text-sm font-medium">Keep going! You are doing great. 🔥</p>
           </div>
-          <div class="h-2 w-full bg-gray-100 rounded-full overflow-hidden">
-             <div class="h-full bg-gradient-to-r from-primary to-accent transition-all duration-500 ease-out"
-                  :style="{ width: `${(tasks.filter(t => t.completed).length / tasks.length) * 100}%` }">
-             </div>
+          <div class="text-3xl font-black text-primary">
+            {{ tasks.length === 0 ? 0 : Math.round((tasks.filter(t => t.completed).length / tasks.length) * 100) }}%
           </div>
         </div>
-        <div class="w-10 h-10 rounded-full bg-accent/20 flex items-center justify-center text-accent font-black">
-          {{ tasks.filter(t => t.completed).length }}/{{ tasks.length }}
+        
+        <div class="h-5 w-full bg-background-light dark:bg-background-dark rounded-full overflow-hidden p-1">
+          <div 
+            class="h-full bg-primary rounded-full transition-all duration-700 ease-out shadow-[0_0_12px_rgba(75,238,43,0.4)]" 
+            :style="{ width: `${tasks.length === 0 ? 0 : (tasks.filter(t => t.completed).length / tasks.length) * 100}%` }"
+          ></div>
+        </div>
+        
+        <div class="flex justify-between text-sm font-bold text-text-sub-light dark:text-text-sub-dark uppercase tracking-wider">
+          <span>{{ tasks.length }} {{ t('app.nav.tasks') }}</span>
+          <span>{{ tasks.filter(t => t.completed).length }} of {{ tasks.length }} {{ t('analytics.status.completed') }}</span>
         </div>
       </div>
-    </div>
+    </section>
+
+    <!-- Add Task Dialog/Form (Inline for simplicity now) -->
+    <Transition name="expand">
+      <div v-if="isAddingFormOpen" class="bg-surface-light dark:bg-surface-dark p-6 rounded-3xl border-2 border-primary/20 shadow-xl shadow-primary/5">
+        <div class="grid md:grid-cols-12 gap-5">
+           <div class="md:col-span-12">
+             <h3 class="text-xl font-bold mb-4">{{ t('home.addTaskTitle') }} ✏️</h3>
+           </div>
+           <div class="md:col-span-5 flex flex-col gap-2">
+             <label class="text-xs font-bold text-text-sub-light uppercase tracking-widest px-1">{{ t('home.inputs.taskName') }}</label>
+             <input v-model="newTaskTitle" type="text" class="w-full bg-background-light dark:bg-background-dark border-transparent focus:border-primary rounded-2xl p-4 font-bold transition-all outline-none" :placeholder="t('home.inputs.placeholder')">
+           </div>
+           <div class="md:col-span-3 flex flex-col gap-2">
+             <label class="text-xs font-bold text-text-sub-light uppercase tracking-widest px-1">{{ t('home.inputs.subject') }}</label>
+             <select v-model="newTaskSubject" class="w-full bg-background-light dark:bg-background-dark border-transparent focus:border-primary rounded-2xl p-4 font-bold transition-all outline-none">
+                <option v-for="s in subjects" :key="s" :value="s">{{ t(`home.subjects.${s}`) }}</option>
+             </select>
+           </div>
+           <div class="md:col-span-2 flex flex-col gap-2">
+             <label class="text-xs font-bold text-text-sub-light uppercase tracking-widest px-1">{{ t('home.inputs.points') }}</label>
+             <input v-model.number="newTaskPoints" type="number" class="w-full bg-background-light dark:bg-background-dark border-transparent focus:border-primary rounded-2xl p-4 font-bold transition-all outline-none text-center">
+           </div>
+           <div class="md:col-span-2 flex items-end">
+             <button @click="addTask" class="w-full bg-primary hover:bg-primary-dark text-black font-black py-4 rounded-2xl shadow-lg shadow-primary/20 transition-all active:scale-95 duration-200 uppercase tracking-widest text-xs">
+               {{ t('home.buttons.add') }}
+             </button>
+           </div>
+        </div>
+      </div>
+    </Transition>
 
     <!-- Task List -->
-    <div class="grid gap-4">
+    <section class="flex flex-col gap-5">
+      <h3 class="text-2xl font-black flex items-center gap-2">
+        <span class="material-symbols-outlined text-primary text-3xl">check_circle</span>
+        {{ t('home.title') }}
+      </h3>
+
       <!-- Empty State -->
-      <div v-if="tasks.length === 0" class="py-12 flex flex-col items-center justify-center text-center opacity-50">
-        <div class="w-32 h-32 bg-gray-100 rounded-full mb-4 flex items-center justify-center">
-            <BookOpenIcon class="w-12 h-12 text-gray-300" />
+      <div v-if="tasks.length === 0" class="py-16 text-center bg-surface-light dark:bg-surface-dark rounded-3xl border border-dashed border-gray-200 dark:border-gray-800">
+        <div class="size-20 bg-gray-50 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-4 text-gray-300">
+          <span class="material-symbols-outlined text-5xl">menu_book</span>
         </div>
-        <h3 class="text-xl font-bold text-gray-400">{{ t('home.noTasksTitle') }}</h3>
-        <p class="text-gray-300">{{ t('home.noTasksDesc') }}</p>
+        <p class="text-xl font-black text-gray-400">{{ t('home.noTasksTitle') }}</p>
+        <p class="text-gray-300 font-bold">{{ t('home.noTasksDesc') }}</p>
+        <button @click="isAddingFormOpen = true" class="mt-6 text-primary font-bold flex items-center justify-center gap-1 mx-auto hover:underline">
+          <span class="material-symbols-outlined">add</span> {{ t('home.addTaskTitle') }}
+        </button>
       </div>
 
       <div 
         v-for="task in tasks" 
         :key="task.id"
-        class="group bg-white rounded-2xl p-4 shadow-sm border border-transparent hover:border-primary/20 hover:shadow-md transition-all duration-200 flex items-center gap-4"
-        :class="{ 'opacity-60 bg-gray-50': task.completed }"
+        class="group flex items-center gap-5 bg-surface-light dark:bg-surface-dark p-5 rounded-2xl shadow-sm border-2 border-transparent hover:border-primary/40 transition-all duration-300"
+        :class="{ 'opacity-60 grayscale-[0.5]': task.completed }"
       >
-         <!-- Checkbox -->
-         <button 
-          @click="toggleTask(task)"
-          class="w-8 h-8 rounded-xl border-2 flex items-center justify-center transition-all duration-200 flex-shrink-0"
-          :class="task.completed ? 'bg-secondary border-secondary' : 'border-gray-200 hover:border-secondary'"
-         >
-           <CheckCircleIcon v-if="task.completed" class="w-5 h-5 text-white" />
-         </button>
-
-         <!-- Content -->
-         <div class="flex-1 min-w-0">
-           <div class="flex items-center gap-2 mb-1">
-             <span class="text-[10px] uppercase font-black px-2 py-0.5 rounded-md border"
-              :class="subjectColors[task.subject] || subjectColors.Other"
-             >
-               {{ t(`home.subjects.${task.subject}`) }}
-             </span>
-           </div>
-           <h3 class="font-bold text-dark truncate" :class="{ 'line-through text-gray-400': task.completed }">{{ task.title }}</h3>
-         </div>
-
-         <!-- Points & Actions -->
-         <div class="flex items-center gap-3">
-           <div class="flex flex-col items-end">
-             <span class="text-xs font-bold text-gray-400 uppercase">{{ t('home.reward') }}</span>
-             <span class="text-sm font-black text-accent">+{{ task.points }}</span>
-           </div>
-           
-           <button @click="deleteTask(task.id)" class="p-2 text-gray-300 hover:text-red-400 hover:bg-red-50 rounded-xl transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100 mobile:opacity-100 md:opacity-0">
-             <TrashIcon class="w-5 h-5" />
-           </button>
-         </div>
-      </div>
-    </div>
-
-    <!-- Add Task Form -->
-    <div class="bg-white rounded-3xl p-6 shadow-lg shadow-primary/5 border border-primary/10 mt-8 relative overflow-hidden">
-      <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary to-accent"></div>
-      <h3 class="text-lg font-bold text-dark mb-4 flex items-center gap-2">
-        <PlusIcon class="w-5 h-5 text-primary" />
-        {{ t('home.addTaskTitle') }}
-      </h3>
-      
-      <div class="grid md:grid-cols-12 gap-4 items-end">
-        <div class="md:col-span-6 space-y-1">
-          <label class="text-xs font-bold text-gray-400 uppercase ml-1">{{ t('home.inputs.taskName') }}</label>
+        <div class="relative flex items-center justify-center flex-shrink-0">
           <input 
-            v-model="newTaskTitle"
-            @keyup.enter="addTask"
-            type="text" 
-            :placeholder="t('home.inputs.placeholder')"
-            class="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-3 font-bold text-dark focus:outline-none focus:ring-2 focus:ring-primary/20 focus:bg-white transition-all placeholder:font-normal"
+            type="checkbox" 
+            :checked="task.completed" 
+            @change="toggleTask(task)"
+            class="custom-checkbox appearance-none size-8 rounded-full border-2 border-gray-200 dark:border-gray-700 checked:bg-primary checked:border-primary transition-all cursor-pointer ring-offset-2 ring-primary/20 focus:ring-4"
           >
-        </div>
-        
-        <div class="md:col-span-3 space-y-1">
-          <label class="text-xs font-bold text-gray-400 uppercase ml-1">{{ t('home.inputs.subject') }}</label>
-          <select 
-            v-model="newTaskSubject"
-            class="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-3 font-bold text-dark focus:outline-none focus:ring-2 focus:ring-primary/20 focus:bg-white transition-all appearance-none cursor-pointer"
-          >
-            <option v-for="s in subjects" :value="s">{{ t(`home.subjects.${s}`) }}</option>
-          </select>
+          <span v-if="task.completed" class="material-symbols-outlined absolute pointer-events-none text-black font-black text-lg">check</span>
         </div>
 
-        <div class="md:col-span-2 space-y-1">
-          <label class="text-xs font-bold text-gray-400 uppercase ml-1">{{ t('home.inputs.points') }}</label>
-          <input 
-            v-model.number="newTaskPoints"
-            type="number" 
-            class="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-3 font-bold text-accent focus:outline-none focus:ring-2 focus:ring-accent/20 focus:bg-white transition-all text-center"
-          >
-        </div>
+        <div class="flex-1 flex flex-col md:flex-row md:items-center justify-between gap-3">
+          <div class="flex flex-col">
+            <h4 class="text-lg font-bold text-text-main-light dark:text-text-main-dark group-hover:text-primary transition-colors duration-300" :class="{ 'line-through decoration-2 decoration-primary/50 text-text-sub-light opacity-70': task.completed }">
+              {{ task.title }}
+            </h4>
+            <div class="flex items-center gap-2 mt-0.5">
+              <span class="text-[10px] font-black uppercase tracking-widest px-2.5 py-1 rounded-lg shadow-sm" :class="subjectColors[task.subject] || subjectColors.Other">
+                 {{ t(`home.subjects.${task.subject}`) }}
+              </span>
+              <span class="text-xs font-bold text-text-sub-light">+{{ task.points }} pts</span>
+            </div>
+          </div>
 
-        <div class="md:col-span-1">
-           <button 
-            @click="addTask"
-            class="w-full h-[50px] bg-dark text-white rounded-xl font-bold flex items-center justify-center hover:bg-black transition-colors shadow-lg shadow-dark/20 active:scale-95 duration-200"
-           >
-             <PlusIcon class="w-6 h-6" />
-           </button>
+          <div class="flex items-center gap-2 md:opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+             <button @click="deleteTask(task.id)" class="p-3 text-gray-300 hover:text-red-500 transition-colors rounded-xl hover:bg-red-50 dark:hover:bg-red-900/20">
+               <span class="material-symbols-outlined">delete</span>
+             </button>
+          </div>
         </div>
       </div>
-    </div>
+    </section>
+
+    <!-- Mobile Floating Add Button -->
+    <button 
+      @click="isAddingFormOpen = true"
+      class="md:hidden fixed bottom-24 right-6 size-16 bg-primary text-black rounded-full shadow-2xl shadow-primary/40 flex items-center justify-center z-50 active:scale-90 transition-transform duration-200"
+    >
+      <span class="material-symbols-outlined text-3xl font-black">add</span>
+    </button>
   </div>
 </template>
+
+<style scoped>
+.expand-enter-active, .expand-leave-active {
+  transition: all 0.3s ease-out;
+  max-height: 400px;
+}
+.expand-enter-from, .expand-leave-to {
+  opacity: 0;
+  max-height: 0;
+  transform: translateY(-10px);
+  margin-bottom: -1.5rem;
+}
+</style>

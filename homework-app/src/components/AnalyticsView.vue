@@ -21,12 +21,20 @@ ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend,
 const { t } = useI18n();
 
 const allTasks = ref([]);
+const userName = ref('Hero');
+
 const subscription = liveQuery(() => db.tasks.toArray()).subscribe(tasks => {
   allTasks.value = tasks.sort((a, b) => b.date.localeCompare(a.date));
 });
 
+const nameSubscription = liveQuery(() => db.settings.get('userName'))
+  .subscribe(result => {
+    if (result) userName.value = result.value;
+  });
+
 onUnmounted(() => {
   subscription.unsubscribe();
+  nameSubscription.unsubscribe();
 });
 
 // --- Stats Calculations ---
@@ -225,7 +233,7 @@ const exportData = () => {
             </div>
             <div>
               <h3 class="font-black text-xl text-primary">Hero Tip!</h3>
-              <p class="text-sm text-gray-300 mt-2 leading-relaxed"> Sam, your speed is increasing! Every mission completed gets you closer to greatness. 🚀</p>
+              <p class="text-sm text-gray-300 mt-2 leading-relaxed"> {{ userName }}, your speed is increasing! Every mission completed gets you closer to greatness. 🚀</p>
             </div>
           </div>
         </div>

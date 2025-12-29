@@ -69,7 +69,9 @@ export const en = {
             backupSub: 'Download JSON file',
             restoreBtn: 'Restore Data',
             restoreSub: 'Upload JSON file',
-            backupFileName: 'homework_hero_backup'
+            backupFileName: 'homework_hero_backup',
+            userName: 'User Name',
+            editProfile: 'Edit Profile'
         },
         danger: {
             title: 'Danger Zone',
@@ -160,7 +162,9 @@ export const zh = {
             backupSub: '下载 JSON 文件',
             restoreBtn: '数据恢复',
             restoreSub: '上传 JSON 文件',
-            backupFileName: '作业小英雄备份'
+            backupFileName: '作业小英雄备份',
+            userName: '用户姓名',
+            editProfile: '修改资料'
         },
         danger: {
             title: '危险区域',

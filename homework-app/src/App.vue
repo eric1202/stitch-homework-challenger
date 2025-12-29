@@ -12,6 +12,7 @@ import SettingsView from './components/SettingsView.vue';
 const { t } = useI18n();
 const currentView = ref('home');
 const totalPoints = ref(0);
+const userName = ref('Hero');
 
 // Live Query for Points
 const pointsSubscription = liveQuery(async () => {
@@ -23,8 +24,15 @@ const pointsSubscription = liveQuery(async () => {
   totalPoints.value = value;
 });
 
+// Live Query for Name
+const nameSubscription = liveQuery(() => db.settings.get('userName'))
+  .subscribe(result => {
+    if (result) userName.value = result.value;
+  });
+
 onUnmounted(() => {
   pointsSubscription.unsubscribe();
+  nameSubscription.unsubscribe();
 });
 
 const navItems = computed(() => [
@@ -86,7 +94,7 @@ onMounted(() => {
             <span class="material-symbols-outlined">person</span>
           </div>
           <div class="flex flex-col overflow-hidden">
-            <p class="text-sm font-bold truncate">Sam Hero</p>
+            <p class="text-sm font-bold truncate">{{ userName }}</p>
             <p class="text-[10px] font-bold text-text-sub-light dark:text-text-sub-dark uppercase">{{ t('app.offlineReady') }}</p>
           </div>
         </div>

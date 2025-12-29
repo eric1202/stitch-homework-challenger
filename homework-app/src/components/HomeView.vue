@@ -26,13 +26,21 @@ const subjectColors = {
 };
 
 const tasks = ref([]);
+const userName = ref('Hero');
+
 const subscription = liveQuery(() => db.tasks.where('date').equals(today).toArray())
     .subscribe(result => {
       tasks.value = result;
     });
 
+const nameSubscription = liveQuery(() => db.settings.get('userName'))
+  .subscribe(result => {
+    if (result) userName.value = result.value;
+  });
+
 onUnmounted(() => {
   subscription.unsubscribe();
+  nameSubscription.unsubscribe();
 });
 
 const addTask = async () => {
@@ -73,7 +81,7 @@ const deleteTask = async (id) => {
     <header class="flex flex-col md:flex-row md:items-end justify-between gap-6">
       <div class="flex flex-col gap-2">
         <h2 class="text-4xl md:text-5xl font-black tracking-tight leading-tight">
-          Hi Sam,<br/>here is your mission! 🚀
+          Hi {{ userName }},<br/>here is your mission! 🚀
         </h2>
         <div class="flex items-center gap-2 text-text-sub-light dark:text-text-sub-dark">
           <span class="material-symbols-outlined text-primary text-xl">calendar_today</span>

@@ -1,18 +1,39 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import { db } from '../db';
+import { liveQuery } from 'dexie';
 import { useI18n } from 'vue-i18n';
 
-const { t } = useI18n();
+const { t, locale } = useI18n();
 const fileInput = ref(null);
+const isEditingName = ref(false);
+const editNameValue = ref('');
+
+// Live reactive username
+const userName = ref('Hero');
+const settingsSubscription = liveQuery(() => db.settings.get('userName'))
+    .subscribe(result => {
+      if (result) userName.value = result.value;
+    });
+
+onMounted(() => {
+  editNameValue.value = userName.value;
+});
+
+const saveName = async () => {
+  if (!editNameValue.value.trim()) return;
+  await db.settings.put({ key: 'userName', value: editNameValue.value.trim() });
+  isEditingName.value = false;
+};
 
 const exportData = async () => {
   try {
     const tasks = await db.tasks.toArray();
+    const settings = await db.settings.toArray();
     const backup = {
-      version: 1,
+      version: 2,
       timestamp: new Date().toISOString(),
-      data: { tasks }
+      data: { tasks, settings }
     };
     
     const blob = new Blob([JSON.stringify(backup, null, 2)], { type: "application/json" });
@@ -47,9 +68,14 @@ const importData = async (event) => {
   reader.onload = async (e) => {
     try {
       const backup = JSON.parse(e.target.result);
-      if (backup.data && backup.data.tasks) {
-        await db.tasks.bulkPut(backup.data.tasks);
-        alert(t('settings.alerts.importSuccess', { count: backup.data.tasks.length }));
+      if (backup.data) {
+        if (backup.data.tasks) {
+          await db.tasks.bulkPut(backup.data.tasks);
+        }
+        if (backup.data.settings) {
+          await db.settings.bulkPut(backup.data.settings);
+        }
+        alert(t('settings.alerts.importSuccess', { count: (backup.data.tasks?.length || 0) }));
       } else {
         throw new Error(t('settings.alerts.invalidFormat'));
       }
@@ -65,7 +91,9 @@ const clearAllData = async () => {
   if (confirm(t('settings.alerts.deleteConfirm1'))) {
     if (confirm(t('settings.alerts.deleteConfirm2'))) {
       await db.tasks.clear();
+      await db.settings.clear();
       alert(t('settings.alerts.resetSuccess'));
+      window.location.reload(); // Refresh to clear state
     }
   }
 };
@@ -81,21 +109,38 @@ const clearAllData = async () => {
 
     <div class="grid gap-8">
       
-      <!-- User Account Section (Visual Only) -->
-      <section class="bg-surface-light dark:bg-surface-dark p-8 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm flex flex-col md:flex-row items-center gap-6">
+      <!-- User Account Section -->
+      <section class="bg-surface-light dark:bg-surface-dark p-8 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm flex flex-col md:flex-row items-center gap-6 relative overflow-hidden">
+        <div class="absolute -right-10 -bottom-10 size-40 bg-primary/5 rounded-full blur-3xl"></div>
+        
         <div class="size-24 rounded-full bg-primary/20 flex items-center justify-center text-primary-dark ring-4 ring-primary/10 overflow-hidden shrink-0">
            <span class="material-symbols-outlined text-5xl">person</span>
         </div>
-        <div class="flex-1 text-center md:text-left">
-           <h3 class="text-2xl font-black">Hero Sam</h3>
-           <p class="text-text-sub-light font-bold">Level 5 Math Scholar • 1,250 pts</p>
-           <button class="mt-4 text-primary text-xs font-black uppercase tracking-widest hover:underline">Edit Profile</button>
+        <div class="flex-1 text-center md:text-left relative z-10">
+           <h3 class="text-2xl font-black">{{ userName }}</h3>
+           <p class="text-text-sub-light font-bold">Scholar • {{ t('app.offlineReady') }}</p>
+           <button 
+            @click="isEditingName = true; editNameValue = userName"
+            class="mt-4 text-primary text-xs font-black uppercase tracking-widest hover:underline flex items-center gap-1 mx-auto md:mx-0"
+           >
+             <span class="material-symbols-outlined text-sm">edit</span>
+             {{ t('settings.dataManagement.editProfile') }}
+           </button>
         </div>
-        <div class="bg-background-light dark:bg-background-dark p-4 rounded-2xl flex flex-col items-center">
+        
+        <div class="bg-background-light dark:bg-background-dark p-4 rounded-2xl flex flex-col items-center border border-gray-100 dark:border-gray-800">
            <span class="text-[10px] font-black uppercase text-text-sub-light opacity-60">Language</span>
-           <div class="flex gap-2 mt-1">
-             <button class="px-3 py-1 bg-primary text-black font-bold rounded-lg text-xs" :class="{ 'opacity-100': $i18n.locale === 'zh', 'opacity-30': $i18n.locale !== 'zh' }" @click="$i18n.locale = 'zh'">ZH</button>
-             <button class="px-3 py-1 bg-primary text-black font-bold rounded-lg text-xs" :class="{ 'opacity-100': $i18n.locale === 'en', 'opacity-30': $i18n.locale !== 'en' }" @click="$i18n.locale = 'en'">EN</button>
+           <div class="flex gap-2 mt-2">
+             <button 
+              class="px-4 py-1.5 font-bold rounded-xl text-xs transition-all" 
+              :class="locale === 'zh' ? 'bg-primary text-black shadow-lg shadow-primary/20' : 'bg-gray-100 dark:bg-gray-800 text-text-sub-light'" 
+              @click="locale = 'zh'"
+             >中文</button>
+             <button 
+              class="px-4 py-1.5 font-bold rounded-xl text-xs transition-all" 
+              :class="locale === 'en' ? 'bg-primary text-black shadow-lg shadow-primary/20' : 'bg-gray-100 dark:bg-gray-800 text-text-sub-light'" 
+              @click="locale = 'en'"
+             >EN</button>
            </div>
         </div>
       </section>
@@ -161,6 +206,29 @@ const clearAllData = async () => {
         </button>
       </section>
 
+    </div>
+
+    <!-- Edit Name Modal -->
+    <div v-if="isEditingName" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+      <div class="bg-surface-light dark:bg-surface-dark p-8 rounded-[2rem] shadow-2xl max-w-sm w-full border border-gray-100 dark:border-gray-800 animate-in zoom-in duration-300">
+        <h3 class="text-2xl font-black mb-6 flex items-center gap-2">
+          {{ t('settings.dataManagement.editProfile') }} ✏️
+        </h3>
+        <div class="flex flex-col gap-2 mb-8">
+           <label class="text-xs font-black uppercase tracking-widest text-text-sub-light px-1">{{ t('settings.dataManagement.userName') }}</label>
+           <input 
+            v-model="editNameValue" 
+            @keyup.enter="saveName"
+            type="text" 
+            class="w-full bg-background-light dark:bg-background-dark border-transparent focus:border-primary rounded-2xl p-4 font-bold transition-all outline-none text-lg shadow-inner ring-1 ring-gray-100 dark:ring-gray-700 focus:ring-primary"
+            autofocus
+           >
+        </div>
+        <div class="flex gap-4">
+          <button @click="isEditingName = false" class="flex-1 py-4 rounded-2xl border border-gray-200 dark:border-gray-700 font-bold text-text-sub-light hover:bg-gray-50 transition-colors uppercase tracking-widest text-xs">Cancel</button>
+          <button @click="saveName" class="flex-1 py-4 bg-primary text-black font-black rounded-2xl shadow-lg shadow-primary/20 hover:bg-primary-dark transition-all active:scale-95 uppercase tracking-widest text-xs">Save</button>
+        </div>
+      </div>
     </div>
   </div>
 </template>

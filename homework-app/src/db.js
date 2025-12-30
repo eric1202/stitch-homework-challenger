@@ -40,10 +40,11 @@ class SupabaseTable {
             .from(this.tableName)
             .select('*')
             .eq('key', key)
-            .single()
+            .limit(1)  // Use limit(1) instead of single() to avoid 406 if not found
+            .maybeSingle()
 
-        if (error && error.code !== 'PGRST116') throw error // PGRST116 = not found
-        return data
+        if (error) throw error
+        return data // returns null if not found
     }
 
     async put(data) {

@@ -1,42 +1,14 @@
 import Dexie from 'dexie';
-import dexieCloud from "dexie-cloud-addon";
-import { nanoid } from 'nanoid';
 
-export const db = new Dexie('HomeworkHeroDB', { addons: [dexieCloud] });
+export const db = new Dexie('HomeworkHeroDB');
 
-// Version 5: Use string-based IDs for Dexie Cloud compatibility
-db.version(5).stores({
-    tasks: 'id, title, subject, completed, date, points, userName, [userName+date]',
+// Version 6: Back to simple local DB without cloud sync
+// Using numeric auto-increment IDs for simplicity
+db.version(6).stores({
+    tasks: '++id, title, subject, completed, date, points, userName, [userName+date]',
     settings: 'key, value',
-    rewards: 'id, title, icon, points, expiryDate, stock, userName',
-    redemptionLogs: 'id, rewardTitle, spentPoints, timestamp, userName'
-});
-
-db.cloud.configure({
-    databaseUrl: "https://z5dx273tz.dexie.cloud",
-    requireAuth: false
-});
-
-// Auto-generate string IDs for new records
-db.tasks.hook('creating', (primKey, obj, trans) => {
-    if (!obj.id) {
-        obj.id = nanoid();
-    }
-    return obj.id;
-});
-
-db.rewards.hook('creating', (primKey, obj, trans) => {
-    if (!obj.id) {
-        obj.id = nanoid();
-    }
-    return obj.id;
-});
-
-db.redemptionLogs.hook('creating', (primKey, obj, trans) => {
-    if (!obj.id) {
-        obj.id = nanoid();
-    }
-    return obj.id;
+    rewards: '++id, title, icon, points, expiryDate, stock, userName',
+    redemptionLogs: '++id, rewardTitle, spentPoints, timestamp, userName'
 });
 
 // Handle version changes (upgrades) gracefully
@@ -44,5 +16,6 @@ db.on('versionchange', () => {
     db.close();
     window.location.reload();
 });
+
 
 

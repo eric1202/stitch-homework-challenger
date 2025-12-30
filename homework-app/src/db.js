@@ -18,16 +18,25 @@ db.cloud.configure({
 });
 
 // Auto-generate string IDs for new records
-db.tasks.hook('creating', (primKey, obj) => {
-    if (!obj.id) obj.id = nanoid();
+db.tasks.hook('creating', (primKey, obj, trans) => {
+    if (!obj.id) {
+        obj.id = nanoid();
+    }
+    return obj.id;
 });
 
-db.rewards.hook('creating', (primKey, obj) => {
-    if (!obj.id) obj.id = nanoid();
+db.rewards.hook('creating', (primKey, obj, trans) => {
+    if (!obj.id) {
+        obj.id = nanoid();
+    }
+    return obj.id;
 });
 
-db.redemptionLogs.hook('creating', (primKey, obj) => {
-    if (!obj.id) obj.id = nanoid();
+db.redemptionLogs.hook('creating', (primKey, obj, trans) => {
+    if (!obj.id) {
+        obj.id = nanoid();
+    }
+    return obj.id;
 });
 
 // Handle version changes (upgrades) gracefully

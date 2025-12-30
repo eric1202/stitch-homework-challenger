@@ -59,6 +59,7 @@ export const en = {
         progress: 'Progress',
         noTasksTitle: 'No tasks for today',
         noTasksDesc: 'Add a new task to get started!',
+        lockedMessage: 'All tasks completed! Today\'s mission is locked. 🔒',
         greeting: 'Hi {name},<br/>here is your mission! 🚀',
         taskNameDisplay: 'Task Name',
         addTaskTitle: 'Add New Task',
@@ -74,6 +75,7 @@ export const en = {
         reward: 'Reward',
         deleteConfirm: 'Are you sure you want to delete this task?',
         subjects: {
+            Chinese: 'Chinese',
             Math: 'Math',
             English: 'English',
             Science: 'Science',
@@ -198,6 +200,7 @@ export const zh = {
         progress: '今日进度',
         noTasksTitle: '今天还没有作业哦',
         noTasksDesc: '快添加一项新任务开始吧！',
+        lockedMessage: '今日作业已全部完成！任务已锁定。🔒',
         greeting: '你好 {name}，<br/>这是你的今日挑战！🚀',
         taskNameDisplay: '任务名称',
         addTaskTitle: '添加新作业',
@@ -213,6 +216,7 @@ export const zh = {
         reward: '奖励',
         deleteConfirm: '确定要删除这项作业吗？',
         subjects: {
+            Chinese: '语文',
             Math: '数学',
             English: '英语',
             Science: '科学',

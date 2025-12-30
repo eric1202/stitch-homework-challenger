@@ -93,8 +93,8 @@ const chartData = computed(() => {
     labels: weekDays.map(d => format(d, 'EEE')),
     datasets: [{
       label: 'Tasks',
-      backgroundColor: '#4bee2b', // primary
-      hoverBackgroundColor: '#3bc920',
+      backgroundColor: '#2563eb', // primary
+      hoverBackgroundColor: '#1d4ed8',
       borderRadius: 12,
       data: data,
       barPercentage: 0.6,
@@ -108,7 +108,7 @@ const chartOptions = {
   plugins: {
     legend: { display: false },
     tooltip: { 
-      backgroundColor: '#132210', 
+      backgroundColor: '#0f172a', 
       titleFont: { family: 'Lexend', size: 14 },
       bodyFont: { family: 'Lexend', size: 12 },
       padding: 12,
@@ -169,7 +169,7 @@ const exportData = () => {
           <p class="text-text-sub-light dark:text-text-sub-dark text-xs font-black uppercase tracking-widest">{{ t('analytics.status.completed') }}</p>
           <p class="text-4xl font-black mt-1 text-text-main-light dark:text-white">{{ stats.perfectDays }}</p>
         </div>
-        <div class="bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-xs font-bold px-3 py-1.5 rounded-xl w-fit flex items-center gap-1.5">
+        <div class="bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 text-xs font-bold px-3 py-1.5 rounded-xl w-fit flex items-center gap-1.5">
           <span class="material-symbols-outlined text-base">trending_up</span>
           Perfect Days
         </div>

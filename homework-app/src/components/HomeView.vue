@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onUnmounted } from 'vue';
+import { ref, computed, onUnmounted } from 'vue';
 import { db } from '../db';
 import { liveQuery } from 'dexie';
 import { useI18n } from 'vue-i18n';
@@ -14,11 +14,11 @@ const newTaskSubject = ref('Math');
 const newTaskPoints = ref(10);
 const isAddingFormOpen = ref(false);
 
-const subjects = ['Math', 'English', 'Science', 'Art', 'Reading', 'Sports', 'Other'];
+const subjects = ["Chinese", 'Math', 'English', 'Science', 'Art', 'Reading', 'Sports', 'Other'];
 const subjectColors = {
   Math: 'text-purple-600 bg-purple-100 dark:bg-purple-900/30 dark:text-purple-300',
   English: 'text-blue-600 bg-blue-100 dark:bg-blue-900/30 dark:text-blue-300',
-  Science: 'text-green-700 bg-green-100 dark:bg-green-900/30 dark:text-green-300',
+  Science: 'text-indigo-700 bg-indigo-100 dark:bg-indigo-900/30 dark:text-indigo-300',
   Art: 'text-rose-600 bg-rose-100 dark:bg-rose-900/30 dark:text-rose-300',
   Reading: 'text-amber-600 bg-amber-100 dark:bg-amber-900/30 dark:text-amber-300',
   Sports: 'text-orange-600 bg-orange-100 dark:bg-orange-900/30 dark:text-orange-400',
@@ -59,7 +59,13 @@ const addTask = async () => {
   isAddingFormOpen.value = false;
 };
 
+const isLocked = computed(() => tasks.value.length > 0 && tasks.value.every(t => t.completed));
+
 const toggleTask = async (task) => {
+  if (isLocked.value && task.completed) {
+    alert(t('home.lockedMessage'));
+    return;
+  }
   const newStatus = !task.completed;
   await db.tasks.update(task.id, { completed: newStatus });
   
@@ -114,7 +120,7 @@ const deleteTask = async (id) => {
         
         <div class="h-5 w-full bg-background-light dark:bg-background-dark rounded-full overflow-hidden p-1">
           <div 
-            class="h-full bg-primary rounded-full transition-all duration-700 ease-out shadow-[0_0_12px_rgba(75,238,43,0.4)]" 
+            class="h-full bg-primary rounded-full transition-all duration-700 ease-out shadow-[0_0_12px_rgba(37,99,235,0.4)]" 
             :style="{ width: `${tasks.length === 0 ? 0 : (tasks.filter(t => t.completed).length / tasks.length) * 100}%` }"
           ></div>
         </div>
@@ -186,7 +192,8 @@ const deleteTask = async (id) => {
             type="checkbox" 
             :checked="task.completed" 
             @change="toggleTask(task)"
-            class="custom-checkbox appearance-none size-8 rounded-full border-2 border-gray-200 dark:border-gray-700 checked:bg-primary checked:border-primary transition-all cursor-pointer ring-offset-2 ring-primary/20 focus:ring-4"
+            :disabled="isLocked && task.completed"
+            class="custom-checkbox appearance-none size-8 rounded-full border-2 border-gray-200 dark:border-gray-700 checked:bg-primary checked:border-primary transition-all cursor-pointer ring-offset-2 ring-primary/20 focus:ring-4 disabled:opacity-50 disabled:cursor-not-allowed"
           >
           <span v-if="task.completed" class="material-symbols-outlined absolute pointer-events-none text-black font-black text-lg">check</span>
         </div>

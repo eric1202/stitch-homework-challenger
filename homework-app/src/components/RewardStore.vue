@@ -261,7 +261,7 @@ const formatTime = (ts) => {
           <div class="absolute top-4 right-4 flex flex-col items-end gap-1">
             <span v-if="isExpired(reward.expiryDate)" class="px-2 py-0.5 bg-red-100 text-red-600 text-[10px] font-black rounded-lg uppercase">{{ t('rewards.expired') }}</span>
             <span v-else-if="reward.stock <= 0" class="px-2 py-0.5 bg-gray-100 text-gray-500 text-[10px] font-black rounded-lg uppercase">{{ t('rewards.soldOut') }}</span>
-            <span v-else class="px-2 py-0.5 bg-green-100 text-green-600 text-[10px] font-black rounded-lg uppercase whitespace-nowrap">{{ t('rewards.left', { count: reward.stock }) }}</span>
+            <span v-else class="px-2 py-0.5 bg-blue-100 text-blue-600 text-[10px] font-black rounded-lg uppercase whitespace-nowrap">{{ t('rewards.left', { count: reward.stock }) }}</span>
           </div>
 
           <!-- Icon Box -->
@@ -337,7 +337,7 @@ const formatTime = (ts) => {
               </td>
               <td class="px-6 py-4 text-xs font-medium text-text-sub-light">{{ formatTime(log.timestamp) }}</td>
               <td class="px-6 py-4 text-right">
-                <span class="inline-flex items-center gap-1 text-[10px] font-black text-green-500 uppercase">
+                <span class="inline-flex items-center gap-1 text-[10px] font-black text-blue-500 uppercase">
                   <CheckCircle2 class="w-3 h-3" /> {{ t('rewards.table.success') }}
                 </span>
               </td>

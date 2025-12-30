@@ -27,7 +27,7 @@ let tasksSub = null;
 const updateTasksSub = (name) => {
   if (tasksSub) tasksSub.unsubscribe();
   tasksSub = liveQuery(() => 
-    db.tasks.where('userName').equals(name).toArray()
+    db.tasks.where('user_name').equals(name).toArray()
   ).subscribe(tasks => {
     allTasks.value = tasks.sort((a, b) => b.date.localeCompare(a.date));
   });

@@ -33,9 +33,9 @@ let tasksSub = null;
 const updateTasksSub = (name) => {
   if (tasksSub) tasksSub.unsubscribe();
   tasksSub = liveQuery(() => 
-    db.tasks.where('[userName+date]').equals([name, today]).toArray()
+    db.tasks.where('user_name').equals(name).toArray()
   ).subscribe(result => {
-    tasks.value = result;
+    tasks.value = result.filter(t => t.date === today);
   });
 };
 
@@ -65,8 +65,7 @@ const addTask = async () => {
     points: Number(newTaskPoints.value) || 0,
     completed: false,
     date: today,
-    userName: userName.value, // Assign to current user
-    createdAt: Date.now() 
+    user_name: userName.value
   });
   
   newTaskTitle.value = '';

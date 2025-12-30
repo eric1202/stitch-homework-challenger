@@ -70,21 +70,21 @@ const updateSubscriptions = (name) => {
   if (logsSub) logsSub.unsubscribe();
   if (pointsSub) pointsSub.unsubscribe();
 
-  rewardsSub = liveQuery(() => db.rewards.where('userName').equals(name).toArray()).subscribe(val => {
+  rewardsSub = liveQuery(() => db.rewards.where('user_name').equals(name).toArray()).subscribe(val => {
     rewards.value = val;
   });
 
-  logsSub = liveQuery(() => db.redemptionLogs.where('userName').equals(name).reverse().toArray()).subscribe(val => {
+  logsSub = liveQuery(() => db.redemptionLogs.where('user_name').equals(name).reverse().toArray()).subscribe(val => {
     logs.value = val;
   });
 
   pointsSub = liveQuery(async () => {
     try {
-      const allTasks = await db.tasks.where('userName').equals(name).toArray();
+      const allTasks = await db.tasks.where('user_name').equals(name).toArray();
       let spent = 0;
       
-      const spentPointsLogs = await db.redemptionLogs.where('userName').equals(name).toArray();
-      spent = spentPointsLogs.reduce((sum, log) => sum + (log.spentPoints || 0), 0);
+      const spentPointsLogs = await db.redemptionLogs.where('user_name').equals(name).toArray();
+      spent = spentPointsLogs.reduce((sum, log) => sum + (log.spent_points || 0), 0);
       
       const earned = allTasks
         .filter(task => task.completed)
@@ -148,9 +148,9 @@ const saveReward = async () => {
     title: rewardForm.value.title,
     icon: rewardForm.value.icon,
     points: Number(rewardForm.value.points) || 0,
-    expiryDate: rewardForm.value.expiryDate,
+    expiry_date: rewardForm.value.expiryDate, // Schema has expiry_date
     stock: Number(rewardForm.value.stock) || 0,
-    userName: userName.value
+    user_name: userName.value
   };
   
   try {
@@ -176,7 +176,7 @@ const deleteReward = async (id) => {
 };
 
 const redeemReward = async (reward) => {
-  if (totalPoints.value < reward.points || reward.stock <= 0 || isExpired(reward.expiryDate)) return;
+  if (totalPoints.value < reward.points || reward.stock <= 0 || isExpired(reward.expiry_date)) return;
 
   try {
     await db.transaction('rw', db.rewards, db.redemptionLogs, async () => {
@@ -191,10 +191,10 @@ const redeemReward = async (reward) => {
 
       // 3. Add log
       await db.redemptionLogs.add({
-        rewardTitle: String(reward.title),
-        spentPoints: Number(reward.points),
+        reward_title: String(reward.title), // Schema: reward_title
+        spent_points: Number(reward.points), // Schema: spent_points
         timestamp: Date.now(),
-        userName: userName.value
+        user_name: userName.value
       });
     });
 
@@ -276,11 +276,11 @@ const formatTime = (ts) => {
           v-for="reward in rewards" 
           :key="reward.id"
           class="relative bg-surface-light dark:bg-surface-dark p-6 rounded-[2rem] border border-gray-100 dark:border-gray-800 shadow-sm transition-all duration-300 flex flex-col gap-4 group"
-          :class="{ 'opacity-60 grayscale scale-[0.98]': isExpired(reward.expiryDate) || reward.stock <= 0 }"
+          :class="{ 'opacity-60 grayscale scale-[0.98]': isExpired(reward.expiry_date) || reward.stock <= 0 }"
         >
           <!-- Expiry/Stock Badger -->
           <div class="absolute top-4 right-4 flex flex-col items-end gap-1">
-            <span v-if="isExpired(reward.expiryDate)" class="px-2 py-0.5 bg-red-100 text-red-600 text-[10px] font-black rounded-lg uppercase">{{ t('rewards.expired') }}</span>
+            <span v-if="isExpired(reward.expiry_date)" class="px-2 py-0.5 bg-red-100 text-red-600 text-[10px] font-black rounded-lg uppercase">{{ t('rewards.expired') }}</span>
             <span v-else-if="reward.stock <= 0" class="px-2 py-0.5 bg-gray-100 text-gray-500 text-[10px] font-black rounded-lg uppercase">{{ t('rewards.soldOut') }}</span>
             <span v-else class="px-2 py-0.5 bg-blue-100 text-blue-600 text-[10px] font-black rounded-lg uppercase whitespace-nowrap">{{ t('rewards.left', { count: reward.stock }) }}</span>
           </div>
@@ -297,9 +297,9 @@ const formatTime = (ts) => {
               <span class="text-base font-black text-primary">{{ reward.points }}</span>
               <span class="text-xs font-bold uppercase tracking-wider">pts</span>
             </div>
-            <div v-if="reward.expiryDate" class="flex items-center gap-1 mt-2 text-[10px] font-bold text-text-sub-light">
+            <div v-if="reward.expiry_date" class="flex items-center gap-1 mt-2 text-[10px] font-bold text-text-sub-light">
               <Clock class="w-3 h-3" />
-              <span>{{ t('rewards.ends', { date: new Date(reward.expiryDate).toLocaleDateString() }) }}</span>
+              <span>{{ t('rewards.ends', { date: new Date(reward.expiry_date).toLocaleDateString() }) }}</span>
             </div>
           </div>
 
@@ -316,7 +316,7 @@ const formatTime = (ts) => {
             <template v-else>
               <button 
                 @click="redeemReward(reward)"
-                :disabled="totalPoints < reward.points || reward.stock <= 0 || isExpired(reward.expiryDate)"
+                :disabled="totalPoints < reward.points || reward.stock <= 0 || isExpired(reward.expiry_date)"
                 class="w-full py-4 rounded-2xl font-black text-xs uppercase tracking-widest transition-all shadow-md active:scale-95 disabled:bg-gray-100 disabled:text-gray-400 disabled:shadow-none disabled:active:scale-100"
                 :class="totalPoints >= reward.points ? 'bg-primary text-black hover:bg-primary-dark shadow-primary/20' : 'bg-gray-100 text-gray-400'"
               >
@@ -351,10 +351,10 @@ const formatTime = (ts) => {
             </tr>
             <tr v-for="log in logs" :key="log.id" class="group hover:bg-gray-50 dark:hover:bg-gray-800/30 transition-colors">
               <td class="px-6 py-4">
-                <span class="font-black">{{ log.rewardTitle }}</span>
+                <span class="font-black">{{ log.reward_title }}</span>
               </td>
               <td class="px-6 py-4">
-                <span class="font-bold text-red-500">-{{ log.spentPoints }} pts</span>
+                <span class="font-bold text-red-500">-{{ log.spent_points }} pts</span>
               </td>
               <td class="px-6 py-4 text-xs font-medium text-text-sub-light">{{ formatTime(log.timestamp) }}</td>
               <td class="px-6 py-4 text-right">

@@ -59,43 +59,62 @@ const getIconColor = (iconName) => {
 };
 
 // --- Live Queries ---
-const rewardsSub = liveQuery(() => db.rewards.toArray()).subscribe(val => {
-  rewards.value = val;
-});
+const userName = ref('Hero');
+let rewardsSub = null;
+let logsSub = null;
+let pointsSub = null;
+let nameSub = null;
 
-const logsSub = liveQuery(() => db.redemptionLogs.orderBy('timestamp').reverse().toArray()).subscribe(val => {
-  logs.value = val;
-});
+const updateSubscriptions = (name) => {
+  if (rewardsSub) rewardsSub.unsubscribe();
+  if (logsSub) logsSub.unsubscribe();
+  if (pointsSub) pointsSub.unsubscribe();
 
-const pointsSub = liveQuery(async () => {
-  try {
-    const allTasks = await db.tasks.toArray();
-    let spent = 0;
-    
-    // Safety check for table existence
-    if (db.redemptionLogs) {
-      const spentPointsLogs = await db.redemptionLogs.toArray();
-      spent = spentPointsLogs.reduce((sum, log) => sum + (log.spentPoints || 0), 0);
-    }
-    
-    const earned = allTasks
-      .filter(task => task.completed)
-      .reduce((sum, task) => sum + (Number(task.points) || 0), 0);
+  rewardsSub = liveQuery(() => db.rewards.where('userName').equals(name).toArray()).subscribe(val => {
+    rewards.value = val;
+  });
+
+  logsSub = liveQuery(() => db.redemptionLogs.where('userName').equals(name).reverse().toArray()).subscribe(val => {
+    logs.value = val;
+  });
+
+  pointsSub = liveQuery(async () => {
+    try {
+      const allTasks = await db.tasks.where('userName').equals(name).toArray();
+      let spent = 0;
       
-    return earned - spent;
-  } catch (err) {
-    console.warn('Points calculation error:', err);
-    return 0;
+      const spentPointsLogs = await db.redemptionLogs.where('userName').equals(name).toArray();
+      spent = spentPointsLogs.reduce((sum, log) => sum + (log.spentPoints || 0), 0);
+      
+      const earned = allTasks
+        .filter(task => task.completed)
+        .reduce((sum, task) => sum + (Number(task.points) || 0), 0);
+        
+      return earned - spent;
+    } catch (err) {
+      console.warn('Points calculation error:', err);
+      return 0;
+    }
+  }).subscribe(val => {
+    totalPoints.value = val;
+  });
+};
+
+nameSub = liveQuery(() => db.settings.get('userName')).subscribe(result => {
+  const newName = result?.value || 'Hero';
+  if (newName !== userName.value || !rewardsSub) {
+    userName.value = newName;
+    updateSubscriptions(newName);
   }
-}).subscribe(val => {
-  totalPoints.value = val;
 });
 
 onUnmounted(() => {
-  rewardsSub.unsubscribe();
-  logsSub.unsubscribe();
-  pointsSub.unsubscribe();
+  if (rewardsSub) rewardsSub.unsubscribe();
+  if (logsSub) logsSub.unsubscribe();
+  if (pointsSub) pointsSub.unsubscribe();
+  if (nameSub) nameSub.unsubscribe();
 });
+
 
 // --- Computed ---
 const isExpired = (expiryDate) => {
@@ -130,7 +149,8 @@ const saveReward = async () => {
     icon: rewardForm.value.icon,
     points: Number(rewardForm.value.points) || 0,
     expiryDate: rewardForm.value.expiryDate,
-    stock: Number(rewardForm.value.stock) || 0
+    stock: Number(rewardForm.value.stock) || 0,
+    userName: userName.value
   };
   
   try {
@@ -173,7 +193,8 @@ const redeemReward = async (reward) => {
       await db.redemptionLogs.add({
         rewardTitle: String(reward.title),
         spentPoints: Number(reward.points),
-        timestamp: Date.now()
+        timestamp: Date.now(),
+        userName: userName.value
       });
     });
 

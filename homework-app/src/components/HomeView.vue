@@ -27,21 +27,34 @@ const subjectColors = {
 
 const tasks = ref([]);
 const userName = ref('Hero');
+let tasksSub = null;
 
-const subscription = liveQuery(() => db.tasks.where('date').equals(today).toArray())
-    .subscribe(result => {
-      tasks.value = result;
-    });
+// Helper to update task subscription
+const updateTasksSub = (name) => {
+  if (tasksSub) tasksSub.unsubscribe();
+  tasksSub = liveQuery(() => 
+    db.tasks.where('[userName+date]').equals([name, today]).toArray()
+  ).subscribe(result => {
+    tasks.value = result;
+  });
+};
 
+// Sync username and trigger task sync
 const nameSubscription = liveQuery(() => db.settings.get('userName'))
   .subscribe(result => {
-    if (result) userName.value = result.value;
+    const newName = result?.value || 'Hero';
+    if (newName !== userName.value || !tasksSub) {
+      userName.value = newName;
+      updateTasksSub(newName);
+    }
   });
 
 onUnmounted(() => {
-  subscription.unsubscribe();
+  if (tasksSub) tasksSub.unsubscribe();
   nameSubscription.unsubscribe();
 });
+
+
 
 const addTask = async () => {
   if (!newTaskTitle.value.trim()) return;
@@ -52,6 +65,7 @@ const addTask = async () => {
     points: Number(newTaskPoints.value) || 0,
     completed: false,
     date: today,
+    userName: userName.value, // Assign to current user
     createdAt: Date.now() 
   });
   

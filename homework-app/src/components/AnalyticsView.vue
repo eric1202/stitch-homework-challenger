@@ -22,20 +22,31 @@ const { t } = useI18n();
 
 const allTasks = ref([]);
 const userName = ref('Hero');
+let tasksSub = null;
 
-const subscription = liveQuery(() => db.tasks.toArray()).subscribe(tasks => {
-  allTasks.value = tasks.sort((a, b) => b.date.localeCompare(a.date));
-});
+const updateTasksSub = (name) => {
+  if (tasksSub) tasksSub.unsubscribe();
+  tasksSub = liveQuery(() => 
+    db.tasks.where('userName').equals(name).toArray()
+  ).subscribe(tasks => {
+    allTasks.value = tasks.sort((a, b) => b.date.localeCompare(a.date));
+  });
+};
 
 const nameSubscription = liveQuery(() => db.settings.get('userName'))
   .subscribe(result => {
-    if (result) userName.value = result.value;
+    const newName = result?.value || 'Hero';
+    if (newName !== userName.value || !tasksSub) {
+      userName.value = newName;
+      updateTasksSub(newName);
+    }
   });
 
 onUnmounted(() => {
-  subscription.unsubscribe();
+  if (tasksSub) tasksSub.unsubscribe();
   nameSubscription.unsubscribe();
 });
+
 
 // --- Stats Calculations ---
 const stats = computed(() => {

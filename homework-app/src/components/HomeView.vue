@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onUnmounted } from 'vue';
+import { ref, computed, onUnmounted, onMounted } from 'vue';
 import { db } from '../db';
 import { liveQuery } from 'dexie';
 import { useI18n } from 'vue-i18n';
@@ -13,6 +13,12 @@ const newTaskTitle = ref('');
 const newTaskSubject = ref('Math'); 
 const newTaskPoints = ref(10);
 const isAddingFormOpen = ref(false);
+const isAddingTask = ref(false);
+const isRefreshing = ref(false);
+const pullStartY = ref(0);
+const pullDistance = ref(0);
+const isPulling = ref(false);
+const taskListRef = ref(null);
 
 const subjects = ["Chinese", 'Math', 'English', 'Science', 'Art', 'Reading', 'Sports', 'Other'];
 const subjectColors = {
@@ -28,6 +34,24 @@ const subjectColors = {
 const tasks = ref([]);
 const userName = ref('Hero');
 let tasksSub = null;
+
+// Helper to refresh tasks manually
+const refreshTasks = async () => {
+  if (isRefreshing.value) return;
+  
+  isRefreshing.value = true;
+  try {
+    const result = await db.tasks.where('user_name').equals(userName.value).toArray();
+    tasks.value = result.filter(t => t.date === today);
+  } catch (error) {
+    console.error('Failed to refresh tasks:', error);
+    alert('刷新失败，请重试');
+  } finally {
+    setTimeout(() => {
+      isRefreshing.value = false;
+    }, 300);
+  }
+};
 
 // Helper to update task subscription
 const updateTasksSub = (name) => {
@@ -49,27 +73,98 @@ const nameSubscription = liveQuery(() => db.settings.get('userName'))
     }
   });
 
+// 下拉刷新处理
+const handleTouchStart = (e) => {
+  // 只在页面顶部时才能下拉刷新
+  if (window.scrollY === 0 && taskListRef.value) {
+    const rect = taskListRef.value.getBoundingClientRect();
+    if (rect.top >= 0 && e.touches[0].clientY > rect.top) {
+      pullStartY.value = e.touches[0].clientY;
+      isPulling.value = true;
+    }
+  }
+};
+
+const handleTouchMove = (e) => {
+  if (!isPulling.value || window.scrollY > 0) {
+    isPulling.value = false;
+    pullDistance.value = 0;
+    return;
+  }
+  
+  const currentY = e.touches[0].clientY;
+  const distance = currentY - pullStartY.value;
+  
+  if (distance > 0) {
+    pullDistance.value = Math.min(distance, 100);
+    e.preventDefault();
+  } else {
+    isPulling.value = false;
+    pullDistance.value = 0;
+  }
+};
+
+const handleTouchEnd = async () => {
+  if (pullDistance.value > 50 && !isRefreshing.value) {
+    isRefreshing.value = true;
+    try {
+      await refreshTasks();
+    } catch (error) {
+      console.error('Failed to refresh:', error);
+    } finally {
+      setTimeout(() => {
+        isRefreshing.value = false;
+        pullDistance.value = 0;
+        isPulling.value = false;
+      }, 300);
+    }
+  } else {
+    pullDistance.value = 0;
+    isPulling.value = false;
+  }
+};
+
+onMounted(() => {
+  document.addEventListener('touchstart', handleTouchStart, { passive: true });
+  document.addEventListener('touchmove', handleTouchMove, { passive: false });
+  document.addEventListener('touchend', handleTouchEnd);
+});
+
 onUnmounted(() => {
   if (tasksSub) tasksSub.unsubscribe();
   nameSubscription.unsubscribe();
+  document.removeEventListener('touchstart', handleTouchStart);
+  document.removeEventListener('touchmove', handleTouchMove);
+  document.removeEventListener('touchend', handleTouchEnd);
 });
 
 
 
 const addTask = async () => {
-  if (!newTaskTitle.value.trim()) return;
+  if (!newTaskTitle.value.trim() || isAddingTask.value) return;
   
-  await db.tasks.add({
-    title: newTaskTitle.value,
-    subject: newTaskSubject.value,
-    points: Number(newTaskPoints.value) || 0,
-    completed: false,
-    date: today,
-    user_name: userName.value
-  });
-  
-  newTaskTitle.value = '';
-  isAddingFormOpen.value = false;
+  isAddingTask.value = true;
+  try {
+    await db.tasks.add({
+      title: newTaskTitle.value,
+      subject: newTaskSubject.value,
+      points: Number(newTaskPoints.value) || 0,
+      completed: false,
+      date: today,
+      user_name: userName.value
+    });
+    
+    newTaskTitle.value = '';
+    isAddingFormOpen.value = false;
+    
+    // 刷新列表
+    await refreshTasks();
+  } catch (error) {
+    console.error('Failed to add task:', error);
+    alert(t('home.addTaskError') || '添加任务失败，请重试');
+  } finally {
+    isAddingTask.value = false;
+  }
 };
 
 const isLocked = computed(() => tasks.value.length > 0 && tasks.value.every(t => t.completed));
@@ -167,8 +262,18 @@ const deleteTask = async (id) => {
              <input v-model.number="newTaskPoints" type="number" class="w-full bg-background-light dark:bg-background-dark border-transparent focus:border-primary rounded-2xl p-4 font-bold transition-all outline-none text-center">
            </div>
            <div class="md:col-span-2 flex items-end">
-             <button @click="addTask" class="w-full bg-primary hover:bg-primary-dark text-black font-black py-4 rounded-2xl shadow-lg shadow-primary/20 transition-all active:scale-95 duration-200 uppercase tracking-widest text-xs">
-               {{ t('home.buttons.add') }}
+             <button 
+               @click="addTask" 
+               :disabled="isAddingTask"
+               class="w-full bg-primary hover:bg-primary-dark text-black font-black py-4 rounded-2xl shadow-lg shadow-primary/20 transition-all active:scale-95 duration-200 uppercase tracking-widest text-xs disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+             >
+               <span 
+                 v-if="isAddingTask"
+                 class="material-symbols-outlined animate-spin text-lg"
+               >
+                 refresh
+               </span>
+               <span>{{ isAddingTask ? '添加中...' : t('home.buttons.add') }}</span>
              </button>
            </div>
         </div>
@@ -176,11 +281,47 @@ const deleteTask = async (id) => {
     </Transition>
 
     <!-- Task List -->
-    <section class="flex flex-col gap-5">
-      <h3 class="text-2xl font-black flex items-center gap-2">
-        <span class="material-symbols-outlined text-primary text-3xl">check_circle</span>
-        {{ t('home.title') }}
-      </h3>
+    <section class="flex flex-col gap-5" ref="taskListRef">
+      <!-- Pull to Refresh Indicator -->
+      <div 
+        v-if="pullDistance > 0 || isRefreshing"
+        class="flex items-center justify-center py-2 transition-all duration-200"
+        :style="{ 
+          height: `${Math.min(pullDistance, 60)}px`,
+          opacity: Math.min(pullDistance / 50, 1)
+        }"
+      >
+        <div class="flex items-center gap-2 text-primary">
+          <span 
+            class="material-symbols-outlined transition-transform duration-200"
+            :class="{ 'animate-spin': isRefreshing }"
+            :style="{ transform: isRefreshing ? 'rotate(0deg)' : `rotate(${Math.min(pullDistance * 3.6, 180)}deg)` }"
+          >
+            {{ isRefreshing ? 'refresh' : 'arrow_downward' }}
+          </span>
+          <span class="text-xs font-bold">{{ isRefreshing ? '刷新中...' : '下拉刷新' }}</span>
+        </div>
+      </div>
+      
+      <div class="flex items-center justify-between">
+        <h3 class="text-2xl font-black flex items-center gap-2">
+          <span class="material-symbols-outlined text-primary text-3xl">check_circle</span>
+          {{ t('home.title') }}
+        </h3>
+        <button 
+          @click="refreshTasks"
+          :disabled="isRefreshing"
+          class="p-2 rounded-xl text-primary hover:bg-primary/10 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed active:scale-95"
+          :title="isRefreshing ? '刷新中...' : '刷新列表'"
+        >
+          <span 
+            class="material-symbols-outlined text-2xl transition-transform duration-200"
+            :class="{ 'animate-spin': isRefreshing }"
+          >
+            refresh
+          </span>
+        </button>
+      </div>
 
       <!-- Empty State -->
       <div v-if="tasks.length === 0" class="py-16 text-center bg-surface-light dark:bg-surface-dark rounded-3xl border border-dashed border-gray-200 dark:border-gray-800">

@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onUnmounted } from 'vue';
+import { ref, computed, onUnmounted, onMounted } from 'vue';
 import { db } from '../db';
 import { liveQuery } from 'dexie';
 import { useI18n } from 'vue-i18n';
@@ -17,7 +17,8 @@ import {
   Clock, 
   CheckCircle2,
   AlertCircle,
-  X
+  X,
+  RefreshCw
 } from 'lucide-vue-next';
 
 const { t } = useI18n();
@@ -30,6 +31,13 @@ const isAdmin = ref(false); // Toggle for Parent/Child view
 const showAddModal = ref(false);
 const showEditModal = ref(false);
 const editingReward = ref(null);
+const isSavingReward = ref(false);
+const isRedeemingReward = ref(false);
+const isRefreshing = ref(false);
+const pullStartY = ref(0);
+const pullDistance = ref(0);
+const isPulling = ref(false);
+const rewardsListRef = ref(null);
 
 // Form state
 const rewardForm = ref({
@@ -64,6 +72,36 @@ let rewardsSub = null;
 let logsSub = null;
 let pointsSub = null;
 let nameSub = null;
+
+// Helper to refresh rewards manually
+const refreshRewards = async () => {
+  if (isRefreshing.value) return;
+  
+  isRefreshing.value = true;
+  try {
+    const rewardsResult = await db.rewards.where('user_name').equals(userName.value).toArray();
+    rewards.value = rewardsResult;
+    
+    const logsResult = await db.redemptionLogs.where('user_name').equals(userName.value).reverse().toArray();
+    logs.value = logsResult;
+    
+    const allTasks = await db.tasks.where('user_name').equals(userName.value).toArray();
+    let spent = 0;
+    const spentPointsLogs = await db.redemptionLogs.where('user_name').equals(userName.value).toArray();
+    spent = spentPointsLogs.reduce((sum, log) => sum + (log.spent_points || 0), 0);
+    const earned = allTasks
+      .filter(task => task.completed)
+      .reduce((sum, task) => sum + (Number(task.points) || 0), 0);
+    totalPoints.value = earned - spent;
+  } catch (error) {
+    console.error('Failed to refresh rewards:', error);
+    alert('刷新失败，请重试');
+  } finally {
+    setTimeout(() => {
+      isRefreshing.value = false;
+    }, 300);
+  }
+};
 
 const updateSubscriptions = (name) => {
   if (rewardsSub) rewardsSub.unsubscribe();
@@ -108,11 +146,71 @@ nameSub = liveQuery(() => db.settings.get('userName')).subscribe(result => {
   }
 });
 
+// 下拉刷新处理
+const handleTouchStart = (e) => {
+  // 只在页面顶部时才能下拉刷新
+  if (window.scrollY === 0 && rewardsListRef.value) {
+    const rect = rewardsListRef.value.getBoundingClientRect();
+    if (rect.top >= 0 && e.touches[0].clientY > rect.top) {
+      pullStartY.value = e.touches[0].clientY;
+      isPulling.value = true;
+    }
+  }
+};
+
+const handleTouchMove = (e) => {
+  if (!isPulling.value || window.scrollY > 0) {
+    isPulling.value = false;
+    pullDistance.value = 0;
+    return;
+  }
+  
+  const currentY = e.touches[0].clientY;
+  const distance = currentY - pullStartY.value;
+  
+  if (distance > 0) {
+    pullDistance.value = Math.min(distance, 100);
+    e.preventDefault();
+  } else {
+    isPulling.value = false;
+    pullDistance.value = 0;
+  }
+};
+
+const handleTouchEnd = async () => {
+  if (pullDistance.value > 50 && !isRefreshing.value) {
+    isRefreshing.value = true;
+    try {
+      await refreshRewards();
+    } catch (error) {
+      console.error('Failed to refresh:', error);
+    } finally {
+      setTimeout(() => {
+        isRefreshing.value = false;
+        pullDistance.value = 0;
+        isPulling.value = false;
+      }, 300);
+    }
+  } else {
+    pullDistance.value = 0;
+    isPulling.value = false;
+  }
+};
+
+onMounted(() => {
+  document.addEventListener('touchstart', handleTouchStart, { passive: true });
+  document.addEventListener('touchmove', handleTouchMove, { passive: false });
+  document.addEventListener('touchend', handleTouchEnd);
+});
+
 onUnmounted(() => {
   if (rewardsSub) rewardsSub.unsubscribe();
   if (logsSub) logsSub.unsubscribe();
   if (pointsSub) pointsSub.unsubscribe();
   if (nameSub) nameSub.unsubscribe();
+  document.removeEventListener('touchstart', handleTouchStart);
+  document.removeEventListener('touchmove', handleTouchMove);
+  document.removeEventListener('touchend', handleTouchEnd);
 });
 
 
@@ -141,19 +239,20 @@ const openEditModal = (reward) => {
 };
 
 const saveReward = async () => {
-  if (!rewardForm.value.title) return;
+  if (!rewardForm.value.title || isSavingReward.value) return;
   
-  // Create a plain object to avoid Proxy issues with IndexedDB storage
-  const data = {
-    title: rewardForm.value.title,
-    icon: rewardForm.value.icon,
-    points: Number(rewardForm.value.points) || 0,
-    expiry_date: rewardForm.value.expiryDate, // Schema has expiry_date
-    stock: Number(rewardForm.value.stock) || 0,
-    user_name: userName.value
-  };
-  
+  isSavingReward.value = true;
   try {
+    // Create a plain object to avoid Proxy issues with IndexedDB storage
+    const data = {
+      title: rewardForm.value.title,
+      icon: rewardForm.value.icon,
+      points: Number(rewardForm.value.points) || 0,
+      expiry_date: rewardForm.value.expiryDate, // Schema has expiry_date
+      stock: Number(rewardForm.value.stock) || 0,
+      user_name: userName.value
+    };
+    
     if (editingReward.value) {
       await db.rewards.update(editingReward.value.id, data);
     } else {
@@ -163,9 +262,14 @@ const saveReward = async () => {
     showAddModal.value = false;
     showEditModal.value = false;
     editingReward.value = null;
+    
+    // 刷新列表
+    await refreshRewards();
   } catch (err) {
     console.error('Failed to save reward:', err);
     alert(t('rewards.redeemFail') + err.message);
+  } finally {
+    isSavingReward.value = false;
   }
 };
 
@@ -176,8 +280,9 @@ const deleteReward = async (id) => {
 };
 
 const redeemReward = async (reward) => {
-  if (totalPoints.value < reward.points || reward.stock <= 0 || isExpired(reward.expiry_date)) return;
+  if (totalPoints.value < reward.points || reward.stock <= 0 || isExpired(reward.expiry_date) || isRedeemingReward.value) return;
 
+  isRedeemingReward.value = true;
   try {
     await db.transaction('rw', db.rewards, db.redemptionLogs, async () => {
       // 1. Check stock again inside transaction
@@ -199,8 +304,13 @@ const redeemReward = async (reward) => {
     });
 
     triggerConfetti();
+    
+    // 刷新列表
+    await refreshRewards();
   } catch (err) {
     alert('Redemption failed: ' + err.message);
+  } finally {
+    isRedeemingReward.value = false;
   }
 };
 
@@ -265,7 +375,44 @@ const formatTime = (ts) => {
     </div>
 
     <!-- Rewards Grid -->
-    <section>
+    <section ref="rewardsListRef">
+      <!-- Pull to Refresh Indicator -->
+      <div 
+        v-if="pullDistance > 0 || isRefreshing"
+        class="flex items-center justify-center py-2 transition-all duration-200 mb-4"
+        :style="{ 
+          height: `${Math.min(pullDistance, 60)}px`,
+          opacity: Math.min(pullDistance / 50, 1)
+        }"
+      >
+        <div class="flex items-center gap-2 text-primary">
+          <RefreshCw 
+            class="w-5 h-5 transition-transform duration-200"
+            :class="{ 'animate-spin': isRefreshing }"
+            :style="{ transform: isRefreshing ? 'rotate(0deg)' : `rotate(${Math.min(pullDistance * 3.6, 180)}deg)` }"
+          />
+          <span class="text-xs font-bold">{{ isRefreshing ? '刷新中...' : '下拉刷新' }}</span>
+        </div>
+      </div>
+      
+      <div class="flex items-center justify-between mb-6">
+        <h3 class="text-2xl font-black flex items-center gap-2">
+          <Gift class="w-8 h-8 text-primary" />
+          {{ t('rewards.rewardsList') || '奖励列表' }}
+        </h3>
+        <button 
+          @click="refreshRewards"
+          :disabled="isRefreshing"
+          class="p-2 rounded-xl text-primary hover:bg-primary/10 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed active:scale-95"
+          :title="isRefreshing ? '刷新中...' : '刷新列表'"
+        >
+          <RefreshCw 
+            class="w-5 h-5 transition-transform duration-200"
+            :class="{ 'animate-spin': isRefreshing }"
+          />
+        </button>
+      </div>
+      
       <div v-if="rewards.length === 0" class="py-20 text-center bg-surface-light dark:bg-surface-dark rounded-3xl border-2 border-dashed border-gray-100 dark:border-gray-800">
         <p class="text-xl font-black text-text-sub-light">{{ t('rewards.noRewards') }}</p>
         <button v-if="isAdmin" @click="openAddModal" class="mt-4 text-primary font-bold hover:underline">{{ t('rewards.addFirst') }}</button>
@@ -316,11 +463,15 @@ const formatTime = (ts) => {
             <template v-else>
               <button 
                 @click="redeemReward(reward)"
-                :disabled="totalPoints < reward.points || reward.stock <= 0 || isExpired(reward.expiry_date)"
-                class="w-full py-4 rounded-2xl font-black text-xs uppercase tracking-widest transition-all shadow-md active:scale-95 disabled:bg-gray-100 disabled:text-gray-400 disabled:shadow-none disabled:active:scale-100"
-                :class="totalPoints >= reward.points ? 'bg-primary text-black hover:bg-primary-dark shadow-primary/20' : 'bg-gray-100 text-gray-400'"
+                :disabled="totalPoints < reward.points || reward.stock <= 0 || isExpired(reward.expiry_date) || isRedeemingReward"
+                class="w-full py-4 rounded-2xl font-black text-xs uppercase tracking-widest transition-all shadow-md active:scale-95 disabled:bg-gray-100 disabled:text-gray-400 disabled:shadow-none disabled:active:scale-100 flex items-center justify-center gap-2"
+                :class="totalPoints >= reward.points && !isRedeemingReward ? 'bg-primary text-black hover:bg-primary-dark shadow-primary/20' : 'bg-gray-100 text-gray-400'"
               >
-                {{ totalPoints < reward.points ? t('rewards.needPoints') : t('rewards.redeem') }}
+                <RefreshCw 
+                  v-if="isRedeemingReward"
+                  class="w-4 h-4 animate-spin"
+                />
+                <span>{{ isRedeemingReward ? '兑换中...' : (totalPoints < reward.points ? t('rewards.needPoints') : t('rewards.redeem')) }}</span>
               </button>
             </template>
           </div>
@@ -420,8 +571,16 @@ const formatTime = (ts) => {
           </div>
         </div>
 
-        <button @click="saveReward" class="w-full py-5 bg-primary text-black font-black rounded-3xl shadow-xl shadow-primary/20 hover:bg-primary-dark transition-all active:scale-95 uppercase tracking-widest text-sm mt-4">
-          {{ showEditModal ? t('rewards.modal.btnUpdate') : t('rewards.modal.btnCreate') }}
+        <button 
+          @click="saveReward" 
+          :disabled="isSavingReward"
+          class="w-full py-5 bg-primary text-black font-black rounded-3xl shadow-xl shadow-primary/20 hover:bg-primary-dark transition-all active:scale-95 uppercase tracking-widest text-sm mt-4 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+        >
+          <RefreshCw 
+            v-if="isSavingReward"
+            class="w-5 h-5 animate-spin"
+          />
+          <span>{{ isSavingReward ? '保存中...' : (showEditModal ? t('rewards.modal.btnUpdate') : t('rewards.modal.btnCreate')) }}</span>
         </button>
       </div>
     </div>

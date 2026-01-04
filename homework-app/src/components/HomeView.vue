@@ -22,6 +22,7 @@ const taskListRef = ref(null);
 
 const subjects = ["Chinese", 'Math', 'English', 'Science', 'Art', 'Reading', 'Sports', 'Other'];
 const subjectColors = {
+  Chinese: 'text-emerald-600 bg-emerald-100 dark:bg-emerald-900/30 dark:text-emerald-300',
   Math: 'text-purple-600 bg-purple-100 dark:bg-purple-900/30 dark:text-purple-300',
   English: 'text-blue-600 bg-blue-100 dark:bg-blue-900/30 dark:text-blue-300',
   Science: 'text-indigo-700 bg-indigo-100 dark:bg-indigo-900/30 dark:text-indigo-300',
@@ -168,6 +169,32 @@ const addTask = async () => {
 };
 
 const isLocked = computed(() => tasks.value.length > 0 && tasks.value.every(t => t.completed));
+
+const groupedTasks = computed(() => {
+  const groups = {};
+  tasks.value.forEach(task => {
+    const s = task.subject || 'Other';
+    if (!groups[s]) {
+      groups[s] = [];
+    }
+    groups[s].push(task);
+  });
+  
+  // Sort subjects based on the predefined subjects list
+  const sortedSubjects = Object.keys(groups).sort((a, b) => {
+    const indexA = subjects.indexOf(a);
+    const indexB = subjects.indexOf(b);
+    if (indexA === -1 && indexB === -1) return a.localeCompare(b);
+    if (indexA === -1) return 1;
+    if (indexB === -1) return -1;
+    return indexA - indexB;
+  });
+
+  return sortedSubjects.map(subject => ({
+    subject,
+    tasks: groups[subject]
+  }));
+});
 
 const toggleTask = async (task) => {
   if (isLocked.value && task.completed) {
@@ -336,39 +363,55 @@ const deleteTask = async (id) => {
       </div>
 
       <div 
-        v-for="task in tasks" 
-        :key="task.id"
-        class="group flex items-center gap-5 bg-surface-light dark:bg-surface-dark p-5 rounded-2xl shadow-sm border-2 border-transparent hover:border-primary/40 transition-all duration-300"
-        :class="{ 'opacity-60 grayscale-[0.5]': task.completed }"
+        v-for="group in groupedTasks" 
+        :key="group.subject" 
+        class="flex flex-col gap-4 p-5 rounded-[2rem] transition-all duration-300"
+        :class="[
+          subjectColors[group.subject]?.split(' ').filter(c => c.startsWith('bg-') || c.includes('/30')).join(' ') || 'bg-slate-50 dark:bg-slate-900/20'
+        ]"
       >
-        <div class="relative flex items-center justify-center flex-shrink-0">
-          <input 
-            type="checkbox" 
-            :checked="task.completed" 
-            @change="toggleTask(task)"
-            :disabled="isLocked && task.completed"
-            class="custom-checkbox appearance-none size-8 rounded-full border-2 border-gray-200 dark:border-gray-700 checked:bg-primary checked:border-primary transition-all cursor-pointer ring-offset-2 ring-primary/20 focus:ring-4 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-          <span v-if="task.completed" class="material-symbols-outlined absolute pointer-events-none text-black font-black text-lg">check</span>
+        <div class="flex items-center justify-between px-1">
+          <h4 class="text-lg font-black uppercase tracking-[0.2em] flex items-center gap-3" :class="subjectColors[group.subject]?.split(' ')[0]">
+            <span class="size-3 rounded-full shadow-sm" :class="subjectColors[group.subject]?.split(' ')[0].replace('text-', 'bg-')"></span>
+            {{ t(`home.subjects.${group.subject}`) }}
+          </h4>
+          <span class="text-xs font-bold opacity-50">{{ group.tasks.length }} {{ t('app.nav.tasks') }}</span>
         </div>
-
-        <div class="flex-1 flex flex-col md:flex-row md:items-center justify-between gap-3">
-          <div class="flex flex-col">
-            <h4 class="text-lg font-bold text-text-main-light dark:text-text-main-dark group-hover:text-primary transition-colors duration-300" :class="{ 'line-through decoration-2 decoration-primary/50 text-text-sub-light opacity-70': task.completed }">
-              {{ task.title }}
-            </h4>
-            <div class="flex items-center gap-2 mt-0.5">
-              <span class="text-[10px] font-black uppercase tracking-widest px-2.5 py-1 rounded-lg shadow-sm" :class="subjectColors[task.subject] || subjectColors.Other">
-                 {{ t(`home.subjects.${task.subject}`) }}
-              </span>
-              <span class="text-xs font-bold text-text-sub-light">+{{ task.points }} pts</span>
+        
+        <div class="flex flex-col gap-3">
+          <div 
+            v-for="task in group.tasks" 
+            :key="task.id"
+            class="group flex items-center gap-5 bg-surface-light dark:bg-surface-dark p-5 rounded-2xl shadow-sm border-2 border-transparent hover:border-primary/40 transition-all duration-300"
+            :class="{ 'opacity-60 grayscale-[0.5]': task.completed }"
+          >
+            <div class="relative flex items-center justify-center flex-shrink-0">
+              <input 
+                type="checkbox" 
+                :checked="task.completed" 
+                @change="toggleTask(task)"
+                :disabled="isLocked && task.completed"
+                class="custom-checkbox appearance-none size-8 rounded-full border-2 border-gray-200 dark:border-gray-700 checked:bg-primary checked:border-primary transition-all cursor-pointer ring-offset-2 ring-primary/20 focus:ring-4 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+              <span v-if="task.completed" class="material-symbols-outlined absolute pointer-events-none text-black font-black text-lg">check</span>
             </div>
-          </div>
 
-          <div class="flex items-center gap-2 md:opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-             <button @click="deleteTask(task.id)" class="p-3 text-gray-300 hover:text-red-500 transition-colors rounded-xl hover:bg-red-50 dark:hover:bg-red-900/20">
-               <span class="material-symbols-outlined">delete</span>
-             </button>
+            <div class="flex-1 flex flex-col md:flex-row md:items-center justify-between gap-3">
+              <div class="flex flex-col">
+                <h4 class="text-lg font-bold text-text-main-light dark:text-text-main-dark group-hover:text-primary transition-colors duration-300" :class="{ 'line-through decoration-2 decoration-primary/50 text-text-sub-light opacity-70': task.completed }">
+                  {{ task.title }}
+                </h4>
+                <div class="flex items-center gap-2 mt-0.5">
+                  <span class="text-xs font-bold text-text-sub-light">+{{ task.points }} pts</span>
+                </div>
+              </div>
+
+              <div class="flex items-center gap-2 md:opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                 <button @click="deleteTask(task.id)" class="p-3 text-gray-300 hover:text-red-500 transition-colors rounded-xl hover:bg-red-50 dark:hover:bg-red-900/20">
+                   <span class="material-symbols-outlined">delete</span>
+                 </button>
+              </div>
+            </div>
           </div>
         </div>
       </div>

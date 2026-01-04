@@ -19,6 +19,7 @@ const pullStartY = ref(0);
 const pullDistance = ref(0);
 const isPulling = ref(false);
 const taskListRef = ref(null);
+const isInitialLoading = ref(true);
 
 const subjects = ["Chinese", 'Math', 'English', 'Science', 'Art', 'Reading', 'Sports', 'Other'];
 const subjectColors = {
@@ -61,6 +62,12 @@ const updateTasksSub = (name) => {
     db.tasks.where('user_name').equals(name).toArray()
   ).subscribe(result => {
     tasks.value = result.filter(t => t.date === today);
+    if (isInitialLoading.value) {
+       // 给一点点延迟让动画更平滑
+       setTimeout(() => {
+         isInitialLoading.value = false;
+       }, 600);
+    }
   });
 };
 
@@ -212,12 +219,32 @@ const toggleTask = async (task) => {
 const deleteTask = async (id) => {
   if (confirm(t('home.deleteConfirm'))) {
     await db.tasks.delete(id);
+    await refreshTasks();
   }
 };
 </script>
 
 <template>
   <div class="flex flex-col gap-8 pb-10">
+    <!-- Initial Loading Overlay -->
+    <Transition name="fade">
+      <div v-if="isInitialLoading" class="fixed inset-0 z-[100] bg-background-light dark:bg-background-dark flex flex-col items-center justify-center gap-6">
+        <div class="relative">
+          <div class="size-20 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
+          <div class="absolute inset-0 flex items-center justify-center">
+            <span class="material-symbols-outlined text-primary text-3xl animate-pulse">rocket_launch</span>
+          </div>
+        </div>
+        <div class="flex flex-col items-center gap-2">
+          <h2 class="text-3xl font-black text-text-main-light dark:text-text-main-dark tracking-tight">Stitch Challenger</h2>
+          <div class="flex items-center gap-2">
+            <div class="size-1.5 bg-primary rounded-full animate-bounce"></div>
+            <div class="size-1.5 bg-primary rounded-full animate-bounce [animation-delay:0.2s]"></div>
+            <div class="size-1.5 bg-primary rounded-full animate-bounce [animation-delay:0.4s]"></div>
+          </div>
+        </div>
+      </div>
+    </Transition>
     <!-- Header -->
     <header class="flex flex-col md:flex-row md:items-end justify-between gap-6">
       <div class="flex flex-col gap-2">
@@ -437,5 +464,12 @@ const deleteTask = async (id) => {
   max-height: 0;
   transform: translateY(-10px);
   margin-bottom: -1.5rem;
+}
+
+.fade-enter-active, .fade-leave-active {
+  transition: opacity 0.5s ease;
+}
+.fade-enter-from, .fade-leave-to {
+  opacity: 0;
 }
 </style>

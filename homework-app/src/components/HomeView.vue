@@ -265,29 +265,29 @@ const deleteTask = async (id) => {
     </header>
 
     <!-- Progress Card -->
-    <section v-if="tasks.length > 0" class="bg-surface-light dark:bg-surface-dark p-6 px-7 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-800 relative overflow-hidden group">
+    <section v-if="tasks.length > 0" class="bg-surface-light dark:bg-surface-dark p-4 md:p-6 md:px-7 rounded-2xl md:rounded-3xl shadow-sm border border-gray-100 dark:border-gray-800 relative overflow-hidden group">
       <div class="absolute -right-10 -top-10 size-40 bg-primary/10 rounded-full blur-3xl group-hover:bg-primary/20 transition-all duration-500"></div>
       
-      <div class="flex flex-col gap-5 relative z-10">
+      <div class="flex flex-col gap-3 md:gap-5 relative z-10">
         <div class="flex justify-between items-end">
           <div>
-            <h3 class="text-xl font-bold mb-1">{{ t('home.progress') }}</h3>
-            <p v-if="tasks.filter(t => t.completed).length === tasks.length" class="text-text-sub-light dark:text-text-sub-dark text-sm font-medium">Mission Accomplished! 🏆</p>
-            <p v-else class="text-text-sub-light dark:text-text-sub-dark text-sm font-medium">Keep going! You are doing great. 🔥</p>
+            <h3 class="text-lg md:text-xl font-bold mb-1">{{ t('home.progress') }}</h3>
+            <p v-if="tasks.filter(t => t.completed).length === tasks.length" class="text-text-sub-light dark:text-text-sub-dark text-xs md:text-sm font-medium">Mission Accomplished! 🏆</p>
+            <p v-else class="text-text-sub-light dark:text-text-sub-dark text-xs md:text-sm font-medium">Keep going! You are doing great. 🔥</p>
           </div>
-          <div class="text-3xl font-black text-primary">
+          <div class="text-2xl md:text-3xl font-black text-primary">
             {{ tasks.length === 0 ? 0 : Math.round((tasks.filter(t => t.completed).length / tasks.length) * 100) }}%
           </div>
         </div>
         
-        <div class="h-5 w-full bg-background-light dark:bg-background-dark rounded-full overflow-hidden p-1">
+        <div class="h-4 md:h-5 w-full bg-background-light dark:bg-background-dark rounded-full overflow-hidden p-1">
           <div 
             class="h-full bg-primary rounded-full transition-all duration-700 ease-out shadow-[0_0_12px_rgba(37,99,235,0.4)]" 
             :style="{ width: `${tasks.length === 0 ? 0 : (tasks.filter(t => t.completed).length / tasks.length) * 100}%` }"
           ></div>
         </div>
         
-        <div class="flex justify-between text-sm font-bold text-text-sub-light dark:text-text-sub-dark uppercase tracking-wider">
+        <div class="flex justify-between text-xs md:text-sm font-bold text-text-sub-light dark:text-text-sub-dark uppercase tracking-wider">
           <span>{{ tasks.length }} {{ t('app.nav.tasks') }}</span>
           <span>{{ tasks.filter(t => t.completed).length }} of {{ tasks.length }} {{ t('analytics.status.completed') }}</span>
         </div>
@@ -296,34 +296,34 @@ const deleteTask = async (id) => {
 
     <!-- Add Task Dialog/Form (Inline for simplicity now) -->
     <Transition name="expand">
-      <div v-if="isAddingFormOpen" class="bg-surface-light dark:bg-surface-dark p-6 rounded-3xl border-2 border-primary/20 shadow-xl shadow-primary/5">
-        <div class="grid md:grid-cols-12 gap-5">
+      <div v-if="isAddingFormOpen" class="bg-surface-light dark:bg-surface-dark p-4 md:p-6 rounded-2xl md:rounded-3xl border-2 border-primary/20 shadow-xl shadow-primary/5">
+        <div class="grid md:grid-cols-12 gap-3 md:gap-5">
            <div class="md:col-span-12">
-             <h3 class="text-xl font-bold mb-4">{{ t('home.addTaskTitle') }} ✏️</h3>
+             <h3 class="text-lg md:text-xl font-bold mb-3 md:mb-4">{{ t('home.addTaskTitle') }} ✏️</h3>
            </div>
-           <div class="md:col-span-5 flex flex-col gap-2">
-             <label class="text-xs font-bold text-text-sub-light uppercase tracking-widest px-1">{{ t('home.inputs.taskName') }}</label>
-             <input v-model="newTaskTitle" type="text" class="w-full bg-background-light dark:bg-background-dark border-transparent focus:border-primary rounded-2xl p-4 font-bold transition-all outline-none" :placeholder="t('home.inputs.placeholder')">
+           <div class="md:col-span-5 flex flex-col gap-1.5 md:gap-2">
+             <label class="text-[10px] md:text-xs font-bold text-text-sub-light uppercase tracking-widest px-1">{{ t('home.inputs.taskName') }}</label>
+             <input v-model="newTaskTitle" type="text" class="w-full bg-background-light dark:bg-background-dark border-transparent focus:border-primary rounded-xl md:rounded-2xl p-3 md:p-4 font-bold transition-all outline-none text-sm md:text-base" :placeholder="t('home.inputs.placeholder')">
            </div>
-           <div class="md:col-span-3 flex flex-col gap-2">
-             <label class="text-xs font-bold text-text-sub-light uppercase tracking-widest px-1">{{ t('home.inputs.subject') }}</label>
-             <select v-model="newTaskSubject" class="w-full bg-background-light dark:bg-background-dark border-transparent focus:border-primary rounded-2xl p-4 font-bold transition-all outline-none">
+           <div class="md:col-span-3 flex flex-col gap-1.5 md:gap-2">
+             <label class="text-[10px] md:text-xs font-bold text-text-sub-light uppercase tracking-widest px-1">{{ t('home.inputs.subject') }}</label>
+             <select v-model="newTaskSubject" class="w-full bg-background-light dark:bg-background-dark border-transparent focus:border-primary rounded-xl md:rounded-2xl p-3 md:p-4 font-bold transition-all outline-none text-sm md:text-base">
                 <option v-for="s in subjects" :key="s" :value="s">{{ t(`home.subjects.${s}`) }}</option>
              </select>
            </div>
-           <div class="md:col-span-2 flex flex-col gap-2">
-             <label class="text-xs font-bold text-text-sub-light uppercase tracking-widest px-1">{{ t('home.inputs.points') }}</label>
-             <input v-model.number="newTaskPoints" type="number" class="w-full bg-background-light dark:bg-background-dark border-transparent focus:border-primary rounded-2xl p-4 font-bold transition-all outline-none text-center">
+           <div class="md:col-span-2 flex flex-col gap-1.5 md:gap-2">
+             <label class="text-[10px] md:text-xs font-bold text-text-sub-light uppercase tracking-widest px-1">{{ t('home.inputs.points') }}</label>
+             <input v-model.number="newTaskPoints" type="number" class="w-full bg-background-light dark:bg-background-dark border-transparent focus:border-primary rounded-xl md:rounded-2xl p-3 md:p-4 font-bold transition-all outline-none text-center text-sm md:text-base">
            </div>
            <div class="md:col-span-2 flex items-end">
              <button 
                @click="addTask" 
                :disabled="isAddingTask"
-               class="w-full bg-primary hover:bg-primary-dark text-black font-black py-4 rounded-2xl shadow-lg shadow-primary/20 transition-all active:scale-95 duration-200 uppercase tracking-widest text-xs disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+               class="w-full bg-primary hover:bg-primary-dark text-black font-black py-3 md:py-4 rounded-xl md:rounded-2xl shadow-lg shadow-primary/20 transition-all active:scale-95 duration-200 uppercase tracking-widest text-[10px] md:text-xs disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
              >
                <span 
                  v-if="isAddingTask"
-                 class="material-symbols-outlined animate-spin text-lg"
+                 class="material-symbols-outlined animate-spin text-base md:text-lg"
                >
                  refresh
                </span>
@@ -335,7 +335,7 @@ const deleteTask = async (id) => {
     </Transition>
 
     <!-- Task List -->
-    <section class="flex flex-col gap-5" ref="taskListRef">
+    <section class="flex flex-col gap-3 md:gap-5" ref="taskListRef">
       <!-- Pull to Refresh Indicator -->
       <div 
         v-if="pullDistance > 0 || isRefreshing"
@@ -357,9 +357,9 @@ const deleteTask = async (id) => {
         </div>
       </div>
       
-      <div class="flex items-center justify-between">
-        <h3 class="text-2xl font-black flex items-center gap-2">
-          <span class="material-symbols-outlined text-primary text-3xl">check_circle</span>
+      <div class="flex items-center justify-between mb-2 md:mb-0">
+        <h3 class="text-lg md:text-2xl font-black flex items-center gap-1.5 md:gap-2">
+          <span class="material-symbols-outlined text-primary text-xl md:text-3xl">check_circle</span>
           {{ t('home.title') }}
         </h3>
         <button 
@@ -378,13 +378,13 @@ const deleteTask = async (id) => {
       </div>
 
       <!-- Empty State -->
-      <div v-if="tasks.length === 0" class="py-16 text-center bg-surface-light dark:bg-surface-dark rounded-3xl border border-dashed border-gray-200 dark:border-gray-800">
-        <div class="size-20 bg-gray-50 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-4 text-gray-300">
-          <span class="material-symbols-outlined text-5xl">menu_book</span>
+      <div v-if="tasks.length === 0" class="py-10 md:py-16 text-center bg-surface-light dark:bg-surface-dark rounded-2xl md:rounded-3xl border border-dashed border-gray-200 dark:border-gray-800">
+        <div class="size-16 md:size-20 bg-gray-50 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-3 md:mb-4 text-gray-300">
+          <span class="material-symbols-outlined text-4xl md:text-5xl">menu_book</span>
         </div>
-        <p class="text-xl font-black text-gray-400">{{ t('home.noTasksTitle') }}</p>
-        <p class="text-gray-300 font-bold">{{ t('home.noTasksDesc') }}</p>
-        <button @click="isAddingFormOpen = true" class="mt-6 text-primary font-bold flex items-center justify-center gap-1 mx-auto hover:underline">
+        <p class="text-lg md:text-xl font-black text-gray-400">{{ t('home.noTasksTitle') }}</p>
+        <p class="text-sm md:text-base text-gray-300 font-bold">{{ t('home.noTasksDesc') }}</p>
+        <button @click="isAddingFormOpen = true" class="mt-4 md:mt-6 text-primary font-bold flex items-center justify-center gap-1 mx-auto hover:underline text-sm md:text-base">
           <span class="material-symbols-outlined">add</span> {{ t('home.addTaskTitle') }}
         </button>
       </div>
@@ -392,24 +392,24 @@ const deleteTask = async (id) => {
       <div 
         v-for="group in groupedTasks" 
         :key="group.subject" 
-        class="flex flex-col gap-4 p-5 rounded-[2rem] transition-all duration-300"
+        class="flex flex-col gap-2 md:gap-4 p-2.5 md:p-5 rounded-xl md:rounded-[2rem] transition-all duration-300"
         :class="[
           subjectColors[group.subject]?.split(' ').filter(c => c.startsWith('bg-') || c.includes('/30')).join(' ') || 'bg-slate-50 dark:bg-slate-900/20'
         ]"
       >
         <div class="flex items-center justify-between px-1">
-          <h4 class="text-lg font-black uppercase tracking-[0.2em] flex items-center gap-3" :class="subjectColors[group.subject]?.split(' ')[0]">
-            <span class="size-3 rounded-full shadow-sm" :class="subjectColors[group.subject]?.split(' ')[0].replace('text-', 'bg-')"></span>
+          <h4 class="text-xs md:text-lg font-black uppercase tracking-[0.15em] md:tracking-[0.2em] flex items-center gap-1.5 md:gap-3" :class="subjectColors[group.subject]?.split(' ')[0]">
+            <span class="size-1.5 md:size-3 rounded-full shadow-sm" :class="subjectColors[group.subject]?.split(' ')[0].replace('text-', 'bg-')"></span>
             {{ t(`home.subjects.${group.subject}`) }}
           </h4>
-          <span class="text-xs font-bold opacity-50">{{ group.tasks.length }} {{ t('app.nav.tasks') }}</span>
+          <span class="text-[9px] md:text-xs font-bold opacity-50">{{ group.tasks.length }} {{ t('app.nav.tasks') }}</span>
         </div>
         
-        <div class="flex flex-col gap-3">
+        <div class="flex flex-col gap-1.5 md:gap-3">
           <div 
             v-for="task in group.tasks" 
             :key="task.id"
-            class="group flex items-center gap-5 bg-surface-light dark:bg-surface-dark p-5 rounded-2xl shadow-sm border-2 border-transparent hover:border-primary/40 transition-all duration-300"
+            class="group flex items-center gap-2 md:gap-5 bg-surface-light dark:bg-surface-dark p-2.5 md:p-5 rounded-lg md:rounded-2xl shadow-sm border-2 border-transparent hover:border-primary/40 transition-all duration-300"
             :class="{ 'opacity-60 grayscale-[0.5]': task.completed }"
           >
             <div class="relative flex items-center justify-center flex-shrink-0">
@@ -418,25 +418,21 @@ const deleteTask = async (id) => {
                 :checked="task.completed" 
                 @change="toggleTask(task)"
                 :disabled="isLocked && task.completed"
-                class="custom-checkbox appearance-none size-8 rounded-full border-2 border-gray-200 dark:border-gray-700 checked:bg-primary checked:border-primary transition-all cursor-pointer ring-offset-2 ring-primary/20 focus:ring-4 disabled:opacity-50 disabled:cursor-not-allowed"
+                class="custom-checkbox appearance-none size-5 md:size-8 rounded-full border-2 border-gray-200 dark:border-gray-700 checked:bg-primary checked:border-primary transition-all cursor-pointer ring-offset-1 md:ring-offset-2 ring-primary/20 focus:ring-2 md:focus:ring-4 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-              <span v-if="task.completed" class="material-symbols-outlined absolute pointer-events-none text-black font-black text-lg">check</span>
+              <span v-if="task.completed" class="material-symbols-outlined absolute pointer-events-none text-black font-black text-xs md:text-lg">check</span>
             </div>
 
-            <div class="flex-1 flex flex-col md:flex-row md:items-center justify-between gap-3">
-              <div class="flex flex-col">
-                <h4 class="text-lg font-bold text-text-main-light dark:text-text-main-dark group-hover:text-primary transition-colors duration-300" :class="{ 'line-through decoration-2 decoration-primary/50 text-text-sub-light opacity-70': task.completed }">
-                  {{ task.title }}
-                </h4>
-                <div class="flex items-center gap-2 mt-0.5">
-                  <span class="text-xs font-bold text-text-sub-light">+{{ task.points }} pts</span>
-                </div>
-              </div>
+            <div class="flex-1 flex items-center justify-between gap-2 md:gap-3 min-w-0">
+              <h4 class="flex-1 text-base md:text-lg font-bold text-text-main-light dark:text-text-main-dark group-hover:text-primary transition-colors duration-300 truncate leading-tight" :class="{ 'line-through decoration-2 decoration-primary/50 text-text-sub-light opacity-70': task.completed }">
+                {{ task.title }}
+              </h4>
 
-              <div class="flex items-center gap-2 md:opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                 <button @click="deleteTask(task.id)" class="p-3 text-gray-300 hover:text-red-500 transition-colors rounded-xl hover:bg-red-50 dark:hover:bg-red-900/20">
-                   <span class="material-symbols-outlined">delete</span>
-                 </button>
+              <div class="flex items-center gap-2 flex-shrink-0">
+                <span class="text-xs md:text-sm font-bold text-text-sub-light whitespace-nowrap">+{{ task.points }} pts</span>
+                <button @click="deleteTask(task.id)" class="p-1.5 md:p-3 text-gray-300 hover:text-red-500 transition-colors rounded-lg md:rounded-xl hover:bg-red-50 dark:hover:bg-red-900/20">
+                  <span class="material-symbols-outlined text-base md:text-xl">delete</span>
+                </button>
               </div>
             </div>
           </div>

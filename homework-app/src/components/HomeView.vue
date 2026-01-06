@@ -409,7 +409,7 @@ const deleteTask = async (id) => {
           <div 
             v-for="task in group.tasks" 
             :key="task.id"
-            class="group flex items-center gap-2 md:gap-5 bg-surface-light dark:bg-surface-dark p-2.5 md:p-5 rounded-lg md:rounded-2xl shadow-sm border-2 border-transparent hover:border-primary/40 transition-all duration-300"
+            class="group flex items-center gap-2 md:gap-5 bg-surface-light dark:bg-surface-dark py-2 px-2.5 md:py-3 md:px-5 rounded-lg md:rounded-2xl shadow-sm border-2 border-transparent hover:border-primary/40 transition-all duration-300"
             :class="{ 'opacity-60 grayscale-[0.5]': task.completed }"
           >
             <div class="relative flex items-center justify-center flex-shrink-0">
@@ -424,7 +424,7 @@ const deleteTask = async (id) => {
             </div>
 
             <div class="flex-1 flex items-center justify-between gap-2 md:gap-3 min-w-0">
-              <h4 class="flex-1 text-base md:text-lg font-bold text-text-main-light dark:text-text-main-dark group-hover:text-primary transition-colors duration-300 truncate leading-tight" :class="{ 'line-through decoration-2 decoration-primary/50 text-text-sub-light opacity-70': task.completed }">
+              <h4 class="flex-1 text-base md:text-lg font-bold text-text-main-light dark:text-text-main-dark group-hover:text-primary transition-colors duration-300 break-words leading-snug pr-2" :class="{ 'line-through decoration-2 decoration-primary/50 text-text-sub-light opacity-70': task.completed }">
                 {{ task.title }}
               </h4>
 

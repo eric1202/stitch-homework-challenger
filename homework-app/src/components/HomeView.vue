@@ -9,6 +9,8 @@ import { triggerConfetti } from '../utils/confetti';
 
 const { t } = useI18n();
 const today = getTodayDateString();
+const selectedDate = ref(today); // 当前选择的日期
+const isDatePickerOpen = ref(false); // 日期选择器是否打开
 const newTaskTitle = ref('');
 const newTaskSubject = ref('Math'); 
 const newTaskPoints = ref(10);
@@ -44,7 +46,7 @@ const refreshTasks = async () => {
   isRefreshing.value = true;
   try {
     const result = await db.tasks.where('user_name').equals(userName.value).toArray();
-    tasks.value = result.filter(t => t.date === today);
+    tasks.value = result.filter(t => t.date === selectedDate.value);
   } catch (error) {
     console.error('Failed to refresh tasks:', error);
     alert('刷新失败，请重试');
@@ -61,7 +63,7 @@ const updateTasksSub = (name) => {
   tasksSub = liveQuery(() => 
     db.tasks.where('user_name').equals(name).toArray()
   ).subscribe(result => {
-    tasks.value = result.filter(t => t.date === today);
+    tasks.value = result.filter(t => t.date === selectedDate.value);
     if (isInitialLoading.value) {
        // 给一点点延迟让动画更平滑
        setTimeout(() => {
@@ -158,7 +160,7 @@ const addTask = async () => {
       subject: newTaskSubject.value,
       points: Number(newTaskPoints.value) || 0,
       completed: false,
-      date: today,
+      date: selectedDate.value, // 使用选中的日期
       user_name: userName.value
     });
     
@@ -174,6 +176,38 @@ const addTask = async () => {
     isAddingTask.value = false;
   }
 };
+
+// 日期选择相关函数
+const openDatePicker = () => {
+  isDatePickerOpen.value = true;
+};
+
+const closeDatePicker = () => {
+  isDatePickerOpen.value = false;
+};
+
+const selectDate = (date) => {
+  selectedDate.value = date;
+  closeDatePicker();
+  refreshTasks();
+};
+
+const goToToday = () => {
+  selectedDate.value = today;
+  refreshTasks();
+};
+
+const changeDate = (days) => {
+  const currentDate = new Date(selectedDate.value);
+  currentDate.setDate(currentDate.getDate() + days);
+  const year = currentDate.getFullYear();
+  const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+  const day = String(currentDate.getDate()).padStart(2, '0');
+  selectedDate.value = `${year}-${month}-${day}`;
+  refreshTasks();
+};
+
+const isToday = computed(() => selectedDate.value === today);
 
 const isLocked = computed(() => tasks.value.length > 0 && tasks.value.every(t => t.completed));
 
@@ -250,9 +284,45 @@ const deleteTask = async (id) => {
       <div class="flex flex-col gap-2">
         <h2 class="text-4xl md:text-5xl font-black tracking-tight leading-tight" v-html="t('home.greeting', { name: userName })">
         </h2>
-        <div class="flex items-center gap-2 text-text-sub-light dark:text-text-sub-dark">
-          <span class="material-symbols-outlined text-primary text-xl">calendar_today</span>
-          <p class="text-lg font-medium">{{ formatDateDisplay(today) }}</p>
+        <div class="flex items-center gap-2 flex-wrap">
+          <div class="flex items-center gap-1.5 md:gap-2">
+            <!-- 前一天按钮 -->
+            <button 
+              @click="changeDate(-1)"
+              class="p-1.5 md:p-2 rounded-lg md:rounded-xl text-text-sub-light dark:text-text-sub-dark hover:bg-primary/10 hover:text-primary transition-all duration-200 active:scale-95"
+              title="前一天"
+            >
+              <span class="material-symbols-outlined text-lg md:text-xl">chevron_left</span>
+            </button>
+            
+            <!-- 日期显示和选择器触发按钮 -->
+            <button 
+              @click="openDatePicker"
+              class="flex items-center gap-2 px-3 py-1.5 md:px-4 md:py-2 rounded-xl md:rounded-2xl text-text-sub-light dark:text-text-sub-dark hover:bg-primary/10 hover:text-primary transition-all duration-200 active:scale-95 group"
+            >
+              <span class="material-symbols-outlined text-primary text-lg md:text-xl group-hover:scale-110 transition-transform">calendar_today</span>
+              <p class="text-base md:text-lg font-medium">{{ formatDateDisplay(selectedDate) }}</p>
+            </button>
+            
+            <!-- 后一天按钮 -->
+            <button 
+              @click="changeDate(1)"
+              class="p-1.5 md:p-2 rounded-lg md:rounded-xl text-text-sub-light dark:text-text-sub-dark hover:bg-primary/10 hover:text-primary transition-all duration-200 active:scale-95"
+              title="后一天"
+            >
+              <span class="material-symbols-outlined text-lg md:text-xl">chevron_right</span>
+            </button>
+          </div>
+          
+          <!-- 返回今天按钮 -->
+          <button 
+            v-if="!isToday"
+            @click="goToToday"
+            class="flex items-center gap-1 px-2.5 py-1 md:px-3 md:py-1.5 rounded-lg md:rounded-xl bg-primary/10 text-primary hover:bg-primary hover:text-black font-bold text-xs md:text-sm transition-all duration-200 active:scale-95"
+          >
+            <span class="material-symbols-outlined text-sm md:text-base">today</span>
+            <span>今天</span>
+          </button>
         </div>
       </div>
       <button 
@@ -263,6 +333,77 @@ const deleteTask = async (id) => {
         <span>{{ isAddingFormOpen ? t('settings.danger.resetBtn') : t('home.addTaskTitle') }}</span>
       </button>
     </header>
+
+    <!-- Date Picker Modal -->
+    <Transition name="modal">
+      <div v-if="isDatePickerOpen" class="fixed inset-0 z-[60] flex items-center justify-center p-4" @click="closeDatePicker">
+        <div class="absolute inset-0 bg-black/50 backdrop-blur-sm"></div>
+        <div 
+          class="relative bg-surface-light dark:bg-surface-dark rounded-3xl shadow-2xl border border-gray-200 dark:border-gray-700 p-6 md:p-8 max-w-md w-full"
+          @click.stop
+        >
+          <!-- Header -->
+          <div class="flex items-center justify-between mb-6">
+            <h3 class="text-2xl font-black flex items-center gap-2">
+              <span class="material-symbols-outlined text-primary text-3xl">calendar_month</span>
+              选择日期
+            </h3>
+            <button 
+              @click="closeDatePicker"
+              class="p-2 rounded-xl text-text-sub-light hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200 active:scale-95"
+            >
+              <span class="material-symbols-outlined text-2xl">close</span>
+            </button>
+          </div>
+
+          <!-- Quick Date Selection -->
+          <div class="flex flex-col gap-3 mb-6">
+            <p class="text-xs font-bold text-text-sub-light uppercase tracking-widest px-1">快捷选择</p>
+            <div class="grid grid-cols-2 gap-2">
+              <button 
+                @click="selectDate(today)"
+                class="flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-bold transition-all duration-200 active:scale-95"
+                :class="selectedDate === today ? 'bg-primary text-black' : 'bg-background-light dark:bg-background-dark hover:bg-primary/10'"
+              >
+                <span class="material-symbols-outlined text-xl">today</span>
+                <span>今天</span>
+              </button>
+              <button 
+                @click="selectDate((() => {
+                  const tomorrow = new Date(today);
+                  tomorrow.setDate(tomorrow.getDate() + 1);
+                  const year = tomorrow.getFullYear();
+                  const month = String(tomorrow.getMonth() + 1).padStart(2, '0');
+                  const day = String(tomorrow.getDate()).padStart(2, '0');
+                  return `${year}-${month}-${day}`;
+                })())"
+                class="flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-background-light dark:bg-background-dark hover:bg-primary/10 font-bold transition-all duration-200 active:scale-95"
+              >
+                <span class="material-symbols-outlined text-xl">event</span>
+                <span>明天</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Custom Date Input -->
+          <div class="flex flex-col gap-2">
+            <label class="text-xs font-bold text-text-sub-light uppercase tracking-widest px-1">自定义日期</label>
+            <input 
+              type="date" 
+              :value="selectedDate"
+              @change="(e) => selectDate(e.target.value)"
+              class="w-full bg-background-light dark:bg-background-dark border-2 border-transparent focus:border-primary rounded-xl p-4 font-bold transition-all outline-none text-base"
+            >
+          </div>
+
+          <!-- Selected Date Display -->
+          <div class="mt-6 p-4 bg-primary/10 rounded-xl">
+            <p class="text-xs font-bold text-text-sub-light uppercase tracking-widest mb-1">当前选择</p>
+            <p class="text-lg font-black text-primary">{{ formatDateDisplay(selectedDate) }}</p>
+          </div>
+        </div>
+      </div>
+    </Transition>
 
     <!-- Progress Card -->
     <section v-if="tasks.length > 0" class="bg-surface-light dark:bg-surface-dark p-4 md:p-6 md:px-7 rounded-2xl md:rounded-3xl shadow-sm border border-gray-100 dark:border-gray-800 relative overflow-hidden group">
@@ -467,5 +608,20 @@ const deleteTask = async (id) => {
 }
 .fade-enter-from, .fade-leave-to {
   opacity: 0;
+}
+
+.modal-enter-active, .modal-leave-active {
+  transition: opacity 0.3s ease;
+}
+.modal-enter-active > div:last-child,
+.modal-leave-active > div:last-child {
+  transition: all 0.3s ease;
+}
+.modal-enter-from, .modal-leave-to {
+  opacity: 0;
+}
+.modal-enter-from > div:last-child,
+.modal-leave-to > div:last-child {
+  transform: scale(0.9) translateY(20px);
 }
 </style>

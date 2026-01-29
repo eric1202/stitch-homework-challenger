@@ -94,7 +94,7 @@ const refreshRewards = async () => {
     totalPoints.value = earned - spent;
   } catch (error) {
     console.error('Failed to refresh rewards:', error);
-    alert('刷新失败，请重试');
+    alert(t('rewards.refreshFail'));
   } finally {
     setTimeout(() => {
       isRefreshing.value = false;
@@ -273,7 +273,7 @@ const saveReward = async () => {
 };
 
 const deleteReward = async (id) => {
-  if (confirm('Are you sure you want to delete this reward?')) {
+  if (confirm(t('rewards.deleteConfirm'))) {
     await db.rewards.delete(id);
   }
 };
@@ -286,7 +286,7 @@ const redeemReward = async (reward) => {
     await db.transaction('rw', db.rewards, db.redemptionLogs, async () => {
       // 1. Check stock again inside transaction
       const freshReward = await db.rewards.get(reward.id);
-      if (freshReward.stock <= 0) throw new Error('Out of stock!');
+      if (freshReward.stock <= 0) throw new Error(t('rewards.outOfStock'));
 
       // 2. Reduce stock
       await db.rewards.update(reward.id, {
@@ -307,7 +307,7 @@ const redeemReward = async (reward) => {
     // 刷新列表
     await refreshRewards();
   } catch (err) {
-    alert('Redemption failed: ' + err.message);
+    alert(t('rewards.redeemFail') + err.message);
   } finally {
     isRedeemingReward.value = false;
   }
@@ -390,7 +390,7 @@ const formatTime = (ts) => {
             :class="{ 'animate-spin': isRefreshing }"
             :style="{ transform: isRefreshing ? 'rotate(0deg)' : `rotate(${Math.min(pullDistance * 3.6, 180)}deg)` }"
           />
-          <span class="text-xs font-bold">{{ isRefreshing ? '刷新中...' : '下拉刷新' }}</span>
+          <span class="text-xs font-bold">{{ isRefreshing ? t('rewards.refreshing') : t('rewards.pullToRefresh') }}</span>
         </div>
       </div>
       
@@ -403,7 +403,7 @@ const formatTime = (ts) => {
           @click="refreshRewards"
           :disabled="isRefreshing"
           class="p-2 rounded-xl text-primary hover:bg-primary/10 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed active:scale-95"
-          :title="isRefreshing ? '刷新中...' : '刷新列表'"
+          :title="isRefreshing ? t('rewards.refreshing') : t('rewards.refreshList')"
         >
           <RefreshCw 
             class="w-5 h-5 transition-transform duration-200"
@@ -474,7 +474,7 @@ const formatTime = (ts) => {
                   v-if="isRedeemingReward"
                   class="w-4 h-4 animate-spin"
                 />
-                <span>{{ isRedeemingReward ? '兑换中...' : (totalPoints < reward.points ? t('rewards.needPoints') : t('rewards.redeem')) }}</span>
+                <span>{{ isRedeemingReward ? t('rewards.redeeming') : (totalPoints < reward.points ? t('rewards.needPoints') : t('rewards.redeem')) }}</span>
               </button>
             </template>
           </div>
@@ -583,7 +583,7 @@ const formatTime = (ts) => {
             v-if="isSavingReward"
             class="w-5 h-5 animate-spin"
           />
-          <span>{{ isSavingReward ? '保存中...' : (showEditModal ? t('rewards.modal.btnUpdate') : t('rewards.modal.btnCreate')) }}</span>
+          <span>{{ isSavingReward ? t('rewards.saving') : (showEditModal ? t('rewards.modal.btnUpdate') : t('rewards.modal.btnCreate')) }}</span>
         </button>
       </div>
     </div>

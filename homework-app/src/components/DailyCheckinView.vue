@@ -350,15 +350,15 @@ const formatSchedule = (template) => {
       <div 
         v-for="group in groupedTemplates" 
         :key="group.subject" 
-        class="flex flex-col gap-4 p-5 rounded-[2rem] transition-all duration-300"
+        class="flex flex-col gap-3 md:gap-4 p-4 md:p-5 rounded-[1.5rem] md:rounded-[2rem] transition-all duration-300"
         :class="[subjectColors[group.subject]?.split(' ').filter(c => c.startsWith('bg-') || c.includes('/30')).join(' ') || 'bg-slate-50 dark:bg-slate-900/20']"
       >
         <div class="flex items-center justify-between px-1">
-          <h4 class="text-lg font-black uppercase tracking-[0.2em] flex items-center gap-3" :class="subjectColors[group.subject]?.split(' ')[0]">
-            <span class="size-3 rounded-full shadow-sm" :class="subjectColors[group.subject]?.split(' ')[0].replace('text-', 'bg-')"></span>
+          <h4 class="text-sm md:text-lg font-black uppercase tracking-[0.2em] flex items-center gap-3" :class="subjectColors[group.subject]?.split(' ')[0]">
+            <span class="size-2.5 md:size-3 rounded-full shadow-sm" :class="subjectColors[group.subject]?.split(' ')[0].replace('text-', 'bg-')"></span>
             {{ t(`home.subjects.${group.subject}`) }}
           </h4>
-          <span class="text-xs font-bold opacity-50">{{ group.templates.length }} {{ t('app.nav.tasks') }}</span>
+          <span class="text-[10px] md:text-xs font-bold opacity-50 uppercase tracking-widest">{{ group.templates.length }} {{ t('app.nav.tasks') }}</span>
         </div>
         
         <div class="flex flex-col gap-3">
@@ -366,29 +366,29 @@ const formatSchedule = (template) => {
             <div 
               v-for="tpl in group.templates" 
               :key="tpl.id"
-              class="group flex items-center gap-5 bg-surface-light dark:bg-surface-dark py-4 px-5 rounded-2xl shadow-sm border-2 border-transparent hover:border-primary/40 transition-all duration-300 hover:-translate-y-0.5"
+              class="group flex items-start md:items-center gap-3 md:gap-5 bg-surface-light dark:bg-surface-dark py-3 md:py-4 px-4 md:px-5 rounded-2xl shadow-sm border-2 border-transparent hover:border-primary/40 transition-all duration-300"
             >
               <div class="flex-1 min-w-0">
-                <h4 class="text-lg font-bold text-text-main-light dark:text-text-main-dark group-hover:text-primary transition-colors duration-300">
+                <h4 class="text-base md:text-lg font-bold text-text-main-light dark:text-text-main-dark group-hover:text-primary transition-colors duration-300 leading-tight">
                   {{ tpl.title }}
                 </h4>
-                <div class="flex items-center gap-3 mt-1 text-sm text-text-sub-light dark:text-text-sub-dark">
+                <div class="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1 text-[11px] md:text-sm text-text-sub-light dark:text-text-sub-dark">
                   <span class="flex items-center gap-1">
-                    <span class="material-symbols-outlined text-base">event_repeat</span>
+                    <span class="material-symbols-outlined text-sm md:text-base">event_repeat</span>
                     {{ formatSchedule(tpl) }}
                   </span>
-                  <span class="flex items-center gap-1">
-                    <span class="material-symbols-outlined text-base">star</span>
+                  <span class="flex items-center gap-1 font-black text-primary/80">
+                    <span class="material-symbols-outlined text-sm md:text-base">star</span>
                     +{{ tpl.points }} pts
                   </span>
                 </div>
               </div>
               
-              <div class="flex items-center gap-2 flex-shrink-0">
-                <button @click="openEditModal(tpl)" class="p-3 text-gray-400 hover:text-primary transition-colors rounded-xl hover:bg-primary/10">
+              <div class="flex items-center gap-1 md:gap-2 flex-shrink-0">
+                <button @click="openEditModal(tpl)" class="p-2 md:p-3 text-gray-400 hover:text-primary transition-colors rounded-xl hover:bg-primary/10">
                   <span class="material-symbols-outlined text-xl">edit</span>
                 </button>
-                <button @click="deleteTemplate(tpl)" class="p-3 text-gray-300 hover:text-red-500 transition-colors rounded-xl hover:bg-red-50 dark:hover:bg-red-900/20">
+                <button @click="deleteTemplate(tpl)" class="p-2 md:p-3 text-gray-300 hover:text-red-500 transition-colors rounded-xl hover:bg-red-50 dark:hover:bg-red-900/20">
                   <span class="material-symbols-outlined text-xl">delete</span>
                 </button>
               </div>
@@ -511,7 +511,7 @@ const formatSchedule = (template) => {
             <button 
               @click="editingTemplate ? updateTemplate() : createTemplate()"
               :disabled="isLoading || !formTitle.trim()"
-              class="w-full bg-primary hover:bg-primary-dark text-white font-black py-4 rounded-2xl shadow-lg shadow-primary/20 transition-all active:scale-95 duration-200 uppercase tracking-widest text-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-2"
+              class="w-full bg-primary hover:bg-primary-dark text-white font-black py-4 rounded-2xl shadow-lg shadow-primary/20 transition-all active:scale-95 duration-200 uppercase tracking-widest text-sm mt-4 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               <span v-if="isLoading" class="material-symbols-outlined animate-spin">refresh</span>
               <span>{{ editingTemplate ? t('dailyCheckin.editBtn') : t('dailyCheckin.createBtn') }}</span>

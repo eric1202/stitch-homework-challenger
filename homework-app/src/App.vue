@@ -1,7 +1,7 @@
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue';
-import { db } from './db';
-import { liveQuery } from 'dexie';
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
+import { db, liveQuery } from './db';
+import gsap from 'gsap';
 import { useI18n } from 'vue-i18n';
 
 // Components
@@ -14,6 +14,7 @@ import DailyCheckinView from './components/DailyCheckinView.vue';
 const { t, locale } = useI18n();
 const currentView = ref('home');
 const totalPoints = ref(0);
+const displayPoints = ref(0); // For GSAP animation
 const userName = ref('Hero');
 
 // Live Query for Points
@@ -38,6 +39,16 @@ const pointsSubscription = liveQuery(async () => {
   }
 }).subscribe(value => {
   totalPoints.value = value;
+});
+
+// GSAP Points Animation
+watch(totalPoints, (newValue) => {
+  gsap.to(displayPoints, {
+    value: newValue,
+    duration: 1.5,
+    ease: "power2.out",
+    snap: { value: 1 }
+  });
 });
 
 // Live Query for Name & Language
@@ -69,6 +80,8 @@ const navItems = computed(() => [
 const isDark = ref(window.matchMedia('(prefers-color-scheme: dark)').matches);
 onMounted(() => {
   if (isDark.value) document.documentElement.classList.add('dark');
+  // Initialize display points
+  displayPoints.value = totalPoints.value;
 });
 </script>
 
@@ -79,7 +92,7 @@ onMounted(() => {
     <aside class="hidden lg:flex w-72 flex-col justify-between bg-surface-light dark:bg-surface-dark border-r border-gray-100 dark:border-gray-800 p-6 h-screen sticky top-0">
       <div class="flex flex-col gap-8">
         <div class="flex items-center gap-3">
-          <div class="bg-gradient-to-br from-primary to-primary-dark rounded-xl size-10 shadow-lg shadow-primary/20 flex items-center justify-center text-black font-black text-xl">
+          <div class="bg-gradient-to-br from-primary to-primary-dark rounded-xl size-10 shadow-lg shadow-primary/20 flex items-center justify-center text-white">
             <span class="material-symbols-outlined fill-1">school</span>
           </div>
           <h1 class="text-xl font-black tracking-tight">{{ t('app.title') }} <span class="text-primary">{{ t('app.subtitle') }}</span></h1>
@@ -108,7 +121,9 @@ onMounted(() => {
           <div class="absolute -right-6 -top-6 w-20 h-20 bg-primary/10 rounded-full blur-xl group-hover:bg-primary/20 transition-all"></div>
           <p class="text-[10px] font-bold text-text-sub-light dark:text-text-sub-dark uppercase tracking-widest mb-1">{{ t('app.totalPoints') }}</p>
           <div class="flex items-baseline gap-1">
-            <p class="text-3xl font-black text-primary">{{ totalPoints }}</p>
+            <p class="text-3xl font-black text-primary transition-all duration-300" :class="{ 'scale-110': displayPoints !== totalPoints }">
+              {{ displayPoints }}
+            </p>
             <span class="text-xs font-bold text-text-sub-light">pts</span>
           </div>
         </div>
@@ -128,13 +143,13 @@ onMounted(() => {
     <!-- Mobile Header -->
     <header class="lg:hidden bg-surface-light/80 dark:bg-surface-dark/80 backdrop-blur-md p-4 flex justify-between items-center sticky top-0 z-40 border-b border-gray-100 dark:border-gray-800 transition-colors">
       <div class="flex items-center gap-2">
-         <div class="size-8 bg-gradient-to-br from-primary to-primary-dark rounded-lg shadow-md flex items-center justify-center text-black">
+         <div class="size-8 bg-gradient-to-br from-primary to-primary-dark rounded-lg shadow-md flex items-center justify-center text-white">
            <span class="material-symbols-outlined text-xl fill-1">school</span>
          </div>
          <h1 class="text-lg font-black tracking-tight">{{ t('app.title') }}<span class="text-primary">{{ t('app.subtitle') }}</span></h1>
       </div>
-      <div class="bg-surface-light dark:bg-surface-dark border border-gray-100 dark:border-gray-800 px-3 py-1.5 rounded-full flex items-center gap-2 shadow-sm">
-        <span class="text-xl font-black text-primary">{{ totalPoints }}</span>
+      <div class="bg-surface-light/50 dark:bg-surface-dark/50 backdrop-blur-md border border-gray-100 dark:border-gray-800 px-3 py-1.5 rounded-full flex items-center gap-2 shadow-sm">
+        <span class="text-xl font-black text-primary">{{ displayPoints }}</span>
         <span class="text-[8px] font-black text-text-sub-light uppercase">pts</span>
       </div>
     </header>

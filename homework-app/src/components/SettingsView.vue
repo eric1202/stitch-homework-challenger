@@ -1,7 +1,6 @@
 <script setup>
 import { ref, onMounted } from 'vue';
-import { db } from '../db';
-import { liveQuery } from 'dexie';
+import { db, liveQuery } from '../db';
 import { useI18n } from 'vue-i18n';
 
 const { t, locale } = useI18n();

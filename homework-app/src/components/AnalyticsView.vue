@@ -1,7 +1,6 @@
 <script setup>
 import { ref, computed, onUnmounted } from 'vue';
-import { db } from '../db';
-import { liveQuery } from 'dexie';
+import { db, liveQuery } from '../db';
 import { useI18n } from 'vue-i18n';
 import {
   Chart as ChartJS,

@@ -1,9 +1,9 @@
 <script setup>
 import { ref, computed, onUnmounted, onMounted } from 'vue';
-import { db } from '../db';
-import { liveQuery } from 'dexie';
+import { db, liveQuery } from '../db';
 import { useI18n } from 'vue-i18n';
 import SplitText from './SplitText.vue';
+import gsap from 'gsap';
 
 
 import { getTodayDateString, formatDateDisplay } from '../utils/date';
@@ -327,7 +327,7 @@ const deleteTask = async (id) => {
           <button 
             v-if="!isToday"
             @click="goToToday"
-            class="flex items-center gap-1 px-2.5 py-1 md:px-3 md:py-1.5 rounded-lg md:rounded-xl bg-primary/10 text-primary hover:bg-primary hover:text-black font-bold text-xs md:text-sm transition-all duration-200 active:scale-95"
+            class="flex items-center gap-1 px-2.5 py-1 md:px-3 md:py-1.5 rounded-lg md:rounded-xl bg-primary/10 text-primary hover:bg-primary hover:text-white font-bold text-xs md:text-sm transition-all duration-200 active:scale-95"
           >
             <span class="material-symbols-outlined text-sm md:text-base">today</span>
             <span>今天</span>
@@ -336,7 +336,7 @@ const deleteTask = async (id) => {
       </div>
       <button 
         @click="isAddingFormOpen = !isAddingFormOpen"
-        class="hidden md:flex items-center gap-2 bg-primary hover:bg-primary-dark text-black font-bold py-4 px-8 rounded-2xl shadow-lg shadow-primary/30 transition-all hover:-translate-y-1 active:scale-95 duration-200"
+        class="hidden md:flex items-center gap-2 bg-primary hover:bg-primary-dark text-white font-bold py-4 px-8 rounded-2xl shadow-lg shadow-primary/30 transition-all hover:-translate-y-1 active:scale-95 duration-200"
       >
         <span class="material-symbols-outlined font-bold">add</span>
         <span>{{ isAddingFormOpen ? t('settings.danger.resetBtn') : t('home.addTaskTitle') }}</span>
@@ -372,7 +372,7 @@ const deleteTask = async (id) => {
               <button 
                 @click="selectDate(today)"
                 class="flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-bold transition-all duration-200 active:scale-95"
-                :class="selectedDate === today ? 'bg-primary text-black' : 'bg-background-light dark:bg-background-dark hover:bg-primary/10'"
+                :class="selectedDate === today ? 'bg-primary text-white' : 'bg-background-light dark:bg-background-dark hover:bg-primary/10'"
               >
                 <span class="material-symbols-outlined text-xl">today</span>
                 <span>今天</span>
@@ -469,7 +469,7 @@ const deleteTask = async (id) => {
              <button 
                @click="addTask" 
                :disabled="isAddingTask"
-               class="w-full bg-primary hover:bg-primary-dark text-black font-black py-3 md:py-4 rounded-xl md:rounded-2xl shadow-lg shadow-primary/20 transition-all active:scale-95 duration-200 uppercase tracking-widest text-[10px] md:text-xs disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+               class="w-full bg-primary hover:bg-primary-dark text-white font-black py-3 md:py-4 rounded-xl md:rounded-2xl shadow-lg shadow-primary/20 transition-all active:scale-95 duration-200 uppercase tracking-widest text-[10px] md:text-xs disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
              >
                <span 
                  v-if="isAddingTask"
@@ -556,36 +556,38 @@ const deleteTask = async (id) => {
         </div>
         
         <div class="flex flex-col gap-1.5 md:gap-3">
-          <div 
-            v-for="task in group.tasks" 
-            :key="task.id"
-            class="group flex items-center gap-2 md:gap-5 bg-surface-light dark:bg-surface-dark py-2 px-2.5 md:py-3 md:px-5 rounded-lg md:rounded-2xl shadow-sm border-2 border-transparent hover:border-primary/40 transition-all duration-300"
-            :class="{ 'opacity-60 grayscale-[0.5]': task.completed }"
-          >
-            <div class="relative flex items-center justify-center flex-shrink-0">
-              <input 
-                type="checkbox" 
-                :checked="task.completed" 
-                @change="toggleTask(task)"
-                :disabled="isLocked && task.completed"
-                class="custom-checkbox appearance-none size-5 md:size-8 rounded-full border-2 border-gray-200 dark:border-gray-700 checked:bg-primary checked:border-primary transition-all cursor-pointer ring-offset-1 md:ring-offset-2 ring-primary/20 focus:ring-2 md:focus:ring-4 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-              <span v-if="task.completed" class="material-symbols-outlined absolute pointer-events-none text-black font-black text-xs md:text-lg">check</span>
-            </div>
+          <TransitionGroup name="list">
+            <div 
+              v-for="task in group.tasks" 
+              :key="task.id"
+              class="group flex items-center gap-2 md:gap-5 bg-surface-light dark:bg-surface-dark py-2 px-2.5 md:py-3 md:px-5 rounded-lg md:rounded-2xl shadow-sm border-2 border-transparent hover:border-primary/40 transition-all duration-300 hover:-translate-y-0.5"
+              :class="{ 'opacity-60 grayscale-[0.5]': task.completed }"
+            >
+              <div class="relative flex items-center justify-center flex-shrink-0">
+                <input 
+                  type="checkbox" 
+                  :checked="task.completed" 
+                  @change="toggleTask(task)"
+                  :disabled="isLocked && task.completed"
+                  class="custom-checkbox appearance-none size-5 md:size-8 rounded-full border-2 border-gray-200 dark:border-gray-700 checked:bg-primary checked:border-primary transition-all cursor-pointer ring-offset-1 md:ring-offset-2 ring-primary/20 focus:ring-2 md:focus:ring-4 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                <span v-if="task.completed" class="material-symbols-outlined absolute pointer-events-none text-white font-black text-xs md:text-lg">check</span>
+              </div>
 
-            <div class="flex-1 flex items-center justify-between gap-2 md:gap-3 min-w-0">
-              <h4 class="flex-1 text-base md:text-lg font-bold text-text-main-light dark:text-text-main-dark group-hover:text-primary transition-colors duration-300 break-words leading-snug pr-2" :class="{ 'line-through decoration-2 decoration-primary/50 text-text-sub-light opacity-70': task.completed }">
-                {{ task.title }}
-              </h4>
+              <div class="flex-1 flex items-center justify-between gap-2 md:gap-3 min-w-0">
+                <h4 class="flex-1 text-base md:text-lg font-bold text-text-main-light dark:text-text-main-dark group-hover:text-primary transition-colors duration-300 break-words leading-snug pr-2" :class="{ 'line-through decoration-2 decoration-primary/50 text-text-sub-light opacity-70': task.completed }">
+                  {{ task.title }}
+                </h4>
 
-              <div class="flex items-center gap-2 flex-shrink-0">
-                <span class="text-xs md:text-sm font-bold text-text-sub-light whitespace-nowrap">+{{ task.points }} pts</span>
-                <button @click="deleteTask(task.id)" class="p-1.5 md:p-3 text-gray-300 hover:text-red-500 transition-colors rounded-lg md:rounded-xl hover:bg-red-50 dark:hover:bg-red-900/20">
-                  <span class="material-symbols-outlined text-base md:text-xl">delete</span>
-                </button>
+                <div class="flex items-center gap-2 flex-shrink-0">
+                  <span class="text-xs md:text-sm font-bold text-text-sub-light whitespace-nowrap">+{{ task.points }} pts</span>
+                  <button @click="deleteTask(task.id)" class="p-1.5 md:p-3 text-gray-300 hover:text-red-500 transition-colors rounded-lg md:rounded-xl hover:bg-red-50 dark:hover:bg-red-900/20">
+                    <span class="material-symbols-outlined text-base md:text-xl">delete</span>
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
+          </TransitionGroup>
         </div>
       </div>
     </section>
@@ -593,7 +595,7 @@ const deleteTask = async (id) => {
     <!-- Mobile Floating Add Button -->
     <button 
       @click="isAddingFormOpen = true"
-      class="md:hidden fixed bottom-24 right-6 size-16 bg-primary text-black rounded-full shadow-2xl shadow-primary/40 flex items-center justify-center z-50 active:scale-90 transition-transform duration-200"
+      class="md:hidden fixed bottom-24 right-6 size-16 bg-primary text-white rounded-full shadow-2xl shadow-primary/40 flex items-center justify-center z-50 active:scale-90 transition-transform duration-200"
     >
       <span class="material-symbols-outlined text-3xl font-black">add</span>
     </button>
@@ -619,18 +621,31 @@ const deleteTask = async (id) => {
   opacity: 0;
 }
 
+.list-enter-active,
+.list-leave-active {
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.list-enter-from,
+.list-leave-to {
+  opacity: 0;
+  transform: translateX(30px);
+}
+.list-move {
+  transition: transform 0.4s ease;
+}
+
 .modal-enter-active, .modal-leave-active {
   transition: opacity 0.3s ease;
 }
 .modal-enter-active > div:last-child,
 .modal-leave-active > div:last-child {
-  transition: all 0.3s ease;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 .modal-enter-from, .modal-leave-to {
   opacity: 0;
 }
 .modal-enter-from > div:last-child,
 .modal-leave-to > div:last-child {
-  transform: scale(0.9) translateY(20px);
+  transform: scale(0.9) translateY(40px);
 }
 </style>

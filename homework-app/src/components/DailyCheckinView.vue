@@ -1,7 +1,6 @@
 <script setup>
 import { ref, computed, onUnmounted } from 'vue';
-import { db } from '../db';
-import { liveQuery } from 'dexie';
+import { db, liveQuery } from '../db';
 import { useI18n } from 'vue-i18n';
 import { getTodayDateString } from '../utils/date';
 
@@ -363,36 +362,38 @@ const formatSchedule = (template) => {
         </div>
         
         <div class="flex flex-col gap-3">
-          <div 
-            v-for="tpl in group.templates" 
-            :key="tpl.id"
-            class="group flex items-center gap-5 bg-surface-light dark:bg-surface-dark py-4 px-5 rounded-2xl shadow-sm border-2 border-transparent hover:border-primary/40 transition-all duration-300"
-          >
-            <div class="flex-1 min-w-0">
-              <h4 class="text-lg font-bold text-text-main-light dark:text-text-main-dark group-hover:text-primary transition-colors duration-300">
-                {{ tpl.title }}
-              </h4>
-              <div class="flex items-center gap-3 mt-1 text-sm text-text-sub-light dark:text-text-sub-dark">
-                <span class="flex items-center gap-1">
-                  <span class="material-symbols-outlined text-base">event_repeat</span>
-                  {{ formatSchedule(tpl) }}
-                </span>
-                <span class="flex items-center gap-1">
-                  <span class="material-symbols-outlined text-base">star</span>
-                  +{{ tpl.points }} pts
-                </span>
+          <TransitionGroup name="list">
+            <div 
+              v-for="tpl in group.templates" 
+              :key="tpl.id"
+              class="group flex items-center gap-5 bg-surface-light dark:bg-surface-dark py-4 px-5 rounded-2xl shadow-sm border-2 border-transparent hover:border-primary/40 transition-all duration-300 hover:-translate-y-0.5"
+            >
+              <div class="flex-1 min-w-0">
+                <h4 class="text-lg font-bold text-text-main-light dark:text-text-main-dark group-hover:text-primary transition-colors duration-300">
+                  {{ tpl.title }}
+                </h4>
+                <div class="flex items-center gap-3 mt-1 text-sm text-text-sub-light dark:text-text-sub-dark">
+                  <span class="flex items-center gap-1">
+                    <span class="material-symbols-outlined text-base">event_repeat</span>
+                    {{ formatSchedule(tpl) }}
+                  </span>
+                  <span class="flex items-center gap-1">
+                    <span class="material-symbols-outlined text-base">star</span>
+                    +{{ tpl.points }} pts
+                  </span>
+                </div>
+              </div>
+              
+              <div class="flex items-center gap-2 flex-shrink-0">
+                <button @click="openEditModal(tpl)" class="p-3 text-gray-400 hover:text-primary transition-colors rounded-xl hover:bg-primary/10">
+                  <span class="material-symbols-outlined text-xl">edit</span>
+                </button>
+                <button @click="deleteTemplate(tpl)" class="p-3 text-gray-300 hover:text-red-500 transition-colors rounded-xl hover:bg-red-50 dark:hover:bg-red-900/20">
+                  <span class="material-symbols-outlined text-xl">delete</span>
+                </button>
               </div>
             </div>
-            
-            <div class="flex items-center gap-2 flex-shrink-0">
-              <button @click="openEditModal(tpl)" class="p-3 text-gray-400 hover:text-primary transition-colors rounded-xl hover:bg-primary/10">
-                <span class="material-symbols-outlined text-xl">edit</span>
-              </button>
-              <button @click="deleteTemplate(tpl)" class="p-3 text-gray-300 hover:text-red-500 transition-colors rounded-xl hover:bg-red-50 dark:hover:bg-red-900/20">
-                <span class="material-symbols-outlined text-xl">delete</span>
-              </button>
-            </div>
-          </div>
+          </TransitionGroup>
         </div>
       </div>
     </section>
@@ -510,7 +511,7 @@ const formatSchedule = (template) => {
             <button 
               @click="editingTemplate ? updateTemplate() : createTemplate()"
               :disabled="isLoading || !formTitle.trim()"
-              class="w-full bg-primary hover:bg-primary-dark text-black font-black py-4 rounded-2xl shadow-lg shadow-primary/20 transition-all active:scale-95 duration-200 uppercase tracking-widest text-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-2"
+              class="w-full bg-primary hover:bg-primary-dark text-white font-black py-4 rounded-2xl shadow-lg shadow-primary/20 transition-all active:scale-95 duration-200 uppercase tracking-widest text-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-2"
             >
               <span v-if="isLoading" class="material-symbols-outlined animate-spin">refresh</span>
               <span>{{ editingTemplate ? t('dailyCheckin.editBtn') : t('dailyCheckin.createBtn') }}</span>
@@ -523,18 +524,45 @@ const formatSchedule = (template) => {
 </template>
 
 <style scoped>
+.list-enter-active,
+.list-leave-active {
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.list-enter-from,
+.list-leave-to {
+  opacity: 0;
+  transform: translateX(30px);
+}
+.list-move {
+  transition: transform 0.4s ease;
+}
+
 .modal-enter-active, .modal-leave-active {
   transition: opacity 0.3s ease;
 }
 .modal-enter-active > div:last-child,
 .modal-leave-active > div:last-child {
-  transition: all 0.3s ease;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 .modal-enter-from, .modal-leave-to {
   opacity: 0;
 }
 .modal-enter-from > div:last-child,
 .modal-leave-to > div:last-child {
-  transform: scale(0.9) translateY(20px);
+  transform: scale(0.9) translateY(40px);
+}
+
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+  appearance: textfield;
 }
 </style>

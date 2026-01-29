@@ -1,7 +1,6 @@
 <script setup>
 import { ref, computed, onUnmounted, onMounted } from 'vue';
-import { db } from '../db';
-import { liveQuery } from 'dexie';
+import { db, liveQuery } from '../db';
 import { useI18n } from 'vue-i18n';
 import { triggerConfetti } from '../utils/confetti';
 import { 
@@ -362,7 +361,7 @@ const formatTime = (ts) => {
     </header>
 
     <!-- Points Banner -->
-    <div class="bg-gradient-to-br from-primary to-primary-dark p-6 rounded-3xl shadow-lg shadow-primary/20 flex items-center justify-between text-black overflow-hidden relative group">
+    <div class="bg-gradient-to-br from-primary to-primary-dark p-6 rounded-3xl shadow-lg shadow-primary/20 flex items-center justify-between text-white overflow-hidden relative group">
       <div class="absolute -right-4 -top-4 size-32 bg-white/20 rounded-full blur-2xl group-hover:scale-110 transition-transform duration-700"></div>
       <div class="relative z-10">
         <p class="text-xs font-black uppercase tracking-widest opacity-70">{{ t('rewards.availableBalance') }}</p>
@@ -418,11 +417,15 @@ const formatTime = (ts) => {
         <button v-if="isAdmin" @click="openAddModal" class="mt-4 text-primary font-bold hover:underline">{{ t('rewards.addFirst') }}</button>
       </div>
 
-      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+      <TransitionGroup 
+        name="list" 
+        tag="div" 
+        class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
+      >
         <div 
           v-for="reward in rewards" 
           :key="reward.id"
-          class="relative bg-surface-light dark:bg-surface-dark p-6 rounded-[2rem] border border-gray-100 dark:border-gray-800 shadow-sm transition-all duration-300 flex flex-col gap-4 group"
+          class="relative bg-surface-light dark:bg-surface-dark p-6 rounded-[2rem] border border-gray-100 dark:border-gray-800 shadow-sm transition-all duration-300 flex flex-col gap-4 group hover:-translate-y-1 hover:shadow-xl hover:shadow-primary/10"
           :class="{ 'opacity-60 grayscale scale-[0.98]': isExpired(reward.expiry_date) || reward.stock <= 0 }"
         >
           <!-- Expiry/Stock Badger -->
@@ -453,8 +456,8 @@ const formatTime = (ts) => {
           <!-- Action -->
           <div class="mt-auto pt-4 border-t border-gray-50 dark:border-gray-800/50 flex gap-2">
             <template v-if="isAdmin">
-              <button @click="openEditModal(reward)" class="flex-1 py-3 bg-gray-50 dark:bg-gray-800 hover:bg-primary transition-all rounded-xl flex items-center justify-center">
-                <Edit2 class="w-4 h-4" />
+              <button @click="openEditModal(reward)" class="flex-1 py-3 bg-gray-50 dark:bg-gray-800 hover:bg-primary transition-all rounded-xl flex items-center justify-center group/btn">
+                <Edit2 class="w-4 h-4 group-hover/btn:text-white" />
               </button>
               <button @click="deleteReward(reward.id)" class="flex-1 py-3 bg-red-50 dark:bg-red-900/20 text-red-500 hover:bg-red-500 hover:text-white transition-all rounded-xl flex items-center justify-center">
                 <Trash2 class="w-4 h-4" />
@@ -465,7 +468,7 @@ const formatTime = (ts) => {
                 @click="redeemReward(reward)"
                 :disabled="totalPoints < reward.points || reward.stock <= 0 || isExpired(reward.expiry_date) || isRedeemingReward"
                 class="w-full py-4 rounded-2xl font-black text-xs uppercase tracking-widest transition-all shadow-md active:scale-95 disabled:bg-gray-100 disabled:text-gray-400 disabled:shadow-none disabled:active:scale-100 flex items-center justify-center gap-2"
-                :class="totalPoints >= reward.points && !isRedeemingReward ? 'bg-primary text-black hover:bg-primary-dark shadow-primary/20' : 'bg-gray-100 text-gray-400'"
+                :class="totalPoints >= reward.points && !isRedeemingReward ? 'bg-primary text-white hover:bg-primary-dark shadow-primary/20' : 'bg-gray-100 text-gray-400'"
               >
                 <RefreshCw 
                   v-if="isRedeemingReward"
@@ -476,7 +479,7 @@ const formatTime = (ts) => {
             </template>
           </div>
         </div>
-      </div>
+      </TransitionGroup>
     </section>
 
     <!-- Redemption Logs -->
@@ -574,7 +577,7 @@ const formatTime = (ts) => {
         <button 
           @click="saveReward" 
           :disabled="isSavingReward"
-          class="w-full py-5 bg-primary text-black font-black rounded-3xl shadow-xl shadow-primary/20 hover:bg-primary-dark transition-all active:scale-95 uppercase tracking-widest text-sm mt-4 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+          class="w-full py-5 bg-primary text-white font-black rounded-3xl shadow-xl shadow-primary/20 hover:bg-primary-dark transition-all active:scale-95 uppercase tracking-widest text-sm mt-4 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
         >
           <RefreshCw 
             v-if="isSavingReward"
@@ -588,6 +591,19 @@ const formatTime = (ts) => {
 </template>
 
 <style scoped>
+.list-enter-active,
+.list-leave-active {
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.list-enter-from,
+.list-leave-to {
+  opacity: 0;
+  transform: translateX(30px);
+}
+.list-move {
+  transition: transform 0.4s ease;
+}
+
 .animate-in {
   animation-duration: 0.3s;
   animation-fill-mode: both;
@@ -612,11 +628,13 @@ const formatTime = (ts) => {
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
   -webkit-appearance: none;
+  appearance: none;
   margin: 0;
 }
 
 /* Firefox */
 input[type=number] {
   -moz-appearance: textfield;
+  appearance: textfield;
 }
 </style>

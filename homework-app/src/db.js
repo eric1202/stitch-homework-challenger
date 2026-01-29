@@ -155,6 +155,7 @@ export const db = {
     settings: new SupabaseTable('settings'),
     rewards: new SupabaseTable('rewards'),
     redemptionLogs: new SupabaseTable('redemption_logs'),
+    dailyCheckinTemplates: new SupabaseTable('daily_checkin_templates'),
 
     transaction: async (mode, tables, callback) => {
         // Supabase doesn't support transactions in the same way

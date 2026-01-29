@@ -9,6 +9,7 @@ import HomeView from './components/HomeView.vue';
 import AnalyticsView from './components/AnalyticsView.vue';
 import RewardStore from './components/RewardStore.vue';
 import SettingsView from './components/SettingsView.vue';
+import DailyCheckinView from './components/DailyCheckinView.vue';
 
 const { t, locale } = useI18n();
 const currentView = ref('home');
@@ -58,6 +59,7 @@ onUnmounted(() => {
 
 const navItems = computed(() => [
   { name: 'home', icon: 'wb_sunny', label: t('app.nav.tasks') },
+  { name: 'checkin', icon: 'event_repeat', label: t('dailyCheckin.title') },
   { name: 'analytics', icon: 'monitoring', label: t('app.nav.analytics') },
   { name: 'rewards', icon: 'redeem', label: t('app.nav.rewards') },
   { name: 'settings', icon: 'settings', label: t('app.nav.settings') },
@@ -143,7 +145,7 @@ onMounted(() => {
         <Transition name="page" mode="out-in">
           <component 
             :key="currentView" 
-            :is="currentView === 'home' ? HomeView : currentView === 'analytics' ? AnalyticsView : currentView === 'rewards' ? RewardStore : SettingsView" 
+            :is="currentView === 'home' ? HomeView : currentView === 'checkin' ? DailyCheckinView : currentView === 'analytics' ? AnalyticsView : currentView === 'rewards' ? RewardStore : SettingsView" 
           />
         </Transition>
       </div>

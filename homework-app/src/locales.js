@@ -60,7 +60,7 @@ export const en = {
         noTasksTitle: 'No tasks for today',
         noTasksDesc: 'Add a new task to get started!',
         lockedMessage: 'All tasks completed! Today\'s mission is locked. 🔒',
-        greeting: 'Hi {name},<br/>here is your mission! 🚀',
+        greeting: 'Hi {name},<br/>here is your mission! ',
         taskNameDisplay: 'Task Name',
         addTaskTitle: 'Add New Task',
         inputs: {
@@ -136,6 +136,43 @@ export const en = {
             deleteConfirm2: 'Please confirm one more time. Delete everything?',
             resetSuccess: 'All data has been reset.'
         }
+    },
+    dailyCheckin: {
+        title: 'Daily Check-in',
+        subtitle: 'Manage recurring homework tasks',
+        addNew: 'Add Template',
+        noTemplates: 'No templates yet',
+        noTemplatesDesc: 'Create a template to auto-generate tasks',
+        templateName: 'Task Name',
+        templateNamePlaceholder: 'e.g. Read for 30 minutes',
+        schedule: 'Schedule',
+        scheduleTypes: {
+            daily: 'Daily',
+            weekdays: 'Weekdays',
+            weekends: 'Weekends',
+            custom: 'Custom'
+        },
+        days: {
+            sun: 'Sun',
+            mon: 'Mon',
+            tue: 'Tue',
+            wed: 'Wed',
+            thu: 'Thu',
+            fri: 'Fri',
+            sat: 'Sat'
+        },
+        dateRange: 'Date Range',
+        startDate: 'Start Date',
+        endDate: 'End Date (Optional)',
+        createBtn: 'Create & Generate Tasks',
+        editBtn: 'Update',
+        deleteConfirm: 'Delete this template?',
+        deleteWithTasks: 'Also delete generated tasks',
+        tasksGenerated: '{count} tasks generated',
+        modal: {
+            create: 'Create Template',
+            edit: 'Edit Template'
+        }
     }
 };
 
@@ -201,7 +238,7 @@ export const zh = {
         noTasksTitle: '今天还没有作业哦',
         noTasksDesc: '快添加一项新任务开始吧！',
         lockedMessage: '今日作业已全部完成！任务已锁定。🔒',
-        greeting: '你好 {name}，<br/>这是你的今日挑战！🚀',
+        greeting: '你好 {name}，\n这是你的今日挑战！',
         taskNameDisplay: '任务名称',
         addTaskTitle: '添加新作业',
         inputs: {
@@ -276,6 +313,43 @@ export const zh = {
             deleteConfirm1: '危险警告：这将永久删除所有的作业记录和积分。此操作无法撤销。你确定要这样做吗？',
             deleteConfirm2: '请再次确认。真的要删除所有内容吗？',
             resetSuccess: '所有数据已重置。'
+        }
+    },
+    dailyCheckin: {
+        title: '每日打卡',
+        subtitle: '管理周期性作业任务',
+        addNew: '新增模板',
+        noTemplates: '暂无打卡模板',
+        noTemplatesDesc: '创建模板后可自动生成周期任务',
+        templateName: '任务名称',
+        templateNamePlaceholder: '例如：朗读课文30分钟',
+        schedule: '重复周期',
+        scheduleTypes: {
+            daily: '每天',
+            weekdays: '工作日',
+            weekends: '周末',
+            custom: '自定义'
+        },
+        days: {
+            sun: '周日',
+            mon: '周一',
+            tue: '周二',
+            wed: '周三',
+            thu: '周四',
+            fri: '周五',
+            sat: '周六'
+        },
+        dateRange: '日期范围',
+        startDate: '开始日期',
+        endDate: '结束日期（可选）',
+        createBtn: '创建并生成任务',
+        editBtn: '更新',
+        deleteConfirm: '确定删除此模板？',
+        deleteWithTasks: '同时删除已生成的任务',
+        tasksGenerated: '已生成 {count} 个任务',
+        modal: {
+            create: '新建模板',
+            edit: '编辑模板'
         }
     }
 };

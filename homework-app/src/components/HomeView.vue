@@ -3,6 +3,8 @@ import { ref, computed, onUnmounted, onMounted } from 'vue';
 import { db } from '../db';
 import { liveQuery } from 'dexie';
 import { useI18n } from 'vue-i18n';
+import SplitText from './SplitText.vue';
+
 
 import { getTodayDateString, formatDateDisplay } from '../utils/date';
 import { triggerConfetti } from '../utils/confetti';
@@ -282,8 +284,15 @@ const deleteTask = async (id) => {
     <!-- Header -->
     <header class="flex flex-col md:flex-row md:items-end justify-between gap-6">
       <div class="flex flex-col gap-2">
-        <h2 class="text-4xl md:text-5xl font-black tracking-tight leading-tight" v-html="t('home.greeting', { name: userName })">
-        </h2>
+        <SplitText
+          :text="t('home.greeting', { name: userName }).replace(/<br\s*\/?>/gi, ' ')"
+          className="text-4xl md:text-5xl font-black tracking-tight leading-tight"
+          :delay="100"
+          :duration="0.6"
+          :from="{ opacity: 0, y: 40 }"
+          :to="{ opacity: 1, y: 0 }"
+          textAlign="left"
+        />
         <div class="flex items-center gap-2 flex-wrap">
           <div class="flex items-center gap-1.5 md:gap-2">
             <!-- 前一天按钮 -->

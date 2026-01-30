@@ -153,6 +153,7 @@ export const en = {
         templateName: 'Task Name',
         templateNamePlaceholder: 'e.g. Read for 30 minutes',
         schedule: 'Schedule',
+        selectDays: 'Select Days',
         scheduleTypes: {
             daily: 'Daily',
             weekdays: 'Weekdays',
@@ -338,6 +339,7 @@ export const zh = {
         templateName: '任务名称',
         templateNamePlaceholder: '例如：朗读课文30分钟',
         schedule: '重复周期',
+        selectDays: '选择日期',
         scheduleTypes: {
             daily: '每天',
             weekdays: '工作日',

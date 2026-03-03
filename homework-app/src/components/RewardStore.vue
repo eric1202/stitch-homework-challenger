@@ -286,7 +286,7 @@ const redeemReward = async (reward) => {
     await db.transaction('rw', db.rewards, db.redemptionLogs, async () => {
       // 1. Check stock again inside transaction
       const freshReward = await db.rewards.get(reward.id);
-      if (freshReward.stock <= 0) throw new Error(t('rewards.outOfStock'));
+      if (!freshReward || freshReward.stock <= 0) throw new Error(t('rewards.outOfStock'));
 
       // 2. Reduce stock
       await db.rewards.update(reward.id, {

@@ -35,11 +35,11 @@ class SupabaseTable {
         if (error) throw error
     }
 
-    async get(key) {
+    async get(value) {
         const { data, error } = await supabase
             .from(this.tableName)
             .select('*')
-            .eq('key', key)
+            .eq(this.primaryKey || 'id', value)
             .limit(1)  // Use limit(1) instead of single() to avoid 406 if not found
             .maybeSingle()
 
@@ -108,6 +108,11 @@ class SupabaseTable {
             })
         }
     }
+
+    setPrimaryKey(key) {
+        this.primaryKey = key;
+        return this;
+    }
 }
 
 // Reactive query helper (simplified version of liveQuery)
@@ -152,15 +157,19 @@ export function liveQuery(queryFn) {
 // Database instance
 export const db = {
     tasks: new SupabaseTable('tasks'),
-    settings: new SupabaseTable('settings'),
+    settings: new SupabaseTable('settings').setPrimaryKey('key'),
     rewards: new SupabaseTable('rewards'),
     redemptionLogs: new SupabaseTable('redemption_logs'),
     dailyCheckinTemplates: new SupabaseTable('daily_checkin_templates'),
 
-    transaction: async (mode, tables, callback) => {
+    transaction: async (...args) => {
         // Supabase doesn't support transactions in the same way
-        // For now, just execute the callback
-        return await callback()
+        // The last argument is the callback function
+        const callback = args[args.length - 1];
+        if (typeof callback !== 'function') {
+            throw new TypeError('The last argument to db.transaction must be a function');
+        }
+        return await callback();
     }
 }
 

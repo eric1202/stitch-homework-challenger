@@ -92,7 +92,7 @@ onMounted(() => {
     <aside class="hidden lg:flex w-72 flex-col justify-between bg-surface-light dark:bg-surface-dark border-r border-gray-100 dark:border-gray-800 p-6 h-screen sticky top-0">
       <div class="flex flex-col gap-8">
         <div class="flex items-center gap-3">
-          <div class="bg-gradient-to-br from-primary to-primary-dark rounded-xl size-10 shadow-lg shadow-primary/20 flex items-center justify-center text-white">
+          <div class="ios-gradient-primary rounded-xl size-10 shadow-lg shadow-primary/20 flex items-center justify-center text-white">
             <span class="material-symbols-outlined fill-1">school</span>
           </div>
           <h1 class="text-xl font-black tracking-tight">{{ t('app.title') }} <span class="text-primary">{{ t('app.subtitle') }}</span></h1>
@@ -117,7 +117,7 @@ onMounted(() => {
 
       <!-- Sidebar Footer Profile -->
       <div class="flex flex-col gap-4">
-        <div class="bg-gradient-to-br from-surface-light to-background-light dark:from-gray-800 dark:to-gray-900 border border-gray-100 dark:border-gray-700 p-5 rounded-2xl shadow-sm relative overflow-hidden group">
+        <div class="ios-gradient-surface border border-gray-100 dark:border-gray-700 p-5 rounded-2xl shadow-sm relative overflow-hidden group">
           <div class="absolute -right-6 -top-6 w-20 h-20 bg-primary/10 rounded-full blur-xl group-hover:bg-primary/20 transition-all"></div>
           <p class="text-[10px] font-bold text-text-sub-light dark:text-text-sub-dark uppercase tracking-widest mb-1">{{ t('app.totalPoints') }}</p>
           <div class="flex items-baseline gap-1">
@@ -143,7 +143,7 @@ onMounted(() => {
     <!-- Mobile Header -->
     <header class="lg:hidden bg-surface-light/80 dark:bg-surface-dark/80 backdrop-blur-md p-4 flex justify-between items-center sticky top-0 z-40 border-b border-gray-100 dark:border-gray-800 transition-colors">
       <div class="flex items-center gap-2">
-         <div class="size-8 bg-gradient-to-br from-primary to-primary-dark rounded-lg shadow-md flex items-center justify-center text-white">
+         <div class="size-8 ios-gradient-primary rounded-lg shadow-md flex items-center justify-center text-white">
            <span class="material-symbols-outlined text-xl fill-1">school</span>
          </div>
          <h1 class="text-lg font-black tracking-tight">{{ t('app.title') }}<span class="text-primary">{{ t('app.subtitle') }}</span></h1>

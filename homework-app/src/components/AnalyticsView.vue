@@ -235,7 +235,7 @@ const exportData = () => {
 
       <!-- Motivation Box & Stats Detail -->
       <div class="flex flex-col gap-6">
-        <div class="bg-gradient-to-br from-background-dark to-surface-dark dark:from-primary/20 dark:to-primary/5 p-7 rounded-3xl text-white relative overflow-hidden">
+        <div class="ios-gradient-analytics p-7 rounded-3xl text-white relative overflow-hidden">
           <div class="absolute top-0 right-0 -mt-2 -mr-2 size-24 bg-primary rounded-full blur-3xl opacity-20"></div>
           <div class="flex items-start gap-4 relative z-10">
             <div class="bg-white/10 p-3 rounded-2xl backdrop-blur-sm shadow-inner ring-1 ring-white/20">

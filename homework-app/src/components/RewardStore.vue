@@ -361,7 +361,7 @@ const formatTime = (ts) => {
     </header>
 
     <!-- Points Banner -->
-    <div class="ios-gradient-primary p-6 rounded-3xl shadow-lg shadow-primary/20 flex items-center justify-between text-white overflow-hidden relative group">
+    <div class="bg-primary p-6 rounded-3xl shadow-lg shadow-primary/20 flex items-center justify-between text-white overflow-hidden relative group">
       <div class="absolute -right-4 -top-4 size-32 bg-white/20 rounded-full blur-2xl group-hover:scale-110 transition-transform duration-700"></div>
       <div class="relative z-10">
         <p class="text-xs font-black uppercase tracking-widest opacity-70">{{ t('rewards.availableBalance') }}</p>

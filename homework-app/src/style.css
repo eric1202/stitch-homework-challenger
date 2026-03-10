@@ -76,26 +76,3 @@ body {
 .animate-in.zoom-in {
   animation: zoomIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
 }
-
-/* iOS compatibility gradient classes (bypass Tailwind v4 oklab & color-mix constraints) */
-.ios-gradient-primary {
-  background: linear-gradient(to bottom right, var(--color-primary), var(--color-primary-dark));
-}
-
-.ios-gradient-surface {
-  background: linear-gradient(to bottom right, var(--color-surface-light), var(--color-background-light));
-}
-
-.dark .ios-gradient-surface {
-  background: linear-gradient(to bottom right, #1f2937, #111827);
-  /* gray-800 to gray-900 */
-}
-
-.ios-gradient-analytics {
-  background: linear-gradient(to bottom right, var(--color-background-dark), var(--color-surface-dark));
-}
-
-.dark .ios-gradient-analytics {
-  background: linear-gradient(to bottom right, rgba(128, 128, 255, 0.2), rgba(128, 128, 255, 0.05));
-  /* primary/20 to primary/5 */
-}

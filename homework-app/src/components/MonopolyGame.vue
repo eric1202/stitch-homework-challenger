@@ -1,6 +1,7 @@
 <script setup>
 import { ref, computed, reactive, onMounted, watch, nextTick } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { supabase, TABLES } from '../supabase';
 
 const { t } = useI18n();
 
@@ -98,6 +99,11 @@ const showBackpack = ref(false);
 const moveHistory = ref([]);
 const shieldActive = ref(false);
 const freezeRounds = ref(0);
+const username = ref(localStorage.getItem('monopoly_username') || '');
+const gameStartTime = ref(null);
+const leaderboardData = ref([]);
+const isLoadingLeaderboard = ref(false);
+const leaderboardError = ref(null);
 
 // Math quiz gate
 const showMathQuiz = ref(false);
@@ -152,6 +158,11 @@ function stopMathTimer() {
 }
 
 function onStartClick() {
+  if (!username.value.trim()) {
+    alert(t('monopoly.username.required'));
+    return;
+  }
+  localStorage.setItem('monopoly_username', username.value.trim());
   generateMathQuiz();
   showMathQuiz.value = true;
   startMathTimer();
@@ -229,7 +240,56 @@ function startGame() {
   gameStats.maxScoreInOneRound = 0;
   gameStats.lapsCompleted = 0;
   gamePhase.value = 'playing';
+  gameStartTime.value = new Date().toISOString();
   saveGame();
+}
+
+async function fetchLeaderboard() {
+  isLoadingLeaderboard.value = true;
+  leaderboardError.value = null;
+  try {
+    const { data, error } = await supabase
+      .from(TABLES.MONOPOLY_LEADERBOARD)
+      .select('*')
+      .order('score', { ascending: false })
+      .order('rounds', { ascending: true })
+      .limit(10);
+
+    if (error) throw error;
+    leaderboardData.value = data || [];
+  } catch (e) {
+    console.error('Leaderboard error:', e);
+    leaderboardError.value = e.message;
+  } finally {
+    isLoadingLeaderboard.value = false;
+  }
+}
+
+async function submitScore() {
+  const endTime = new Date().toISOString();
+  try {
+    const { error } = await supabase
+      .from(TABLES.MONOPOLY_LEADERBOARD)
+      .insert({
+        username: username.value.trim(),
+        score: player.score,
+        rounds: round.value - 1,
+        start_time: gameStartTime.value,
+        end_time: endTime
+      });
+    if (error) throw error;
+    fetchLeaderboard(); // Refresh leaderboard
+  } catch (e) {
+    console.error('Submit score error:', e);
+  }
+}
+
+function quitGame() {
+  if (confirm(t('monopoly.quitConfirm'))) {
+    gamePhase.value = 'start';
+    clearSave();
+    fetchLeaderboard();
+  }
 }
 
 function rollDice() {
@@ -297,6 +357,7 @@ async function movePlayer(steps) {
   // Check game over
   if (isGameOver.value) {
     gamePhase.value = 'gameover';
+    submitScore();
     clearSave();
   } else {
     saveGame();
@@ -570,6 +631,7 @@ onMounted(() => {
   if (!loaded) {
     gamePhase.value = 'start';
   }
+  fetchLeaderboard();
 });
 
 // ==================== DICE FACE ====================
@@ -639,12 +701,96 @@ const gradeLabel = computed(() => {
           </div>
         </div>
 
+        <!-- Username Input -->
+        <div class="w-full max-w-sm">
+          <label class="block text-left text-xs font-bold text-text-sub-light dark:text-text-sub-dark mb-2 uppercase px-1">
+            {{ t('monopoly.username.label') }}
+          </label>
+          <input
+            v-model="username"
+            type="text"
+            :placeholder="t('monopoly.username.placeholder')"
+            class="w-full px-4 py-3 rounded-2xl border-2 bg-surface-light dark:bg-surface-dark border-gray-100 dark:border-gray-800 focus:border-primary focus:outline-none transition-all font-bold text-center"
+          />
+        </div>
+
         <button
           @click="onStartClick"
           class="bg-linear-to-r from-primary to-violet-500 text-white font-black text-lg px-10 py-4 rounded-2xl shadow-lg shadow-primary/30 hover:shadow-xl hover:shadow-primary/40 hover:scale-105 active:scale-95 transition-all duration-300"
         >
           {{ t('monopoly.startBtn') }} 🚀
         </button>
+
+        <!-- Leaderboard -->
+        <div class="w-full max-w-xl mt-4">
+          <div class="bg-surface-light dark:bg-surface-dark rounded-3xl p-6 border border-gray-100 dark:border-gray-800 shadow-sm overflow-hidden">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="text-xl font-black bg-linear-to-r from-primary to-violet-500 bg-clip-text text-transparent">
+                🏆 {{ t('monopoly.leaderboard.title') }}
+              </h3>
+              <button @click="fetchLeaderboard" class="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors" :disabled="isLoadingLeaderboard">
+                <span class="material-symbols-outlined text-sm" :class="{ 'animate-spin': isLoadingLeaderboard }">refresh</span>
+              </button>
+            </div>
+
+            <div v-if="isLoadingLeaderboard && !leaderboardData.length" class="py-12 text-center text-text-sub-light dark:text-text-sub-dark">
+              <div class="animate-spin text-3xl mb-2">🎲</div>
+              <p class="text-xs font-bold">{{ t('monopoly.leaderboard.loading') }}</p>
+            </div>
+
+            <div v-else-if="leaderboardError" class="py-8 text-center text-red-500">
+               <p class="text-xs font-bold">{{ t('monopoly.leaderboard.error') }}</p>
+               <p class="text-[10px] mt-1 opacity-70">{{ leaderboardError }}</p>
+            </div>
+
+            <div v-else-if="!leaderboardData.length" class="py-12 text-center text-text-sub-light dark:text-text-sub-dark">
+              <p class="text-4xl mb-2">📭</p>
+              <p class="text-xs font-bold">{{ t('monopoly.leaderboard.noData') }}</p>
+            </div>
+
+            <div v-else class="overflow-x-auto">
+              <table class="w-full text-left">
+                <thead>
+                  <tr class="text-[10px] uppercase font-bold text-text-sub-light dark:text-text-sub-dark border-b border-gray-50 dark:border-gray-800">
+                    <th class="pb-2 px-2 w-12">{{ t('monopoly.leaderboard.rank') }}</th>
+                    <th class="pb-2 px-2">{{ t('monopoly.leaderboard.nickname') }}</th>
+                    <th class="pb-2 px-2 text-right">{{ t('monopoly.leaderboard.score') }}</th>
+                    <th class="pb-2 px-2 text-right">{{ t('monopoly.leaderboard.rounds') }}</th>
+                  </tr>
+                </thead>
+                <tbody class="text-sm">
+                  <tr
+                    v-for="(item, idx) in leaderboardData"
+                    :key="item.id"
+                    class="border-b border-gray-50/50 dark:border-gray-800/50 last:border-0 hover:bg-gray-50/50 dark:hover:bg-gray-800/20 transition-colors"
+                  >
+                    <td class="py-3 px-2">
+                       <span v-if="idx === 0" class="text-lg">🥇</span>
+                       <span v-else-if="idx === 1" class="text-lg">🥈</span>
+                       <span v-else-if="idx === 2" class="text-lg">🥉</span>
+                       <span v-else class="font-black text-text-sub-light dark:text-text-sub-dark pl-1">#{{ idx + 1 }}</span>
+                    </td>
+                    <td class="py-3 px-2">
+                      <div class="font-bold flex items-center gap-1.5">
+                        {{ item.username }}
+                        <span v-if="item.username === username" class="text-[8px] bg-primary/10 text-primary px-1.5 py-0.5 rounded-full">YOU</span>
+                      </div>
+                      <div class="text-[10px] text-text-sub-light dark:text-text-sub-dark opacity-70">
+                        {{ new Date(item.start_time).toLocaleDateString() }}
+                      </div>
+                    </td>
+                    <td class="py-3 px-2 text-right">
+                      <span class="font-black text-emerald-500">{{ item.score }}</span>
+                    </td>
+                    <td class="py-3 px-2 text-right">
+                      <span class="font-bold">{{ item.rounds }}</span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
       </div>
     </Transition>
 
@@ -913,6 +1059,17 @@ const gradeLabel = computed(() => {
             </div>
           </div>
         </Transition>
+
+        <!-- Quit Button -->
+        <div class="mt-4 flex justify-center">
+          <button
+            @click="quitGame"
+            class="text-xs font-bold text-text-sub-light dark:text-text-sub-dark hover:text-red-500 transition-colors flex items-center gap-1 opacity-60 hover:opacity-100"
+          >
+            <span class="material-symbols-outlined text-sm">logout</span>
+            {{ t('monopoly.quitBtn') }}
+          </button>
+        </div>
       </div>
     </Transition>
 

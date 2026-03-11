@@ -158,6 +158,8 @@ export const en = {
         backpack: 'Backpack',
         emptyBackpack: 'No items yet. Land on an item tile to collect!',
         ok: 'Got it!',
+        quitBtn: 'Quit Adventure',
+        quitConfirm: 'Are you sure you want to quit? Your progress will be lost!',
         gameOver: 'Adventure Complete!',
         playAgain: 'Play Again',
         finalScore: 'Final Score',
@@ -238,6 +240,22 @@ export const en = {
             itemsUsed: 'Items Used',
             bestRound: 'Best Round',
         },
+        leaderboard: {
+            title: 'Top 10 Leaderboard',
+            rank: 'Rank',
+            nickname: 'Username',
+            score: 'Score',
+            rounds: 'Rounds',
+            date: 'Date',
+            loading: 'Loading leaderboard...',
+            noData: 'No records yet. Be the first!',
+            error: 'Failed to load leaderboard',
+        },
+        username: {
+            label: 'Your Name',
+            placeholder: 'Enter your name...',
+            required: 'Please enter a name to start',
+        }
     },
     dailyCheckin: {
         title: 'Daily Check-in',
@@ -439,6 +457,8 @@ export const zh = {
         backpack: '背包',
         emptyBackpack: '还没有道具，踩到道具格就能获得哦！',
         ok: '知道了！',
+        quitBtn: '退出冒险',
+        quitConfirm: '确定要退出吗？当前进度将会丢失！',
         gameOver: '冒险结束！',
         playAgain: '再玩一次',
         finalScore: '最终积分',
@@ -519,6 +539,22 @@ export const zh = {
             itemsUsed: '使用道具',
             bestRound: '最佳单回合',
         },
+        leaderboard: {
+            title: '前10名排行榜',
+            rank: '排名',
+            nickname: '用户名',
+            score: '积分',
+            rounds: '回合',
+            date: '时间',
+            loading: '排行榜加载中...',
+            noData: '暂无记录，快来抢占第一名吧！',
+            error: '排行榜加载失败',
+        },
+        username: {
+            label: '玩家姓名',
+            placeholder: '请输入你的名字...',
+            required: '请输入名字后再开始冒险',
+        }
     },
     dailyCheckin: {
         title: '每日打卡',

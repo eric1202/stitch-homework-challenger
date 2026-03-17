@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onUnmounted, onMounted } from 'vue';
+import { ref, computed, onUnmounted, onMounted, watch } from 'vue';
 import { db, liveQuery } from '../db';
 import { useI18n } from 'vue-i18n';
 import { triggerConfetti } from '../utils/confetti';
@@ -48,12 +48,51 @@ const rewardForm = ref({
 });
 
 const iconPresets = [
-  { name: 'Gamepad2', icon: Gamepad2, color: 'text-blue-500' },
-  { name: 'IceCream', icon: IceCream, color: 'text-pink-500' },
-  { name: 'Palmtree', icon: Palmtree, color: 'text-green-500' },
-  { name: 'Book', icon: Book, color: 'text-purple-500' },
-  { name: 'Gift', icon: Gift, color: 'text-amber-500' }
+  { name: 'Gamepad2', icon: Gamepad2, color: 'text-blue-500', bg: 'bg-blue-50 dark:bg-blue-900/20' },
+  { name: 'IceCream', icon: IceCream, color: 'text-pink-500', bg: 'bg-pink-50 dark:bg-pink-900/20' },
+  { name: 'Palmtree', icon: Palmtree, color: 'text-green-500', bg: 'bg-green-50 dark:bg-green-900/20' },
+  { name: 'Book', icon: Book, color: 'text-purple-500', bg: 'bg-purple-50 dark:bg-purple-900/20' },
+  { name: 'Gift', icon: Gift, color: 'text-amber-500', bg: 'bg-amber-50 dark:bg-amber-900/20' }
 ];
+
+// Category filter
+const selectedCategory = ref('all');
+
+const categories = computed(() => {
+  const all = { key: 'all', label: t('rewards.categories.all'), count: rewards.value.length };
+  const groups = iconPresets.map(preset => ({
+    key: preset.name,
+    label: t(`rewards.categories.${preset.name}`),
+    icon: preset.icon,
+    color: preset.color,
+    bg: preset.bg,
+    count: rewards.value.filter(r => r.icon === preset.name).length
+  }));
+  return [all, ...groups.filter(g => g.count > 0)];
+});
+
+const isExpired = (expiryDate) => {
+  if (!expiryDate) return false;
+  return new Date(expiryDate) < new Date().setHours(0, 0, 0, 0);
+};
+
+const filteredRewards = computed(() => {
+  let list = rewards.value;
+  if (selectedCategory.value !== 'all') {
+    list = list.filter(r => r.icon === selectedCategory.value);
+  }
+  
+  return [...list].sort((a, b) => {
+    const aUnavailable = isExpired(a.expiry_date) || a.stock <= 0;
+    const bUnavailable = isExpired(b.expiry_date) || b.stock <= 0;
+    
+    if (aUnavailable !== bUnavailable) {
+      return aUnavailable ? 1 : -1;
+    }
+    
+    return (b.id || 0) - (a.id || 0);
+  });
+});
 
 const getIconComponent = (iconName) => {
   const preset = iconPresets.find(p => p.name === iconName);
@@ -212,12 +251,6 @@ onUnmounted(() => {
   document.removeEventListener('touchend', handleTouchEnd);
 });
 
-
-// --- Computed ---
-const isExpired = (expiryDate) => {
-  if (!expiryDate) return false;
-  return new Date(expiryDate) < new Date().setHours(0, 0, 0, 0);
-};
 
 // --- Actions ---
 const openAddModal = () => {
@@ -411,19 +444,50 @@ const formatTime = (ts) => {
           />
         </button>
       </div>
-      
+
+      <!-- Category Tabs -->
+      <div class="flex gap-2 mb-6 overflow-x-auto pb-2 -mx-1 px-1 scrollbar-hide">
+        <button
+          v-for="cat in categories"
+          :key="cat.key"
+          @click="selectedCategory = cat.key"
+          class="flex items-center gap-1.5 px-4 py-2.5 rounded-2xl font-bold text-sm whitespace-nowrap transition-all duration-200 shrink-0 border"
+          :class="selectedCategory === cat.key
+            ? 'bg-primary text-white border-primary shadow-md shadow-primary/20'
+            : 'bg-surface-light dark:bg-surface-dark border-gray-100 dark:border-gray-800 text-text-sub-light dark:text-text-sub-dark hover:border-primary/30'"
+        >
+          <component
+            v-if="cat.icon"
+            :is="cat.icon"
+            class="w-4 h-4"
+          />
+          <span>{{ cat.label }}</span>
+          <span
+            class="text-[10px] font-black px-1.5 py-0.5 rounded-lg min-w-[20px] text-center"
+            :class="selectedCategory === cat.key
+              ? 'bg-white/20 text-white'
+              : 'bg-gray-100 dark:bg-gray-800 text-text-sub-light dark:text-text-sub-dark'"
+          >{{ cat.count }}</span>
+        </button>
+      </div>
+
       <div v-if="rewards.length === 0" class="py-20 text-center bg-surface-light dark:bg-surface-dark rounded-3xl border-2 border-dashed border-gray-100 dark:border-gray-800">
         <p class="text-xl font-black text-text-sub-light">{{ t('rewards.noRewards') }}</p>
         <button v-if="isAdmin" @click="openAddModal" class="mt-4 text-primary font-bold hover:underline">{{ t('rewards.addFirst') }}</button>
       </div>
 
-      <TransitionGroup 
-        name="list" 
-        tag="div" 
+      <div v-else-if="filteredRewards.length === 0" class="py-16 text-center bg-surface-light dark:bg-surface-dark rounded-3xl border-2 border-dashed border-gray-100 dark:border-gray-800">
+        <p class="text-lg font-bold text-text-sub-light">{{ t('rewards.noRewardsInCategory') }}</p>
+      </div>
+
+      <TransitionGroup
+        v-else
+        name="list"
+        tag="div"
         class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
       >
-        <div 
-          v-for="reward in rewards" 
+        <div
+          v-for="reward in filteredRewards" 
           :key="reward.id"
           class="relative bg-surface-light dark:bg-surface-dark p-6 rounded-[2rem] border border-gray-100 dark:border-gray-800 shadow-sm transition-all duration-300 flex flex-col gap-4 group hover:-translate-y-1 hover:shadow-xl hover:shadow-primary/10"
           :class="{ 'opacity-60 grayscale scale-[0.98]': isExpired(reward.expiry_date) || reward.stock <= 0 }"
@@ -622,6 +686,15 @@ const formatTime = (ts) => {
 @keyframes zoomIn {
   from { opacity: 0; transform: scale(0.95); }
   to { opacity: 1; transform: scale(1); }
+}
+
+/* Hide scrollbar for category tabs */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
 /* Chrome, Safari, Edge, Opera */

@@ -4,6 +4,7 @@ import { db, liveQuery } from '../db';
 import { useI18n } from 'vue-i18n';
 import SplitText from './SplitText.vue';
 import gsap from 'gsap';
+import { Rocket } from 'lucide-vue-next';
 
 
 import { getTodayDateString, formatDateDisplay } from '../utils/date';
@@ -268,7 +269,7 @@ const deleteTask = async (id) => {
         <div class="relative">
           <div class="size-20 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
           <div class="absolute inset-0 flex items-center justify-center">
-            <span class="material-symbols-outlined text-primary text-3xl animate-pulse">rocket_launch</span>
+            <Rocket class="w-8 h-8 text-primary animate-pulse" />
           </div>
         </div>
         <div class="flex flex-col items-center gap-2">

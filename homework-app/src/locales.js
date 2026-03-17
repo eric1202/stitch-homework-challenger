@@ -59,7 +59,16 @@ export const en = {
             expiry: 'Expiry Date (Optional)',
             btnCreate: 'Create Reward',
             btnUpdate: 'Update Reward'
-        }
+        },
+        categories: {
+            all: 'All',
+            Gamepad2: 'Gaming',
+            IceCream: 'Snacks',
+            Palmtree: 'Outings',
+            Book: 'Learning',
+            Gift: 'Other'
+        },
+        noRewardsInCategory: 'No rewards in this category'
     },
     home: {
         title: "Today's Tasks",
@@ -358,7 +367,16 @@ export const zh = {
             expiry: '有效期 (可选)',
             btnCreate: '确认新增',
             btnUpdate: '保存修改'
-        }
+        },
+        categories: {
+            all: '全部',
+            Gamepad2: '游戏娱乐',
+            IceCream: '美食零食',
+            Palmtree: '出行活动',
+            Book: '学习文具',
+            Gift: '其他'
+        },
+        noRewardsInCategory: '该分类下暂无礼品'
     },
     home: {
         title: "今日作业",

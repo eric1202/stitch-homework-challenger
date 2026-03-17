@@ -16,7 +16,18 @@ const selectedDate = ref(today); // 当前选择的日期
 const isDatePickerOpen = ref(false); // 日期选择器是否打开
 const newTaskTitle = ref('');
 const newTaskSubject = ref('Math'); 
-const newTaskPoints = ref(10);
+
+const calculatedPoints = computed(() => {
+  if (!newTaskTitle.value.trim()) return 0;
+  const str = `${newTaskSubject.value}-${newTaskTitle.value.trim()}`;
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    hash = (hash << 5) - hash + str.charCodeAt(i);
+    hash |= 0;
+  }
+  return (Math.abs(hash) % 26) + 10;
+});
+
 const isAddingFormOpen = ref(false);
 const isAddingTask = ref(false);
 const isRefreshing = ref(false);
@@ -161,7 +172,7 @@ const addTask = async () => {
     await db.tasks.add({
       title: newTaskTitle.value,
       subject: newTaskSubject.value,
-      points: Number(newTaskPoints.value) || 0,
+      points: calculatedPoints.value,
       completed: false,
       date: selectedDate.value, // 使用选中的日期
       user_name: userName.value
@@ -464,7 +475,9 @@ const deleteTask = async (id) => {
            </div>
            <div class="md:col-span-2 flex flex-col gap-1.5 md:gap-2">
              <label class="text-[10px] md:text-xs font-bold text-text-sub-light uppercase tracking-widest px-1">{{ t('home.inputs.points') }}</label>
-             <input v-model.number="newTaskPoints" type="number" class="w-full bg-background-light dark:bg-background-dark border-transparent focus:border-primary rounded-xl md:rounded-2xl p-3 md:p-4 font-bold transition-all outline-none text-center text-sm md:text-base">
+             <div class="w-full h-full bg-background-light dark:bg-background-dark border-transparent rounded-xl md:rounded-2xl p-3 md:p-4 font-black transition-all outline-none text-center text-sm md:text-base text-primary/80 flex items-center justify-center select-none shadow-inner">
+               -
+             </div>
            </div>
            <div class="md:col-span-2 flex items-end">
              <button 

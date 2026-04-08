@@ -1,4 +1,6 @@
 <script setup>
+import { BadgeCheck, ClipboardList, Download, Flame, LineChart, PieChart, Star, Stars, TrendingUp, Zap } from 'lucide-vue-next';
+
 import { ref, computed, onUnmounted } from 'vue';
 import { db, liveQuery } from '../db';
 import { useI18n } from 'vue-i18n';
@@ -164,7 +166,7 @@ const exportData = () => {
         @click="exportData"
         class="bg-white dark:bg-surface-dark border border-gray-100 dark:border-gray-800 text-text-main-light dark:text-text-main-dark px-6 py-3 rounded-2xl font-bold text-sm hover:bg-gray-50 dark:hover:bg-gray-800 transition-all flex items-center gap-2 shadow-sm"
       >
-        <span class="material-symbols-outlined">download</span>
+        <Download  class=""/>
         {{ t('analytics.exportCsv') }}
       </button>
     </div>
@@ -173,42 +175,42 @@ const exportData = () => {
     <section class="grid grid-cols-1 md:grid-cols-3 gap-6">
       <div class="bg-surface-light dark:bg-surface-dark p-6 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm flex flex-col gap-4 relative overflow-hidden group">
         <div class="absolute right-0 top-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-          <span class="material-symbols-outlined text-7xl text-primary font-light">verified</span>
+          <BadgeCheck  class=" text-7xl text-primary font-light"/>
         </div>
         <div>
           <p class="text-text-sub-light dark:text-text-sub-dark text-xs font-black uppercase tracking-widest">{{ t('analytics.status.completed') }}</p>
           <p class="text-4xl font-black mt-1 text-text-main-light dark:text-white">{{ stats.perfectDays }}</p>
         </div>
         <div class="bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 text-xs font-bold px-3 py-1.5 rounded-xl w-fit flex items-center gap-1.5">
-          <span class="material-symbols-outlined text-base">trending_up</span>
+          <TrendingUp  class=" text-base"/>
           Perfect Days
         </div>
       </div>
 
       <div class="bg-surface-light dark:bg-surface-dark p-6 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm flex flex-col gap-4 relative overflow-hidden group">
         <div class="absolute right-0 top-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity whitespace-nowrap">
-          <span class="material-symbols-outlined text-7xl text-orange-400 font-light">local_fire_department</span>
+          <Flame  class=" text-7xl text-orange-400 font-light"/>
         </div>
         <div>
           <p class="text-text-sub-light dark:text-text-sub-dark text-xs font-black uppercase tracking-widest">Active Streak</p>
           <p class="text-4xl font-black mt-1 text-text-main-light dark:text-white">{{ stats.streak }} Days</p>
         </div>
         <div class="bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400 text-xs font-bold px-3 py-1.5 rounded-xl w-fit flex items-center gap-1.5">
-          <span class="material-symbols-outlined text-base">flash_on</span>
+          <Zap  class=" text-base"/>
           Keep going!
         </div>
       </div>
 
       <div class="bg-surface-light dark:bg-surface-dark p-6 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm flex flex-col gap-4 relative overflow-hidden group">
         <div class="absolute right-0 top-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-          <span class="material-symbols-outlined text-7xl text-blue-400 font-light">pie_chart</span>
+          <PieChart  class=" text-7xl text-blue-400 font-light"/>
         </div>
         <div>
           <p class="text-text-sub-light dark:text-text-sub-dark text-xs font-black uppercase tracking-widest">Global Progress</p>
           <p class="text-4xl font-black mt-1 text-text-main-light dark:text-white">{{ stats.rate }}%</p>
         </div>
         <div class="bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 text-xs font-bold px-3 py-1.5 rounded-xl w-fit flex items-center gap-1.5">
-          <span class="material-symbols-outlined text-base">stars</span>
+          <Stars  class=" text-base"/>
           Completion
         </div>
       </div>
@@ -224,7 +226,7 @@ const exportData = () => {
             <p class="text-sm text-text-sub-light">{{ t('analytics.subtitle') }}</p>
           </div>
           <div class="flex items-center gap-1 text-xs font-black text-primary bg-primary/10 px-4 py-2 rounded-full uppercase tracking-wider">
-            <span class="material-symbols-outlined text-lg">timeline</span>
+            <LineChart  class=" text-lg"/>
             On Track
           </div>
         </div>
@@ -239,7 +241,7 @@ const exportData = () => {
           <div class="absolute top-0 right-0 -mt-2 -mr-2 size-24 bg-primary rounded-full blur-3xl opacity-20"></div>
           <div class="flex items-start gap-4 relative z-10">
             <div class="bg-white/10 p-3 rounded-2xl backdrop-blur-sm shadow-inner ring-1 ring-white/20">
-              <span class="material-symbols-outlined text-primary text-3xl">star</span>
+              <Star  class=" text-primary text-3xl"/>
             </div>
             <div>
               <h3 class="font-black text-xl text-primary">{{ t('analytics.tipTitle') }}</h3>
@@ -260,7 +262,7 @@ const exportData = () => {
               class="flex items-center gap-4 p-3 rounded-2xl hover:bg-background-light dark:hover:bg-gray-800/50 transition-all border border-transparent hover:border-gray-100 dark:hover:border-gray-700 group cursor-pointer"
             >
               <div class="size-10 rounded-full bg-primary/10 flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-black transition-all shadow-sm">
-                 <span class="material-symbols-outlined text-xl">assignment</span>
+                 <ClipboardList  class=" text-xl"/>
               </div>
               <div class="flex-1 min-w-0">
                 <p class="font-bold truncate text-sm">{{ task.title }}</p>

@@ -1,4 +1,6 @@
 <script setup>
+import { ChevronDown, CloudOff, CloudRain, Database, Edit2, TriangleAlert, User } from 'lucide-vue-next';
+
 import { ref, onMounted } from 'vue';
 import { db, liveQuery } from '../db';
 import { useI18n } from 'vue-i18n';
@@ -142,7 +144,7 @@ const clearAllData = async () => {
         <div class="absolute -right-10 -bottom-10 size-40 bg-primary/5 rounded-full blur-3xl"></div>
         
         <div class="size-24 rounded-full bg-primary/20 flex items-center justify-center text-primary-dark ring-4 ring-primary/10 overflow-hidden shrink-0">
-           <span class="material-symbols-outlined text-5xl">person</span>
+           <User  class=" text-5xl"/>
         </div>
         <div class="flex-1 text-center md:text-left relative z-10">
            <h3 class="text-2xl font-black">{{ userName }}</h3>
@@ -151,7 +153,7 @@ const clearAllData = async () => {
             @click="isEditingName = true; editNameValue = userName"
             class="mt-4 text-primary text-xs font-black uppercase tracking-widest hover:underline flex items-center gap-1 mx-auto md:mx-0"
            >
-             <span class="material-symbols-outlined text-sm">edit</span>
+             <Edit2  class=" text-sm"/>
              {{ t('settings.dataManagement.editProfile') }}
            </button>
         </div>
@@ -168,7 +170,7 @@ const clearAllData = async () => {
                <option value="en">English (US)</option>
              </select>
              <div class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-primary">
-               <span class="material-symbols-outlined text-lg">expand_more</span>
+               <ChevronDown  class=" text-lg"/>
              </div>
            </div>
         </div>
@@ -177,7 +179,7 @@ const clearAllData = async () => {
       <!-- Data Management -->
       <section class="bg-surface-light dark:bg-surface-dark p-8 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm">
         <div class="flex items-center gap-3 mb-6">
-           <span class="material-symbols-outlined text-primary text-3xl">database</span>
+           <Database  class=" text-primary text-3xl"/>
            <h3 class="text-xl font-bold">{{ t('settings.dataManagement.title') }}</h3>
         </div>
         <p class="text-text-sub-light dark:text-text-sub-dark font-medium mb-8 leading-relaxed">{{ t('settings.dataManagement.desc') }}</p>
@@ -188,7 +190,7 @@ const clearAllData = async () => {
             class="group flex items-center gap-4 p-6 rounded-2xl bg-primary/10 dark:bg-primary/5 hover:bg-primary transition-all duration-300 border-2 border-transparent hover:border-primary-dark shadow-sm"
           >
             <div class="size-12 rounded-xl bg-white dark:bg-gray-800 flex items-center justify-center text-primary group-hover:bg-black group-hover:text-primary transition-all duration-300">
-              <span class="material-symbols-outlined text-3xl">cloud_download</span>
+              <CloudRain  class=" text-3xl"/>
             </div>
             <div class="text-left">
               <div class="text-lg font-black text-text-main-light dark:text-white group-hover:text-black transition-colors">{{ t('settings.dataManagement.backupBtn') }}</div>
@@ -201,7 +203,7 @@ const clearAllData = async () => {
             class="group flex items-center gap-4 p-6 rounded-2xl bg-gray-50 dark:bg-gray-800/50 hover:bg-black transition-all duration-300 border-2 border-transparent hover:border-primary shadow-sm"
           >
             <div class="size-12 rounded-xl bg-white dark:bg-gray-800 flex items-center justify-center text-gray-500 group-hover:bg-primary group-hover:text-black transition-all duration-300">
-              <span class="material-symbols-outlined text-3xl">cloud_upload</span>
+              <CloudOff  class=" text-3xl"/>
             </div>
             <div class="text-left">
               <div class="text-lg font-black text-text-main-light dark:text-white group-hover:text-primary transition-colors">{{ t('settings.dataManagement.restoreBtn') }}</div>
@@ -222,7 +224,7 @@ const clearAllData = async () => {
       <!-- Danger Zone -->
       <section class="bg-red-50 dark:bg-red-900/10 p-8 rounded-3xl border border-red-100 dark:border-red-900/30">
         <h3 class="text-xl font-bold text-red-600 dark:text-red-400 mb-2 flex items-center gap-3">
-          <span class="material-symbols-outlined text-3xl">warning</span>
+          <TriangleAlert  class=" text-3xl"/>
           {{ t('settings.danger.title') }}
         </h3>
         <p class="text-text-sub-light dark:text-red-400/70 font-medium mb-8">{{ t('settings.danger.desc') }}</p>

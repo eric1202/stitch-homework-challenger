@@ -1,4 +1,6 @@
 <script setup>
+import { ArrowDown, Book, Calendar, CalendarDays, CalendarPlus, Check, CheckCircle2, ChevronLeft, ChevronRight, Plus, RotateCw, Trash2, X } from 'lucide-vue-next';
+
 import { ref, computed, onUnmounted, onMounted } from 'vue';
 import { db, liveQuery } from '../db';
 import { useI18n } from 'vue-i18n';
@@ -313,7 +315,7 @@ const deleteTask = async (id) => {
               class="p-1.5 md:p-2 rounded-lg md:rounded-xl text-text-sub-light dark:text-text-sub-dark hover:bg-primary/10 hover:text-primary transition-all duration-200 active:scale-95"
               title="前一天"
             >
-              <span class="material-symbols-outlined text-lg md:text-xl">chevron_left</span>
+              <ChevronLeft  class=" text-lg md:text-xl"/>
             </button>
             
             <!-- 日期显示和选择器触发按钮 -->
@@ -321,7 +323,7 @@ const deleteTask = async (id) => {
               @click="openDatePicker"
               class="flex items-center gap-2 px-3 py-1.5 md:px-4 md:py-2 rounded-xl md:rounded-2xl text-text-sub-light dark:text-text-sub-dark hover:bg-primary/10 hover:text-primary transition-all duration-200 active:scale-95 group"
             >
-              <span class="material-symbols-outlined text-primary text-lg md:text-xl group-hover:scale-110 transition-transform">calendar_today</span>
+              <Calendar  class=" text-primary text-lg md:text-xl group-hover:scale-110 transition-transform"/>
               <p class="text-base md:text-lg font-medium">{{ formatDateDisplay(selectedDate) }}</p>
             </button>
             
@@ -331,7 +333,7 @@ const deleteTask = async (id) => {
               class="p-1.5 md:p-2 rounded-lg md:rounded-xl text-text-sub-light dark:text-text-sub-dark hover:bg-primary/10 hover:text-primary transition-all duration-200 active:scale-95"
               title="后一天"
             >
-              <span class="material-symbols-outlined text-lg md:text-xl">chevron_right</span>
+              <ChevronRight  class=" text-lg md:text-xl"/>
             </button>
           </div>
           
@@ -341,7 +343,7 @@ const deleteTask = async (id) => {
             @click="goToToday"
             class="flex items-center gap-1 px-2.5 py-1 md:px-3 md:py-1.5 rounded-lg md:rounded-xl bg-primary/10 text-primary hover:bg-primary hover:text-white font-bold text-xs md:text-sm transition-all duration-200 active:scale-95"
           >
-            <span class="material-symbols-outlined text-sm md:text-base">today</span>
+            <CalendarDays  class=" text-sm md:text-base"/>
             <span>今天</span>
           </button>
         </div>
@@ -350,7 +352,7 @@ const deleteTask = async (id) => {
         @click="isAddingFormOpen = !isAddingFormOpen"
         class="hidden md:flex items-center gap-2 bg-primary hover:bg-primary-dark text-white font-bold py-4 px-8 rounded-2xl shadow-lg shadow-primary/30 transition-all hover:-translate-y-1 active:scale-95 duration-200"
       >
-        <span class="material-symbols-outlined font-bold">add</span>
+        <Plus  class=" font-bold"/>
         <span>{{ isAddingFormOpen ? t('settings.danger.resetBtn') : t('home.addTaskTitle') }}</span>
       </button>
     </header>
@@ -366,14 +368,14 @@ const deleteTask = async (id) => {
           <!-- Header -->
           <div class="flex items-center justify-between mb-6">
             <h3 class="text-2xl font-black flex items-center gap-2">
-              <span class="material-symbols-outlined text-primary text-3xl">calendar_month</span>
+              <Calendar  class=" text-primary text-3xl"/>
               选择日期
             </h3>
             <button 
               @click="closeDatePicker"
               class="p-2 rounded-xl text-text-sub-light hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200 active:scale-95"
             >
-              <span class="material-symbols-outlined text-2xl">close</span>
+              <X  class=" text-2xl"/>
             </button>
           </div>
 
@@ -386,7 +388,7 @@ const deleteTask = async (id) => {
                 class="flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-bold transition-all duration-200 active:scale-95"
                 :class="selectedDate === today ? 'bg-primary text-white' : 'bg-background-light dark:bg-background-dark hover:bg-primary/10'"
               >
-                <span class="material-symbols-outlined text-xl">today</span>
+                <CalendarDays  class=" text-xl"/>
                 <span>今天</span>
               </button>
               <button 
@@ -400,7 +402,7 @@ const deleteTask = async (id) => {
                 })())"
                 class="flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-background-light dark:bg-background-dark hover:bg-primary/10 font-bold transition-all duration-200 active:scale-95"
               >
-                <span class="material-symbols-outlined text-xl">event</span>
+                <CalendarPlus  class=" text-xl"/>
                 <span>明天</span>
               </button>
             </div>
@@ -485,12 +487,10 @@ const deleteTask = async (id) => {
                :disabled="isAddingTask"
                class="w-full bg-primary hover:bg-primary-dark text-white font-black py-3 md:py-4 rounded-xl md:rounded-2xl shadow-lg shadow-primary/20 transition-all active:scale-95 duration-200 uppercase tracking-widest text-[10px] md:text-xs disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
              >
-               <span 
+               <RotateCw  
                  v-if="isAddingTask"
-                 class="material-symbols-outlined animate-spin text-base md:text-lg"
-               >
-                 refresh
-               </span>
+                 class=" animate-spin text-base md:text-lg"
+               />
                <span>{{ isAddingTask ? '添加中...' : t('home.buttons.add') }}</span>
              </button>
            </div>
@@ -510,20 +510,18 @@ const deleteTask = async (id) => {
         }"
       >
         <div class="flex items-center gap-2 text-primary">
-          <span 
-            class="material-symbols-outlined transition-transform duration-200"
+          <component :is="isRefreshing ? RotateCw : ArrowDown"  
+            class=" transition-transform duration-200"
             :class="{ 'animate-spin': isRefreshing }"
             :style="{ transform: isRefreshing ? 'rotate(0deg)' : `rotate(${Math.min(pullDistance * 3.6, 180)}deg)` }"
-          >
-            {{ isRefreshing ? 'refresh' : 'arrow_downward' }}
-          </span>
+          />
           <span class="text-xs font-bold">{{ isRefreshing ? '刷新中...' : '下拉刷新' }}</span>
         </div>
       </div>
       
       <div class="flex items-center justify-between mb-2 md:mb-0">
         <h3 class="text-lg md:text-2xl font-black flex items-center gap-1.5 md:gap-2">
-          <span class="material-symbols-outlined text-primary text-xl md:text-3xl">check_circle</span>
+          <CheckCircle2  class=" text-primary text-xl md:text-3xl"/>
           {{ t('home.title') }}
         </h3>
         <button 
@@ -532,24 +530,22 @@ const deleteTask = async (id) => {
           class="p-2 rounded-xl text-primary hover:bg-primary/10 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed active:scale-95"
           :title="isRefreshing ? '刷新中...' : '刷新列表'"
         >
-          <span 
-            class="material-symbols-outlined text-2xl transition-transform duration-200"
+          <RotateCw  
+            class=" text-2xl transition-transform duration-200"
             :class="{ 'animate-spin': isRefreshing }"
-          >
-            refresh
-          </span>
+          />
         </button>
       </div>
 
       <!-- Empty State -->
       <div v-if="tasks.length === 0" class="py-10 md:py-16 text-center bg-surface-light dark:bg-surface-dark rounded-2xl md:rounded-3xl border border-dashed border-gray-200 dark:border-gray-800">
         <div class="size-16 md:size-20 bg-gray-50 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-3 md:mb-4 text-gray-300">
-          <span class="material-symbols-outlined text-4xl md:text-5xl">menu_book</span>
+          <Book  class=" text-4xl md:text-5xl"/>
         </div>
         <p class="text-lg md:text-xl font-black text-gray-400">{{ t('home.noTasksTitle') }}</p>
         <p class="text-sm md:text-base text-gray-300 font-bold">{{ t('home.noTasksDesc') }}</p>
         <button @click="isAddingFormOpen = true" class="mt-4 md:mt-6 text-primary font-bold flex items-center justify-center gap-1 mx-auto hover:underline text-sm md:text-base">
-          <span class="material-symbols-outlined">add</span> {{ t('home.addTaskTitle') }}
+          <Plus  class=""/> {{ t('home.addTaskTitle') }}
         </button>
       </div>
 
@@ -585,7 +581,7 @@ const deleteTask = async (id) => {
                   :disabled="isLocked && task.completed"
                   class="custom-checkbox appearance-none size-5 md:size-8 rounded-full border-2 border-gray-200 dark:border-gray-700 checked:bg-primary checked:border-primary transition-all cursor-pointer ring-offset-1 md:ring-offset-2 ring-primary/20 focus:ring-2 md:focus:ring-4 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                <span v-if="task.completed" class="material-symbols-outlined absolute pointer-events-none text-white font-black text-xs md:text-lg">check</span>
+                <Check  v-if="task.completed" class=" absolute pointer-events-none text-white font-black text-xs md:text-lg"/>
               </div>
 
               <div class="flex-1 flex items-center justify-between gap-2 md:gap-3 min-w-0">
@@ -596,7 +592,7 @@ const deleteTask = async (id) => {
                 <div class="flex items-center gap-2 flex-shrink-0">
                   <span class="text-xs md:text-sm font-bold text-text-sub-light whitespace-nowrap">+{{ task.points }} pts</span>
                   <button @click="deleteTask(task.id)" class="p-1.5 md:p-3 text-gray-300 hover:text-red-500 transition-colors rounded-lg md:rounded-xl hover:bg-red-50 dark:hover:bg-red-900/20">
-                    <span class="material-symbols-outlined text-base md:text-xl">delete</span>
+                    <Trash2  class=" text-base md:text-xl"/>
                   </button>
                 </div>
               </div>
@@ -611,7 +607,7 @@ const deleteTask = async (id) => {
       @click="isAddingFormOpen = true"
       class="md:hidden fixed bottom-24 right-6 size-16 bg-primary text-white rounded-full shadow-2xl shadow-primary/40 flex items-center justify-center z-50 active:scale-90 transition-transform duration-200"
     >
-      <span class="material-symbols-outlined text-3xl font-black">add</span>
+      <Plus  class=" text-3xl font-black"/>
     </button>
   </div>
 </template>

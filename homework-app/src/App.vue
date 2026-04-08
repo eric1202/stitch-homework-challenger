@@ -3,6 +3,7 @@ import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
 import { db, liveQuery } from './db';
 import gsap from 'gsap';
 import { useI18n } from 'vue-i18n';
+import { GraduationCap, User, Sun, CalendarDays, LineChart, Gift, Dices, Settings } from 'lucide-vue-next';
 
 // Components
 import HomeView from './components/HomeView.vue';
@@ -70,12 +71,12 @@ onUnmounted(() => {
 });
 
 const navItems = computed(() => [
-  { name: 'home', icon: 'wb_sunny', label: t('app.nav.tasks') },
-  { name: 'checkin', icon: 'event_repeat', label: t('dailyCheckin.title') },
-  { name: 'analytics', icon: 'monitoring', label: t('app.nav.analytics') },
-  { name: 'rewards', icon: 'redeem', label: t('app.nav.rewards') },
-  { name: 'monopoly', icon: 'casino', label: t('monopoly.navTitle') },
-  { name: 'settings', icon: 'settings', label: t('app.nav.settings') },
+  { name: 'home', icon: Sun, label: t('app.nav.tasks') },
+  { name: 'checkin', icon: CalendarDays, label: t('dailyCheckin.title') },
+  { name: 'analytics', icon: LineChart, label: t('app.nav.analytics') },
+  { name: 'rewards', icon: Gift, label: t('app.nav.rewards') },
+  { name: 'monopoly', icon: Dices, label: t('monopoly.navTitle') },
+  { name: 'settings', icon: Settings, label: t('app.nav.settings') },
 ]);
 
 // Theme handling (simplistic approach for now)
@@ -95,7 +96,7 @@ onMounted(() => {
       <div class="flex flex-col gap-8">
         <div class="flex items-center gap-3">
           <div class="bg-primary rounded-xl size-10 shadow-lg shadow-primary/20 flex items-center justify-center text-white">
-            <span class="material-symbols-outlined fill-1">school</span>
+            <GraduationCap class="w-6 h-6" />
           </div>
           <h1 class="text-xl font-black tracking-tight">{{ t('app.title') }} <span class="text-primary">{{ t('app.subtitle') }}</span></h1>
         </div>
@@ -110,7 +111,7 @@ onMounted(() => {
               ? 'bg-primary/20 text-text-main-light dark:text-primary' 
               : 'text-text-sub-light dark:text-text-sub-dark hover:bg-gray-50 dark:hover:bg-gray-800'"
           >
-            <span class="material-symbols-outlined transition-transform duration-300 group-hover:scale-110" :class="{ 'fill-1': currentView === item.name }">{{ item.icon }}</span>
+            <component :is="item.icon" class="w-6 h-6 transition-transform duration-300 group-hover:scale-110" :class="{ 'text-primary fill-primary': currentView === item.name }" />
             <span>{{ item.label }}</span>
             <div v-if="currentView === item.name" class="absolute right-0 top-1/2 -translate-y-1/2 w-1.5 h-6 bg-primary rounded-l-full"></div>
           </button>
@@ -132,7 +133,7 @@ onMounted(() => {
 
         <div class="flex items-center gap-3 p-3 rounded-2xl bg-background-light/50 dark:bg-background-dark/50 border border-transparent hover:border-gray-100 dark:hover:border-gray-800 transition-all cursor-pointer">
           <div class="size-10 rounded-full bg-primary/30 flex items-center justify-center text-primary-dark font-black overflow-hidden ring-2 ring-white dark:ring-gray-800">
-            <span class="material-symbols-outlined">person</span>
+            <User class="w-6 h-6" />
           </div>
           <div class="flex flex-col overflow-hidden">
             <p class="text-sm font-bold truncate">{{ userName }}</p>
@@ -146,7 +147,7 @@ onMounted(() => {
     <header class="lg:hidden bg-surface-light/80 dark:bg-surface-dark/80 backdrop-blur-md p-4 flex justify-between items-center sticky top-0 z-40 border-b border-gray-100 dark:border-gray-800 transition-colors">
       <div class="flex items-center gap-2">
          <div class="size-8 bg-primary rounded-lg shadow-md flex items-center justify-center text-white">
-           <span class="material-symbols-outlined text-xl fill-1">school</span>
+           <GraduationCap class="w-5 h-5 text-xl" />
          </div>
          <h1 class="text-lg font-black tracking-tight">{{ t('app.title') }}<span class="text-primary">{{ t('app.subtitle') }}</span></h1>
       </div>
@@ -179,7 +180,7 @@ onMounted(() => {
         >
           <div class="absolute inset-x-2 inset-y-1 bg-primary/10 rounded-xl transition-all duration-300" :class="{ 'opacity-100 scale-100': currentView === item.name, 'opacity-0 scale-90': currentView !== item.name }"></div>
           <div class="flex flex-col items-center relative z-10">
-            <span class="material-symbols-outlined text-2xl" :class="{ 'fill-1': currentView === item.name }">{{ item.icon }}</span>
+            <component :is="item.icon" class="w-6 h-6" :class="{ 'text-primary fill-primary': currentView === item.name }" />
             <span class="text-[10px] font-bold mt-0.5">{{ item.label }}</span>
           </div>
         </button>

@@ -1,4 +1,6 @@
 <script setup>
+import { CalendarSync, Edit2, Plus, RotateCw, Star, Trash2, X } from 'lucide-vue-next';
+
 import { ref, computed, onUnmounted } from 'vue';
 import { db, liveQuery } from '../db';
 import { useI18n } from 'vue-i18n';
@@ -312,12 +314,10 @@ const formatSchedule = (template) => {
             class="p-1.5 md:p-2 rounded-lg md:rounded-xl text-primary hover:bg-primary/10 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed active:scale-95"
             title="刷新列表"
           >
-            <span
-              class="material-symbols-outlined text-xl md:text-2xl transition-transform duration-200"
+            <RotateCw 
+              class=" text-xl md:text-2xl transition-transform duration-200"
               :class="{ 'animate-spin': isRefreshing }"
-            >
-              refresh
-            </span>
+            />
           </button>
         </div>
         <p class="text-text-sub-light dark:text-text-sub-dark text-sm md:text-lg font-medium">
@@ -328,7 +328,7 @@ const formatSchedule = (template) => {
         @click="openCreateModal"
         class="hidden md:flex items-center gap-2 bg-primary hover:bg-primary-dark text-black font-bold py-4 px-8 rounded-2xl shadow-lg shadow-primary/30 transition-all hover:-translate-y-1 active:scale-95 duration-200"
       >
-        <span class="material-symbols-outlined font-bold">add</span>
+        <Plus  class=" font-bold"/>
         <span>{{ t('dailyCheckin.addNew') }}</span>
       </button>
     </header>
@@ -336,12 +336,12 @@ const formatSchedule = (template) => {
     <!-- Empty State -->
     <div v-if="templates.length === 0" class="py-10 md:py-16 text-center bg-surface-light dark:bg-surface-dark rounded-2xl md:rounded-3xl border border-dashed border-gray-200 dark:border-gray-800">
       <div class="size-14 md:size-20 bg-gray-50 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-3 md:mb-4 text-gray-300">
-        <span class="material-symbols-outlined text-3xl md:text-5xl">event_repeat</span>
+        <CalendarSync  class=" text-3xl md:text-5xl"/>
       </div>
       <p class="text-base md:text-xl font-black text-gray-400">{{ t('dailyCheckin.noTemplates') }}</p>
       <p class="text-sm md:text-base text-gray-300 font-bold mb-4 md:mb-6 px-4">{{ t('dailyCheckin.noTemplatesDesc') }}</p>
       <button @click="openCreateModal" class="text-primary font-bold flex items-center justify-center gap-1 mx-auto hover:underline text-sm md:text-base">
-        <span class="material-symbols-outlined text-lg md:text-xl">add</span> {{ t('dailyCheckin.addNew') }}
+        <Plus  class=" text-lg md:text-xl"/> {{ t('dailyCheckin.addNew') }}
       </button>
     </div>
 
@@ -374,11 +374,11 @@ const formatSchedule = (template) => {
                 </h4>
                 <div class="flex flex-wrap items-center gap-x-2 md:gap-x-3 gap-y-0.5 mt-0.5 md:mt-1 text-[10px] md:text-sm text-text-sub-light dark:text-text-sub-dark">
                   <span class="flex items-center gap-0.5 md:gap-1">
-                    <span class="material-symbols-outlined text-xs md:text-base">event_repeat</span>
+                    <CalendarSync  class=" text-xs md:text-base"/>
                     {{ formatSchedule(tpl) }}
                   </span>
                   <span class="flex items-center gap-0.5 md:gap-1 font-black text-primary/80">
-                    <span class="material-symbols-outlined text-xs md:text-base">star</span>
+                    <Star  class=" text-xs md:text-base"/>
                     +{{ tpl.points }}
                   </span>
                 </div>
@@ -386,10 +386,10 @@ const formatSchedule = (template) => {
 
               <div class="flex items-center gap-0 flex-shrink-0">
                 <button @click="openEditModal(tpl)" class="p-2 md:p-3 text-gray-400 hover:text-primary transition-colors rounded-lg md:rounded-xl hover:bg-primary/10 active:scale-95">
-                  <span class="material-symbols-outlined text-lg md:text-xl">edit</span>
+                  <Edit2  class=" text-lg md:text-xl"/>
                 </button>
                 <button @click="deleteTemplate(tpl)" class="p-2 md:p-3 text-gray-300 hover:text-red-500 transition-colors rounded-lg md:rounded-xl hover:bg-red-50 dark:hover:bg-red-900/20 active:scale-95">
-                  <span class="material-symbols-outlined text-lg md:text-xl">delete</span>
+                  <Trash2  class=" text-lg md:text-xl"/>
                 </button>
               </div>
             </div>
@@ -403,7 +403,7 @@ const formatSchedule = (template) => {
       @click="openCreateModal"
       class="md:hidden fixed bottom-[calc(5rem+env(safe-area-inset-bottom))] right-4 size-14 bg-primary text-black rounded-full shadow-2xl shadow-primary/40 flex items-center justify-center z-50 active:scale-90 transition-transform duration-200"
     >
-      <span class="material-symbols-outlined text-2xl font-black">add</span>
+      <Plus  class=" text-2xl font-black"/>
     </button>
 
     <!-- Create/Edit Modal -->
@@ -418,14 +418,14 @@ const formatSchedule = (template) => {
           <!-- Header -->
           <div class="flex items-center justify-between p-4 md:p-6 border-b border-gray-100 dark:border-gray-800 flex-shrink-0">
             <h3 class="text-lg md:text-2xl font-black flex items-center gap-2">
-              <span class="material-symbols-outlined text-primary text-2xl md:text-3xl">event_repeat</span>
+              <CalendarSync  class=" text-primary text-2xl md:text-3xl"/>
               {{ editingTemplate ? t('dailyCheckin.modal.edit') : t('dailyCheckin.modal.create') }}
             </h3>
             <button
               @click="closeModal"
               class="p-1.5 md:p-2 rounded-lg md:rounded-xl text-text-sub-light hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200 active:scale-95"
             >
-              <span class="material-symbols-outlined text-xl md:text-2xl">close</span>
+              <X  class=" text-xl md:text-2xl"/>
             </button>
           </div>
 
@@ -514,7 +514,7 @@ const formatSchedule = (template) => {
               :disabled="isLoading || !formTitle.trim()"
               class="w-full bg-primary hover:bg-primary-dark text-white font-black py-3.5 md:py-4 rounded-xl md:rounded-2xl shadow-lg shadow-primary/20 transition-all active:scale-95 duration-200 uppercase tracking-widest text-xs md:text-sm mt-2 md:mt-4 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
-              <span v-if="isLoading" class="material-symbols-outlined animate-spin text-lg">refresh</span>
+              <RotateCw  v-if="isLoading" class=" animate-spin text-lg"/>
               <span>{{ editingTemplate ? t('dailyCheckin.editBtn') : t('dailyCheckin.createBtn') }}</span>
             </button>
           </div>

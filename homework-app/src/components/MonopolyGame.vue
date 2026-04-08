@@ -1,4 +1,6 @@
 <script setup>
+import { LogOut, RotateCw, X } from 'lucide-vue-next';
+
 import { ref, computed, reactive, onMounted, watch, nextTick } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { supabase, TABLES } from '../supabase';
@@ -729,7 +731,7 @@ const gradeLabel = computed(() => {
                 🏆 {{ t('monopoly.leaderboard.title') }}
               </h3>
               <button @click="fetchLeaderboard" class="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors" :disabled="isLoadingLeaderboard">
-                <span class="material-symbols-outlined text-sm" :class="{ 'animate-spin': isLoadingLeaderboard }">refresh</span>
+                <RotateCw  class=" text-sm" :class="{ 'animate-spin': isLoadingLeaderboard }"/>
               </button>
             </div>
 
@@ -1022,7 +1024,7 @@ const gradeLabel = computed(() => {
             <div class="flex justify-between items-center mb-3">
               <h3 class="font-black text-sm flex items-center gap-2">🎒 {{ t('monopoly.backpack') }} <span class="text-text-sub-light dark:text-text-sub-dark text-xs">({{ player.items.length }}/6)</span></h3>
               <button @click="showBackpack = false" class="text-text-sub-light dark:text-text-sub-dark hover:text-text-main-light dark:hover:text-text-main-dark transition-colors">
-                <span class="material-symbols-outlined text-xl">close</span>
+                <X  class=" text-xl"/>
               </button>
             </div>
             <div v-if="player.items.length === 0" class="text-center py-6 text-text-sub-light dark:text-text-sub-dark text-sm">
@@ -1066,7 +1068,7 @@ const gradeLabel = computed(() => {
             @click="quitGame"
             class="text-xs font-bold text-text-sub-light dark:text-text-sub-dark hover:text-red-500 transition-colors flex items-center gap-1 opacity-60 hover:opacity-100"
           >
-            <span class="material-symbols-outlined text-sm">logout</span>
+            <LogOut  class=" text-sm"/>
             {{ t('monopoly.quitBtn') }}
           </button>
         </div>

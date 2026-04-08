@@ -6,6 +6,12 @@ class SupabaseTable {
         this.tableName = tableName
     }
 
+    notify() {
+        if (typeof window !== 'undefined') {
+            window.dispatchEvent(new CustomEvent('db-changed'));
+        }
+    }
+
     async add(data) {
         const { data: result, error } = await supabase
             .from(this.tableName)
@@ -14,6 +20,7 @@ class SupabaseTable {
             .single()
 
         if (error) throw error
+        this.notify()
         return result
     }
 
@@ -24,6 +31,7 @@ class SupabaseTable {
             .eq('id', id)
 
         if (error) throw error
+        this.notify()
     }
 
     async delete(id) {
@@ -33,6 +41,7 @@ class SupabaseTable {
             .eq('id', id)
 
         if (error) throw error
+        this.notify()
     }
 
     async get(value) {
@@ -53,6 +62,7 @@ class SupabaseTable {
             .upsert([data])
 
         if (error) throw error
+        this.notify()
     }
 
     async toArray() {
@@ -70,6 +80,7 @@ class SupabaseTable {
             .upsert(items)
 
         if (error) throw error
+        this.notify()
     }
 
     async clear() {
@@ -79,6 +90,7 @@ class SupabaseTable {
             .neq('id', '00000000-0000-0000-0000-000000000000') // Delete all
 
         if (error) throw error
+        this.notify()
     }
 
     where(field) {
@@ -119,7 +131,6 @@ class SupabaseTable {
 export function liveQuery(queryFn) {
     let subscribers = []
     let currentData = null
-    let polling = null
 
     const execute = async () => {
         try {
@@ -131,22 +142,28 @@ export function liveQuery(queryFn) {
         }
     }
 
+    const listener = () => execute();
+
     return {
         subscribe: (callback) => {
             subscribers.push(callback)
-            execute() // Initial execution
 
-            // Poll every 2 seconds for changes
-            if (!polling) {
-                polling = setInterval(execute, 2000)
+            // On first subscriber, setup listeners
+            if (subscribers.length === 1) {
+                if (typeof window !== 'undefined') {
+                    window.addEventListener('db-changed', listener);
+                }
             }
+
+            execute() // Initial execution
 
             return {
                 unsubscribe: () => {
                     subscribers = subscribers.filter(cb => cb !== callback)
-                    if (subscribers.length === 0 && polling) {
-                        clearInterval(polling)
-                        polling = null
+                    if (subscribers.length === 0) {
+                        if (typeof window !== 'undefined') {
+                            window.removeEventListener('db-changed', listener);
+                        }
                     }
                 }
             }

@@ -1,0 +1,12 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom base styles for React Native */
+@layer base {
+  :root {
+    --primary: 243 75% 59%;
+    --primary-foreground: 0 0% 100%;
+    /* ... add more variables if needed ... */
+  }
+}

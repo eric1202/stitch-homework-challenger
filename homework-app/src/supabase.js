@@ -18,18 +18,15 @@ const resolveActiveUrl = async () => {
 
     try {
         // Try the primary URL with a GET request
-        const response = await fetch(`${PRIMARY_URL}/rest/v1/`, {
+        await fetch(`${PRIMARY_URL}/rest/v1/`, {
             method: 'GET',
             headers: { 'apikey': supabaseAnonKey },
             signal: controller.signal
         })
 
-        if (response.ok) {
-            activeUrl = PRIMARY_URL
-            console.log('Supabase: Using Primary URL')
-        } else {
-            throw new Error('Primary URL returned non-ok status')
-        }
+        // If fetch succeeds (even with 401/404), server is reachable
+        activeUrl = PRIMARY_URL
+        console.log('Supabase: Using Primary URL')
     } catch (err) {
         console.warn('Supabase: Primary URL failed or timed out, falling back to Backup URL')
         activeUrl = BACKUP_URL

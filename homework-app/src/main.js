@@ -3,5 +3,9 @@ import './style.css'
 import App from './App.vue'
 
 import { i18n } from './i18n'
+import { initSupabase } from './supabase'
 
-createApp(App).use(i18n).mount('#app')
+// Initialize Supabase (with URL failover) before mounting the app
+initSupabase().then(() => {
+    createApp(App).use(i18n).mount('#app')
+})

@@ -1,9 +1,12 @@
+import 'react-native-url-polyfill/auto';
+import 'react-native-get-random-values';
+import 'react-native-gesture-handler';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
 import { Stack, Slot, Tabs } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { View } from 'react-native';
 import 'react-native-reanimated';
 
@@ -13,6 +16,7 @@ import '../src/i18n'; // Initialize i18n
 import { useDevice } from '../src/hooks/useDevice';
 import { useData } from '../src/hooks/useData';
 import Sidebar from '../src/components/Sidebar';
+import { initSupabase } from '../src/services/supabase';
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -28,6 +32,7 @@ export const unstable_settings = {
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
+  const [supabaseReady, setSupabaseReady] = useState(false);
   const [loaded, error] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
     ...FontAwesome.font,
@@ -39,12 +44,19 @@ export default function RootLayout() {
   }, [error]);
 
   useEffect(() => {
-    if (loaded) {
+    // Initialize Supabase (with URL failover) before hiding splash
+    initSupabase().then(() => {
+        setSupabaseReady(true);
+    });
+  }, []);
+
+  useEffect(() => {
+    if (loaded && supabaseReady) {
       SplashScreen.hideAsync();
     }
-  }, [loaded]);
+  }, [loaded, supabaseReady]);
 
-  if (!loaded) {
+  if (!loaded || !supabaseReady) {
     return null;
   }
 

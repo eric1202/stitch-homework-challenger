@@ -53,16 +53,25 @@ export default function HomeView() {
   };
 
   useEffect(() => {
+    // Safety timeout to prevent infinite loading
+    const timer = setTimeout(() => {
+      if (isInitialLoading) setIsInitialLoading(false);
+    }, 5000);
+
     const sub = liveQuery(() => 
       db.tasks.where('user_name').equals(userName).toArray()
     ).subscribe(result => {
       setTasks(result.filter(t => t.date === selectedDateRef.current));
       if (isInitialLoading) {
         setIsInitialLoading(false);
+        clearTimeout(timer);
       }
     });
 
-    return () => sub.unsubscribe();
+    return () => {
+      sub.unsubscribe();
+      clearTimeout(timer);
+    };
   }, [userName, isInitialLoading]);
 
   const refreshTasks = useCallback(async () => {

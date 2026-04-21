@@ -337,18 +337,38 @@ export default function MonopolyGame() {
             onChangeText={setUsername}
           />
           
-          <TouchableOpacity onPress={() => { if(username.trim()) startGame(); else Alert.alert('Error', 'Name required'); }} className="bg-primary px-10 py-4 rounded-2xl">
+          <TouchableOpacity 
+            onPress={() => { 
+                if(username.trim()) {
+                    AsyncStorage.setItem(USERNAME_KEY, username.trim());
+                    generateMathQuiz();
+                    setShowMathQuiz(true);
+                } else { 
+                    Alert.alert('Error', 'Name required'); 
+                } 
+            }} 
+            className="bg-primary px-10 py-4 rounded-2xl"
+          >
             <Text className="text-white font-black text-lg">{t('monopoly.startBtn')}</Text>
           </TouchableOpacity>
 
           <View className="mt-12 w-full max-w-sm">
              <Text className="text-xl font-black mb-4 dark:text-white">🏆 Leaderboard</Text>
-             {leaderboardData.map((item, i) => (
-               <View key={i} className="flex flex-row justify-between p-2 border-b border-gray-100 dark:border-gray-800">
-                 <Text className="font-bold dark:text-gray-300">#{i+1} {item.username}</Text>
-                 <Text className="font-black text-primary">{item.score} pts</Text>
+             
+             {isLoadingLeaderboard ? (
+               <View className="py-10">
+                 <ActivityIndicator size="small" color="#6366f1" />
                </View>
-             ))}
+             ) : leaderboardData.length === 0 ? (
+               <Text className="text-center py-10 text-gray-400 italic">No rankings yet. Be the first!</Text>
+             ) : (
+               leaderboardData.map((item, i) => (
+                 <View key={i} className="flex flex-row justify-between p-2 border-b border-gray-100 dark:border-gray-800">
+                   <Text className="font-bold dark:text-gray-300">#{i+1} {item.username}</Text>
+                   <Text className="font-black text-primary">{item.score} pts</Text>
+                 </View>
+               ))
+             )}
           </View>
         </View>
       )}
@@ -451,6 +471,49 @@ export default function MonopolyGame() {
           </TouchableOpacity>
         </View>
       )}
+      
+      {/* Math Quiz Modal */}
+      <Modal visible={showMathQuiz} transparent animationType="fade">
+        <View className="flex-1 bg-black/60 items-center justify-center p-6">
+          <View className="bg-surface-light dark:bg-surface-dark w-full max-w-sm p-8 rounded-3xl items-center border border-gray-100 shadow-2xl">
+            <View className="bg-primary/10 p-4 rounded-2xl mb-6">
+              <Calculator size={40} color="#6366f1" />
+            </View>
+            
+            <Text className="text-xl font-black text-center dark:text-white mb-2">Adventure Challenge!</Text>
+            <Text className="text-text-sub-light text-center mb-8">Solve this to start your journey</Text>
+            
+            <View className="flex-row items-center justify-center mb-8 gap-4">
+              <Text className="text-4xl font-black dark:text-white">{mathA}</Text>
+              <Text className="text-3xl font-black text-primary">{mathOp}</Text>
+              <Text className="text-4xl font-black dark:text-white">{mathB}</Text>
+              <Text className="text-3xl font-black text-primary">=</Text>
+              <View className={`border-b-4 ${mathWrong ? 'border-red-500' : 'border-primary'} px-2 min-w-[60px] items-center`}>
+                <TextInput
+                  className="text-4xl font-black dark:text-white text-center"
+                  keyboardType="number-pad"
+                  autoFocus
+                  maxLength={3}
+                  value={mathAnswer}
+                  onChangeText={setMathAnswer}
+                  onSubmitEditing={checkMathAnswer}
+                />
+              </View>
+            </View>
+            
+            <TouchableOpacity 
+              onPress={checkMathAnswer} 
+              className="bg-primary w-full py-4 rounded-2xl shadow-lg shadow-primary/30"
+            >
+              <Text className="text-white font-black text-center text-lg">Verify & Start</Text>
+            </TouchableOpacity>
+            
+            <TouchableOpacity onPress={() => setShowMathQuiz(false)} className="mt-6">
+              <Text className="text-text-sub-light font-bold">Maybe later</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </ScrollView>
   );
 }

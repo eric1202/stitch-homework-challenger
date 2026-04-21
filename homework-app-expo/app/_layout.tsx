@@ -8,6 +8,7 @@ import { Stack, Slot, Tabs } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect, useState } from 'react';
 import { View } from 'react-native';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import 'react-native-reanimated';
 
 import { useColorScheme } from '@/components/useColorScheme';
@@ -69,17 +70,21 @@ function RootLayoutNav() {
   const { totalPoints, userName } = useData();
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <View style={{ flex: 1, flexDirection: isLargeScreen ? 'row' : 'column' }} className="bg-background-light dark:bg-background-dark">
-        {isLargeScreen && <Sidebar totalPoints={totalPoints} userName={userName} />}
-        
-        <View style={{ flex: 1 }}>
-          <Stack screenOptions={{ headerShown: false }}>
-            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-            <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
-          </Stack>
-        </View>
-      </View>
-    </ThemeProvider>
+    <SafeAreaProvider>
+      <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+        <SafeAreaView style={{ flex: 1 }} className="bg-background-light dark:bg-background-dark">
+          <View style={{ flex: 1, flexDirection: isLargeScreen ? 'row' : 'column' }}>
+            {isLargeScreen && <Sidebar totalPoints={totalPoints} userName={userName} />}
+            
+            <View style={{ flex: 1 }}>
+              <Stack screenOptions={{ headerShown: false }}>
+                <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+                <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
+              </Stack>
+            </View>
+          </View>
+        </SafeAreaView>
+      </ThemeProvider>
+    </SafeAreaProvider>
   );
 }

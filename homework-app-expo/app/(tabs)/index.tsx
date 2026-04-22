@@ -11,6 +11,14 @@ import { getTodayDateString, formatDateDisplay } from '../../src/utils/date';
 import { triggerConfetti } from '../../src/utils/confetti';
 import { useData } from '../../src/hooks/useData';
 
+const parseBatchTasks = (text) => {
+  let parts = text.split(/(?:\s+)?\d+\s*[.、,，]+\s*/);
+  if (parts.length <= 1 && text.includes('\n')) {
+      parts = text.split(/\n+/);
+  }
+  return parts.map(p => p.trim()).filter(p => p.length > 0);
+};
+
 export default function HomeView() {
   const { t } = useTranslation();
   const today = getTodayDateString();
@@ -20,6 +28,9 @@ export default function HomeView() {
   const [newTaskSubject, setNewTaskSubject] = useState('Math');
   const [isAddingFormOpen, setIsAddingFormOpen] = useState(false);
   const [isAddingTask, setIsAddingTask] = useState(false);
+  const [isBatchMode, setIsBatchMode] = useState(false);
+  const [isBatchConfirmModalOpen, setIsBatchConfirmModalOpen] = useState(false);
+  const [batchParsedTasks, setBatchParsedTasks] = useState([]);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isInitialLoading, setIsInitialLoading] = useState(true);
   const [tasks, setTasks] = useState([]);
@@ -110,6 +121,15 @@ export default function HomeView() {
 
   const addTask = async () => {
     if (!newTaskTitle.trim() || isAddingTask) return;
+    
+    if (isBatchMode) {
+      const parsed = parseBatchTasks(newTaskTitle);
+      if (parsed.length === 0) return;
+      setBatchParsedTasks(parsed);
+      setIsBatchConfirmModalOpen(true);
+      return;
+    }
+
     setIsAddingTask(true);
     try {
       await db.tasks.add({
@@ -121,6 +141,38 @@ export default function HomeView() {
       refreshTasks();
     } catch (error) {
       Alert.alert(t('common.error'), t('home.addTaskError') || 'Failed to add task');
+    } finally {
+      setIsAddingTask(false);
+    }
+  };
+
+  const confirmBatchAdd = async () => {
+    setIsAddingTask(true);
+    try {
+      for (const title of batchParsedTasks) {
+        const str = `${newTaskSubject}-${title}`;
+        let hash = 0;
+        for (let i = 0; i < str.length; i++) {
+          hash = (hash << 5) - hash + str.charCodeAt(i);
+          hash |= 0;
+        }
+        const pts = (Math.abs(hash) % 26) + 10;
+        
+        await db.tasks.add({
+          title: title, 
+          subject: newTaskSubject, 
+          points: pts,
+          completed: false, 
+          date: selectedDate, 
+          user_name: userName
+        });
+      }
+      setNewTaskTitle('');
+      setIsAddingFormOpen(false);
+      setIsBatchConfirmModalOpen(false);
+      refreshTasks();
+    } catch (error) {
+      Alert.alert(t('common.error'), t('home.addTaskError') || 'Failed to add tasks');
     } finally {
       setIsAddingTask(false);
     }
@@ -229,12 +281,28 @@ export default function HomeView() {
 
         {isAddingFormOpen && (
           <View className="bg-surface-light dark:bg-surface-dark p-4 rounded-2xl border-2 border-primary/20 shadow-lg">
+            <View className="flex flex-row justify-between items-center mb-2">
+              <Text className="text-gray-500 font-bold dark:text-gray-400">
+                {isBatchMode ? '批量输入多项作业' : '输入作业内容'}
+              </Text>
+              <TouchableOpacity 
+                onPress={() => setIsBatchMode(!isBatchMode)}
+                className="flex flex-row items-center gap-2"
+              >
+                <View className={`size-5 rounded border items-center justify-center ${isBatchMode ? 'bg-primary border-primary' : 'border-gray-400 dark:border-gray-600'}`}>
+                  {isBatchMode && <Check size={12} color="white" />}
+                </View>
+                <Text className="text-gray-600 dark:text-gray-300 font-bold">批量</Text>
+              </TouchableOpacity>
+            </View>
             <TextInput
               className="bg-background-light dark:bg-background-dark p-4 rounded-xl font-bold dark:text-white mb-4"
-              placeholder={t('home.inputs.placeholder')}
+              placeholder={isBatchMode ? '例如：1.抄写生字 2.背诵课文...' : t('home.inputs.placeholder')}
               placeholderTextColor="#94a3b8"
               value={newTaskTitle}
               onChangeText={setNewTaskTitle}
+              multiline={isBatchMode}
+              style={isBatchMode ? { minHeight: 80, textAlignVertical: 'top' } : {}}
             />
             <ScrollView horizontal showsHorizontalScrollIndicator={false} className="mb-4">
               {subjects.map(s => (
@@ -285,6 +353,30 @@ export default function HomeView() {
           ))
         )}
       </View>
+
+      {/* Batch Confirm Modal */}
+      <Modal visible={isBatchConfirmModalOpen} transparent animationType="fade">
+        <View className="flex-1 bg-black/50 justify-center p-6">
+          <View className="bg-surface-light dark:bg-surface-dark p-6 rounded-3xl max-h-[80%]">
+            <View className="flex flex-row justify-between items-center mb-6">
+              <Text className="text-2xl font-black dark:text-white">确认批量添加</Text>
+              <TouchableOpacity onPress={() => setIsBatchConfirmModalOpen(false)}><X size={24} color="#64748b" /></TouchableOpacity>
+            </View>
+            <Text className="text-gray-500 mb-4 dark:text-gray-400">即将添加以下 {batchParsedTasks.length} 项作业（科目：{t(`home.subjects.${newTaskSubject}`)}）：</Text>
+            <ScrollView className="mb-6">
+              {batchParsedTasks.map((task, idx) => (
+                <View key={idx} className="bg-background-light dark:bg-background-dark p-3 rounded-xl mb-2">
+                  <Text className="dark:text-white font-bold">{idx + 1}. {task}</Text>
+                </View>
+              ))}
+            </ScrollView>
+            <TouchableOpacity onPress={confirmBatchAdd} disabled={isAddingTask} className="bg-primary p-4 rounded-xl items-center flex flex-row justify-center gap-2">
+              {isAddingTask && <ActivityIndicator color="white" size="small" />}
+              <Text className="text-white font-black uppercase">确认添加</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
 
       {/* Basic Modal for Date Picker */}
       <Modal visible={isDatePickerOpen} transparent animationType="fade">

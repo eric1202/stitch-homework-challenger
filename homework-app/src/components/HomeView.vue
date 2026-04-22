@@ -19,8 +19,21 @@ const isDatePickerOpen = ref(false); // 日期选择器是否打开
 const newTaskTitle = ref('');
 const newTaskSubject = ref('Math'); 
 
+const parseBatchTasks = (text) => {
+  let parts = text.split(/(?:\s+)?\d+\s*[.、,，]+\s*/);
+  if (parts.length <= 1 && text.includes('\n')) {
+      parts = text.split(/\n+/);
+  }
+  return parts.map(p => p.trim()).filter(p => p.length > 0);
+};
+
+const isBatchMode = ref(false);
+const isBatchConfirmModalOpen = ref(false);
+const batchParsedTasks = ref([]);
+
 const calculatedPoints = computed(() => {
   if (!newTaskTitle.value.trim()) return 0;
+  if (isBatchMode.value) return '-';
   const str = `${newTaskSubject.value}-${newTaskTitle.value.trim()}`;
   let hash = 0;
   for (let i = 0; i < str.length; i++) {
@@ -169,6 +182,14 @@ onUnmounted(() => {
 const addTask = async () => {
   if (!newTaskTitle.value.trim() || isAddingTask.value) return;
   
+  if (isBatchMode.value) {
+    const parsed = parseBatchTasks(newTaskTitle.value);
+    if (parsed.length === 0) return;
+    batchParsedTasks.value = parsed;
+    isBatchConfirmModalOpen.value = true;
+    return;
+  }
+
   isAddingTask.value = true;
   try {
     await db.tasks.add({
@@ -188,6 +209,39 @@ const addTask = async () => {
   } catch (error) {
     console.error('Failed to add task:', error);
     alert(t('home.addTaskError') || '添加任务失败，请重试');
+  } finally {
+    isAddingTask.value = false;
+  }
+};
+
+const confirmBatchAdd = async () => {
+  isAddingTask.value = true;
+  try {
+    for (const title of batchParsedTasks.value) {
+      const str = `${newTaskSubject.value}-${title}`;
+      let hash = 0;
+      for (let i = 0; i < str.length; i++) {
+        hash = (hash << 5) - hash + str.charCodeAt(i);
+        hash |= 0;
+      }
+      const pts = (Math.abs(hash) % 26) + 10;
+      
+      await db.tasks.add({
+        title: title, 
+        subject: newTaskSubject.value, 
+        points: pts,
+        completed: false, 
+        date: selectedDate.value, 
+        user_name: userName.value
+      });
+    }
+    newTaskTitle.value = '';
+    isAddingFormOpen.value = false;
+    isBatchConfirmModalOpen.value = false;
+    await refreshTasks();
+  } catch (error) {
+    console.error('Failed to batch add tasks:', error);
+    alert(t('home.addTaskError') || '批量添加失败，请重试');
   } finally {
     isAddingTask.value = false;
   }
@@ -462,12 +516,36 @@ const deleteTask = async (id) => {
     <Transition name="expand">
       <div v-if="isAddingFormOpen" class="bg-surface-light dark:bg-surface-dark p-4 md:p-6 rounded-2xl md:rounded-3xl border-2 border-primary/20 shadow-xl shadow-primary/5">
         <div class="grid md:grid-cols-12 gap-3 md:gap-5">
-           <div class="md:col-span-12">
-             <h3 class="text-lg md:text-xl font-bold mb-3 md:mb-4">{{ t('home.addTaskTitle') }} ✏️</h3>
+           <div class="md:col-span-12 flex items-center justify-between mb-3 md:mb-4">
+             <h3 class="text-lg md:text-xl font-bold">{{ t('home.addTaskTitle') }} ✏️</h3>
+             <label class="flex items-center gap-2 cursor-pointer group">
+               <div class="relative flex items-center justify-center">
+                 <input 
+                   type="checkbox" 
+                   v-model="isBatchMode"
+                   class="appearance-none size-5 rounded border-2 border-gray-300 dark:border-gray-600 checked:bg-primary checked:border-primary transition-all cursor-pointer"
+                 >
+                 <Check v-if="isBatchMode" class="absolute pointer-events-none text-white w-3 h-3" />
+               </div>
+               <span class="text-sm font-bold text-gray-600 dark:text-gray-300 group-hover:text-primary transition-colors">批量添加</span>
+             </label>
            </div>
            <div class="md:col-span-5 flex flex-col gap-1.5 md:gap-2">
              <label class="text-[10px] md:text-xs font-bold text-text-sub-light uppercase tracking-widest px-1">{{ t('home.inputs.taskName') }}</label>
-             <input v-model="newTaskTitle" type="text" class="w-full bg-background-light dark:bg-background-dark border-transparent focus:border-primary rounded-xl md:rounded-2xl p-3 md:p-4 font-bold transition-all outline-none text-sm md:text-base" :placeholder="t('home.inputs.placeholder')">
+             <textarea 
+               v-if="isBatchMode"
+               v-model="newTaskTitle" 
+               rows="3"
+               class="w-full bg-background-light dark:bg-background-dark border-transparent focus:border-primary rounded-xl md:rounded-2xl p-3 md:p-4 font-bold transition-all outline-none text-sm md:text-base resize-none" 
+               placeholder="例如：1.抄写生字&#10;2.背诵课文..."
+             ></textarea>
+             <input 
+               v-else
+               v-model="newTaskTitle" 
+               type="text" 
+               class="w-full bg-background-light dark:bg-background-dark border-transparent focus:border-primary rounded-xl md:rounded-2xl p-3 md:p-4 font-bold transition-all outline-none text-sm md:text-base" 
+               :placeholder="t('home.inputs.placeholder')"
+             >
            </div>
            <div class="md:col-span-3 flex flex-col gap-1.5 md:gap-2">
              <label class="text-[10px] md:text-xs font-bold text-text-sub-light uppercase tracking-widest px-1">{{ t('home.inputs.subject') }}</label>
@@ -478,7 +556,7 @@ const deleteTask = async (id) => {
            <div class="md:col-span-2 flex flex-col gap-1.5 md:gap-2">
              <label class="text-[10px] md:text-xs font-bold text-text-sub-light uppercase tracking-widest px-1">{{ t('home.inputs.points') }}</label>
              <div class="w-full h-full bg-background-light dark:bg-background-dark border-transparent rounded-xl md:rounded-2xl p-3 md:p-4 font-black transition-all outline-none text-center text-sm md:text-base text-primary/80 flex items-center justify-center select-none shadow-inner">
-               -
+               {{ isBatchMode ? '-' : (calculatedPoints || '-') }}
              </div>
            </div>
            <div class="md:col-span-2 flex items-end">
@@ -601,6 +679,55 @@ const deleteTask = async (id) => {
         </div>
       </div>
     </section>
+
+    <!-- Batch Confirm Modal -->
+    <Transition name="modal">
+      <div v-if="isBatchConfirmModalOpen" class="fixed inset-0 z-[70] flex items-center justify-center p-4" @click="isBatchConfirmModalOpen = false">
+        <div class="absolute inset-0 bg-black/50 backdrop-blur-sm"></div>
+        <div 
+          class="relative bg-surface-light dark:bg-surface-dark rounded-3xl shadow-2xl border border-gray-200 dark:border-gray-700 p-6 md:p-8 max-w-md w-full max-h-[80vh] flex flex-col"
+          @click.stop
+        >
+          <!-- Header -->
+          <div class="flex items-center justify-between mb-6 flex-shrink-0">
+            <h3 class="text-2xl font-black">确认批量添加</h3>
+            <button 
+              @click="isBatchConfirmModalOpen = false"
+              class="p-2 rounded-xl text-text-sub-light hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200 active:scale-95"
+            >
+              <X class="text-2xl"/>
+            </button>
+          </div>
+
+          <!-- Content -->
+          <p class="text-sm text-text-sub-light dark:text-text-sub-dark mb-4 flex-shrink-0">
+            即将添加以下 {{ batchParsedTasks.length }} 项作业（科目：{{ t(`home.subjects.${newTaskSubject}`) }}）：
+          </p>
+          
+          <div class="overflow-y-auto flex-1 mb-6 -mx-2 px-2">
+            <div class="flex flex-col gap-2">
+              <div 
+                v-for="(task, idx) in batchParsedTasks" 
+                :key="idx" 
+                class="bg-background-light dark:bg-background-dark p-3 rounded-xl"
+              >
+                <p class="font-bold text-text-main-light dark:text-text-main-dark">{{ idx + 1 }}. {{ task }}</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Action -->
+          <button 
+            @click="confirmBatchAdd" 
+            :disabled="isAddingTask"
+            class="w-full bg-primary hover:bg-primary-dark text-white font-black py-3 md:py-4 rounded-xl md:rounded-2xl shadow-lg shadow-primary/20 transition-all active:scale-95 duration-200 uppercase tracking-widest text-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 flex-shrink-0"
+          >
+            <RotateCw v-if="isAddingTask" class="animate-spin text-lg" />
+            <span>{{ isAddingTask ? '添加中...' : '确认添加' }}</span>
+          </button>
+        </div>
+      </div>
+    </Transition>
 
     <!-- Mobile Floating Add Button -->
     <button 

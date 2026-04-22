@@ -41,19 +41,41 @@ export default function RootLayout() {
 
   // Expo Router uses Error Boundaries to catch errors in the navigation tree.
   useEffect(() => {
-    if (error) throw error;
+    if (error) {
+      console.error('Font loading error:', error);
+      throw error;
+    }
   }, [error]);
 
   useEffect(() => {
+    console.log('Layout: Initializing Supabase...');
     // Initialize Supabase (with URL failover) before hiding splash
-    initSupabase().then(() => {
+    initSupabase()
+      .then(() => {
+        console.log('Layout: Supabase ready');
         setSupabaseReady(true);
-    });
+      })
+      .catch((err) => {
+        console.error('Layout: Supabase init failed', err);
+        // Set to true anyway to allow app to start even if DB is down
+        setSupabaseReady(true);
+      });
+
+    // Safety timeout: Hide splash after 10 seconds regardless of status
+    const timer = setTimeout(() => {
+      console.warn('Layout: Splash screen safety timeout triggered');
+      SplashScreen.hideAsync().catch(() => {});
+    }, 10000);
+
+    return () => clearTimeout(timer);
   }, []);
 
   useEffect(() => {
     if (loaded && supabaseReady) {
-      SplashScreen.hideAsync();
+      console.log('Layout: Hiding splash screen');
+      SplashScreen.hideAsync().catch((err) => {
+        console.warn('Layout: Failed to hide splash screen', err);
+      });
     }
   }, [loaded, supabaseReady]);
 

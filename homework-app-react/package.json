@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@homework/shared": "file:../packages/shared",
     "@supabase/supabase-js": "^2.89.0",
     "canvas-confetti": "^1.9.4",
     "chart.js": "^4.5.1",

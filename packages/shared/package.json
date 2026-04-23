@@ -1,0 +1,9 @@
+{
+  "name": "@homework/shared",
+  "version": "1.0.0",
+  "main": "index.js",
+  "type": "module",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.49.4"
+  }
+}

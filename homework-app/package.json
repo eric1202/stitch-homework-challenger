@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@homework/shared": "file:../packages/shared",
     "@heroicons/vue": "^2.2.0",
     "@supabase/supabase-js": "^2.89.0",
     "canvas-confetti": "^1.9.4",

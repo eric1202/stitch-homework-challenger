@@ -1,62 +1,15 @@
-import { createClient } from '@supabase/supabase-js'
+import { createSupabaseClient } from '@homework/shared'
+import { TABLES } from '@homework/shared'
 
-const PRIMARY_URL = import.meta.env.VITE_SUPABASE_URL_PRIMARY
-const BACKUP_URL = import.meta.env.VITE_SUPABASE_URL_BACKUP
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
+const _instance = createSupabaseClient({
+    primaryUrl: import.meta.env.VITE_SUPABASE_URL_PRIMARY,
+    backupUrl: import.meta.env.VITE_SUPABASE_URL_BACKUP,
+    anonKey: import.meta.env.VITE_SUPABASE_ANON_KEY,
+})
 
-let activeUrl = PRIMARY_URL
-let isResolved = false
-
-/**
- * Health check with timeout to determine the best available URL
- */
-const resolveActiveUrl = async () => {
-    if (isResolved) return activeUrl
-
-    const controller = new AbortController()
-    const timeoutId = setTimeout(() => controller.abort(), 5000)
-
-    try {
-        // Try the primary URL with a GET request
-        await fetch(`${PRIMARY_URL}/rest/v1/`, {
-            method: 'GET',
-            headers: { 'apikey': supabaseAnonKey },
-            signal: controller.signal
-        })
-
-        // If fetch succeeds (even with 401/404), server is reachable
-        activeUrl = PRIMARY_URL
-        console.log('Supabase: Using Primary URL')
-    } catch (err) {
-        console.warn('Supabase: Primary URL failed or timed out, falling back to Backup URL')
-        activeUrl = BACKUP_URL
-    } finally {
-        clearTimeout(timeoutId)
-        isResolved = true
-    }
-
-    return activeUrl
-}
-
-// Initial client
-export let supabase = createClient(PRIMARY_URL, supabaseAnonKey)
-
-/**
- * Initialization function for Vue app
- */
-export const initSupabase = async () => {
-    const url = await resolveActiveUrl()
-    if (url !== PRIMARY_URL) {
-        supabase = createClient(url, supabaseAnonKey)
-    }
-    return supabase
-}
-
-// Database schema types
-export const TABLES = {
-    TASKS: 'tasks',
-    SETTINGS: 'settings',
-    REWARDS: 'rewards',
-    REDEMPTION_LOGS: 'redemption_logs',
-    MONOPOLY_LEADERBOARD: 'monopoly_leaderboard'
-}
+export { TABLES }
+// getter always returns the current client (may be swapped after failover)
+export const getSupabase = () => _instance.supabase
+export const initSupabase = _instance.initSupabase
+// direct export for components that use supabase directly (e.g. MonopolyGame)
+export const supabase = new Proxy({}, { get: (_, prop) => _instance.supabase[prop] })

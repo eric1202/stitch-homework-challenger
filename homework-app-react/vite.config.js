@@ -5,6 +5,9 @@ import { VitePWA } from 'vite-plugin-pwa'
 // https://vitejs.dev/config/
 export default defineConfig({
   base: './',
+  resolve: {
+    dedupe: ['@supabase/supabase-js'],
+  },
   plugins: [
     react(),
     VitePWA({

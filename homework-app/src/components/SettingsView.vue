@@ -118,10 +118,13 @@ const importData = async (event) => {
 const clearAllData = async () => {
   if (confirm(t('settings.alerts.deleteConfirm1'))) {
     if (confirm(t('settings.alerts.deleteConfirm2'))) {
-      await db.tasks.clear();
+      const name = userName.value;
+      await db.tasks.clearByUser(name);
+      await db.rewards.clearByUser(name);
+      await db.redemptionLogs.clearByUser(name);
+      await db.dailyCheckinTemplates.clearByUser(name);
+      // Clear settings last (no user_name field, use clear)
       await db.settings.clear();
-      await db.rewards.clear();
-      await db.redemptionLogs.clear();
       alert(t('settings.alerts.resetSuccess'));
       window.location.reload(); // Refresh to clear state
     }

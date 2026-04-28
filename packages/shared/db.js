@@ -121,29 +121,37 @@ class SupabaseTable {
         const getSupabase = this._getSupabase
         const tableName = this.tableName
         return {
-            equals: (value) => ({
-                toArray: async () => {
-                    const { data, error } = await getSupabase()
-                        .from(tableName)
-                        .select('*')
-                        .eq(field, value)
-
-                    if (error) throw error
-                    return data || []
-                },
-                reverse: () => ({
+            equals: (value) => {
+                let columns = '*'
+                const chain = {
+                    select: (cols) => {
+                        columns = cols
+                        return chain
+                    },
                     toArray: async () => {
                         const { data, error } = await getSupabase()
                             .from(tableName)
-                            .select('*')
+                            .select(columns)
                             .eq(field, value)
-                            .order('created_at', { ascending: false })
 
                         if (error) throw error
                         return data || []
-                    }
-                })
-            })
+                    },
+                    reverse: () => ({
+                        toArray: async () => {
+                            const { data, error } = await getSupabase()
+                                .from(tableName)
+                                .select(columns)
+                                .eq(field, value)
+                                .order('created_at', { ascending: false })
+
+                            if (error) throw error
+                            return data || []
+                        }
+                    })
+                }
+                return chain
+            }
         }
     }
 

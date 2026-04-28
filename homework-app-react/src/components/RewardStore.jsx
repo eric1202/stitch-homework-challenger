@@ -85,8 +85,8 @@ export default function RewardStore() {
       logsSub = liveQuery(() => db.redemptionLogs.where('user_name').equals(newName).reverse().toArray()).subscribe(setLogs);
       pointsSub = liveQuery(async () => {
         try {
-          const allTasks = await db.tasks.where('user_name').equals(newName).toArray();
-          const spentLogs = await db.redemptionLogs.where('user_name').equals(newName).toArray();
+          const allTasks = await db.tasks.where('user_name').equals(newName).select('points, completed').toArray();
+          const spentLogs = await db.redemptionLogs.where('user_name').equals(newName).select('spent_points').toArray();
           const spent = spentLogs.reduce((sum, log) => sum + (log.spent_points || 0), 0);
           const earned = allTasks.filter(t => t.completed).reduce((sum, t) => sum + (Number(t.points) || 0), 0);
           return earned - spent;
@@ -109,8 +109,8 @@ export default function RewardStore() {
       const name = userNameRef.current;
       setRewards(await db.rewards.where('user_name').equals(name).toArray());
       setLogs(await db.redemptionLogs.where('user_name').equals(name).reverse().toArray());
-      const allTasks = await db.tasks.where('user_name').equals(name).toArray();
-      const spentLogs = await db.redemptionLogs.where('user_name').equals(name).toArray();
+      const allTasks = await db.tasks.where('user_name').equals(name).select('points, completed').toArray();
+      const spentLogs = await db.redemptionLogs.where('user_name').equals(name).select('spent_points').toArray();
       const spent = spentLogs.reduce((sum, log) => sum + (log.spent_points || 0), 0);
       const earned = allTasks.filter(t => t.completed).reduce((sum, t) => sum + (Number(t.points) || 0), 0);
       setTotalPoints(earned - spent);

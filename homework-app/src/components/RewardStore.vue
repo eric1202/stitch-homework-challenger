@@ -123,9 +123,9 @@ const refreshRewards = async () => {
     const logsResult = await db.redemptionLogs.where('user_name').equals(userName.value).reverse().toArray();
     logs.value = logsResult;
     
-    const allTasks = await db.tasks.where('user_name').equals(userName.value).toArray();
+    const allTasks = await db.tasks.where('user_name').equals(userName.value).select('points, completed').toArray();
     let spent = 0;
-    const spentPointsLogs = await db.redemptionLogs.where('user_name').equals(userName.value).toArray();
+    const spentPointsLogs = await db.redemptionLogs.where('user_name').equals(userName.value).select('spent_points').toArray();
     spent = spentPointsLogs.reduce((sum, log) => sum + (log.spent_points || 0), 0);
     const earned = allTasks
       .filter(task => task.completed)
@@ -156,10 +156,10 @@ const updateSubscriptions = (name) => {
 
   pointsSub = liveQuery(async () => {
     try {
-      const allTasks = await db.tasks.where('user_name').equals(name).toArray();
+      const allTasks = await db.tasks.where('user_name').equals(name).select('points, completed').toArray();
       let spent = 0;
       
-      const spentPointsLogs = await db.redemptionLogs.where('user_name').equals(name).toArray();
+      const spentPointsLogs = await db.redemptionLogs.where('user_name').equals(name).select('spent_points').toArray();
       spent = spentPointsLogs.reduce((sum, log) => sum + (log.spent_points || 0), 0);
       
       const earned = allTasks

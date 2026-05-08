@@ -184,7 +184,7 @@ export default function HomeView() {
             </div>
           </div>
           <div className="flex flex-col items-center gap-2">
-            <h2 className="text-3xl font-black text-text-main-light dark:text-text-main-dark tracking-tight">Stitch Challenger</h2>
+            <h2 className="text-3xl font-black text-text-main-light dark:text-text-main-dark tracking-tight">Homework Challenger</h2>
             <div className="flex items-center gap-2">
               <div className="size-1.5 bg-primary rounded-full animate-bounce"></div>
               <div className="size-1.5 bg-primary rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
@@ -227,7 +227,7 @@ export default function HomeView() {
         </div>
         <button
           onClick={() => setIsAddingFormOpen(!isAddingFormOpen)}
-          className="hidden md:flex items-center gap-2 bg-primary hover:bg-primary-dark text-white font-bold py-4 px-8 rounded-2xl shadow-lg shadow-primary/30 transition-all hover:-translate-y-1 active:scale-95 duration-200"
+          className="hidden md:flex items-center bg-surface-light dark:bg-surface-dark  hover:bg-primary-dark text-white font-bold py-4 px-8 rounded-2xl shadow-lg shadow-primary/30 transition-all hover:-translate-y-1 active:scale-95 duration-200"
         >
           <Plus className="w-5 h-5" />
           <span>{isAddingFormOpen ? t('settings.danger.resetBtn') : t('home.addTaskTitle')}</span>

@@ -1,12 +1,18 @@
 <!DOCTYPE html>
-<html class="light" lang="en"><head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Homework Hero - Today's Tasks</title>
-<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700;800&amp;family=Noto+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<script id="tailwind-config">
+<html class="light" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Homework Hero - Today's Tasks</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700;800&amp;family=Noto+Sans:wght@400;500;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
         tailwind.config = {
             darkMode: "class",
             theme: {
@@ -31,222 +37,321 @@
             },
         }
     </script>
-<style>.custom-checkbox:checked {
+    <style>
+        .custom-checkbox:checked {
             background-image: url(https://lh3.googleusercontent.com/aida-public/AB6AXuBKFoRmeiQ9X_5Sf_LMj1PdclbppMTOpLWxQ3QZFZ1US0hLQ6tP-83SdiRb82TRJ791NQ0cxRWCmCnHffgIdeWuY3GfvpUXMOHHhaeJlZ2NRQEa7wrdQPO8sqO95vWHyK2FJLH70MZMTBfwi1rtxQoiofMwOxXsdv2IEMfRS4q001EXCMJVdDMjlDi0M4keqhzHaXrbqUTGPFyJBbHl3mJYIuaWHC_-i5uYwzIZ3_fvN8_BJKIFqk8I1DpMQ6ihfPLCy2zTYm0KSABn)
         }
     </style>
 </head>
-<body class="bg-background-light dark:bg-background-dark font-display text-text-primary-light dark:text-text-primary-dark transition-colors duration-200">
-<div class="flex min-h-screen w-full flex-col lg:flex-row overflow-hidden">
-<aside class="hidden lg:flex w-72 flex-col justify-between bg-surface-light dark:bg-surface-dark border-r border-gray-100 dark:border-gray-800 p-6 h-screen sticky top-0">
-<div class="flex flex-col gap-8">
-<div class="flex items-center gap-3">
-<div class="bg-center bg-no-repeat bg-cover rounded-xl size-10 shadow-sm" data-alt="Abstract colorful shape logo" style="background-image: linear-gradient(135deg, #4bee2b 0%, #2ecc71 100%);"></div>
-<h1 class="text-xl font-bold tracking-tight">Homework Hero</h1>
-</div>
-<nav class="flex flex-col gap-2">
-<a class="flex items-center gap-3 px-4 py-3 rounded-xl bg-primary/20 text-primary-dark dark:text-primary font-medium transition-transform hover:scale-105" href="#">
-<span class="material-symbols-outlined fill-1">wb_sunny</span>
-<span>Today's Tasks</span>
-</a>
-<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-text-secondary-light dark:text-text-secondary-dark hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors" href="#">
-<span class="material-symbols-outlined">calendar_month</span>
-<span>Weekly Plan</span>
-</a>
-<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-text-secondary-light dark:text-text-secondary-dark hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors" href="#">
-<span class="material-symbols-outlined">menu_book</span>
-<span>Subjects</span>
-</a>
-<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-text-secondary-light dark:text-text-secondary-dark hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors" href="#">
-<span class="material-symbols-outlined">stars</span>
-<span>Rewards</span>
-</a>
-</nav>
-</div>
-<div class="flex items-center gap-3 p-3 rounded-xl bg-background-light dark:bg-background-dark">
-<div class="bg-center bg-no-repeat bg-cover rounded-full size-10" data-alt="Avatar of a smiling young student" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBvwVmL0kgkWzosiTVTJD__46aKrvidB9U1XUfC2TJYEoZorXpiudwKBGRKUv3JdzaK3oEhFGIMmFO7CMUKsnPQF6-zOwR9qiCP5IGJ_tE5d_ro1KdGpk4bmFwZRHrMl6RCRsTFRky2NyzRa9h8T4YM1hMDPvZbVqI6kcQrQRJJYOhOW21W4RH3vgEyOcxauwJZlNIAC_qfpxUjPORL3uFIT0qwL0horoVVXoWdTAUNkjFVpqLtMjwWDfQuQUoEGIG4ygRW7GWORFpd");'></div>
-<div class="flex flex-col">
-<p class="text-sm font-bold">Alex Johnson</p>
-<p class="text-xs text-text-secondary-light dark:text-text-secondary-dark">Level 5 Scholar</p>
-</div>
-</div>
-</aside>
-<main class="flex-1 h-screen overflow-y-auto bg-background-light dark:bg-background-dark p-4 lg:p-8 xl:p-12 relative">
-<div class="max-w-4xl mx-auto flex flex-col gap-8 pb-20">
-<header class="flex flex-col md:flex-row md:items-end justify-between gap-4">
-<div class="flex flex-col gap-2">
-<h2 class="text-3xl md:text-4xl font-black tracking-tight">Hi Alex,<br/>here is your mission! 🚀</h2>
-<div class="flex items-center gap-2 text-text-secondary-light dark:text-text-secondary-dark">
-<span class="material-symbols-outlined text-primary text-xl">calendar_today</span>
-<p class="text-lg font-medium">Monday, October 24th</p>
-</div>
-</div>
-<button class="hidden md:flex items-center gap-2 bg-primary hover:bg-[#3cd620] text-black font-bold py-3 px-6 rounded-xl shadow-lg shadow-primary/30 transition-all hover:-translate-y-1 active:scale-95">
-<span class="material-symbols-outlined font-bold">add</span>
-<span>New Mission</span>
-</button>
-</header>
-<section class="bg-surface-light dark:bg-surface-dark p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 relative overflow-hidden group">
-<div class="absolute -right-10 -top-10 size-40 bg-primary/10 rounded-full blur-2xl group-hover:bg-primary/20 transition-colors"></div>
-<div class="flex flex-col gap-4 relative z-10">
-<div class="flex justify-between items-end">
-<div>
-<h3 class="text-lg font-bold mb-1">Daily Progress</h3>
-<p class="text-text-secondary-light dark:text-text-secondary-dark text-sm">You're doing great! Keep it up!</p>
-</div>
-<div class="text-2xl font-black text-primary">66%</div>
-</div>
-<div class="h-4 w-full bg-background-light dark:bg-background-dark rounded-full overflow-hidden">
-<div class="h-full bg-primary rounded-full transition-all duration-500 ease-out shadow-[0_0_10px_rgba(75,238,43,0.5)]" style="width: 66%"></div>
-</div>
-<div class="flex justify-between text-sm font-medium text-text-secondary-light dark:text-text-secondary-dark">
-<span>0 tasks</span>
-<span>2 of 3 complete</span>
-</div>
-</div>
-</section>
-<section class="flex flex-col gap-4">
-<h3 class="text-xl font-bold flex items-center gap-2">
-<span class="material-symbols-outlined text-primary">check_circle</span>
+
+<body
+    class="bg-background-light dark:bg-background-dark font-display text-text-primary-light dark:text-text-primary-dark transition-colors duration-200">
+    <div class="flex min-h-screen w-full flex-col lg:flex-row overflow-hidden">
+        <aside
+            class="hidden lg:flex w-72 flex-col justify-between bg-surface-light dark:bg-surface-dark border-r border-gray-100 dark:border-gray-800 p-6 h-screen sticky top-0">
+            <div class="flex flex-col gap-8">
+                <div class="flex items-center gap-3">
+                    <div class="bg-center bg-no-repeat bg-cover rounded-xl size-10 shadow-sm"
+                        data-alt="Abstract colorful shape logo"
+                        style="background-image: linear-gradient(135deg, #4bee2b 0%, #2ecc71 100%);"></div>
+                    <h1 class="text-xl font-bold tracking-tight">Homework Hero</h1>
+                </div>
+                <nav class="flex flex-col gap-2">
+                    <a class="flex items-center gap-3 px-4 py-3 rounded-xl bg-primary/20 text-primary-dark dark:text-primary font-medium transition-transform hover:scale-105"
+                        href="#">
+                        <span class="material-symbols-outlined fill-1">wb_sunny</span>
+                        <span>Today's Tasks</span>
+                    </a>
+                    <a class="flex items-center gap-3 px-4 py-3 rounded-xl text-text-secondary-light dark:text-text-secondary-dark hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                        href="#">
+                        <span class="material-symbols-outlined">calendar_month</span>
+                        <span>Weekly Plan</span>
+                    </a>
+                    <a class="flex items-center gap-3 px-4 py-3 rounded-xl text-text-secondary-light dark:text-text-secondary-dark hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                        href="#">
+                        <span class="material-symbols-outlined">menu_book</span>
+                        <span>Subjects</span>
+                    </a>
+                    <a class="flex items-center gap-3 px-4 py-3 rounded-xl text-text-secondary-light dark:text-text-secondary-dark hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                        href="#">
+                        <span class="material-symbols-outlined">stars</span>
+                        <span>Rewards</span>
+                    </a>
+                </nav>
+            </div>
+            <div class="flex items-center gap-3 p-3 rounded-xl bg-background-light dark:bg-background-dark">
+                <div class="bg-center bg-no-repeat bg-cover rounded-full size-10"
+                    data-alt="Avatar of a smiling young student"
+                    style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBvwVmL0kgkWzosiTVTJD__46aKrvidB9U1XUfC2TJYEoZorXpiudwKBGRKUv3JdzaK3oEhFGIMmFO7CMUKsnPQF6-zOwR9qiCP5IGJ_tE5d_ro1KdGpk4bmFwZRHrMl6RCRsTFRky2NyzRa9h8T4YM1hMDPvZbVqI6kcQrQRJJYOhOW21W4RH3vgEyOcxauwJZlNIAC_qfpxUjPORL3uFIT0qwL0horoVVXoWdTAUNkjFVpqLtMjwWDfQuQUoEGIG4ygRW7GWORFpd");'>
+                </div>
+                <div class="flex flex-col">
+                    <p class="text-sm font-bold">Alex Johnson</p>
+                    <p class="text-xs text-text-secondary-light dark:text-text-secondary-dark">Level 5 Scholar</p>
+                </div>
+            </div>
+        </aside>
+        <main
+            class="flex-1 h-screen overflow-y-auto bg-background-light dark:bg-background-dark p-4 lg:p-8 xl:p-12 relative">
+            <div class="max-w-4xl mx-auto flex flex-col gap-8 pb-20">
+                <header class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+                    <div class="flex flex-col gap-2">
+                        <h2 class="text-3xl md:text-4xl font-black tracking-tight">Hi Alex,<br />here is your mission!
+                            🚀</h2>
+                        <div class="flex items-center gap-2 text-text-secondary-light dark:text-text-secondary-dark">
+                            <span class="material-symbols-outlined text-primary text-xl">calendar_today</span>
+                            <p class="text-lg font-medium">Monday, October 24th</p>
+                        </div>
+                    </div>
+                    <button
+                        class="hidden md:flex items-center bg-surface-light dark:bg-surface-dark  hover:bg-[#3cd620] text-black font-bold py-3 px-6 rounded-xl shadow-lg shadow-primary/30 transition-all hover:-translate-y-1 active:scale-95">
+                        <span class="material-symbols-outlined font-bold">add</span>
+                        <span>New Mission</span>
+                    </button>
+                </header>
+                <section
+                    class="bg-surface-light dark:bg-surface-dark p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 relative overflow-hidden group">
+                    <div
+                        class="absolute -right-10 -top-10 size-40 bg-primary/10 rounded-full blur-2xl group-hover:bg-primary/20 transition-colors">
+                    </div>
+                    <div class="flex flex-col gap-4 relative z-10">
+                        <div class="flex justify-between items-end">
+                            <div>
+                                <h3 class="text-lg font-bold mb-1">Daily Progress</h3>
+                                <p class="text-text-secondary-light dark:text-text-secondary-dark text-sm">You're doing
+                                    great! Keep it up!</p>
+                            </div>
+                            <div class="text-2xl font-black text-primary">66%</div>
+                        </div>
+                        <div
+                            class="h-4 w-full bg-background-light dark:bg-background-dark rounded-full overflow-hidden">
+                            <div class="h-full bg-primary rounded-full transition-all duration-500 ease-out shadow-[0_0_10px_rgba(75,238,43,0.5)]"
+                                style="width: 66%"></div>
+                        </div>
+                        <div
+                            class="flex justify-between text-sm font-medium text-text-secondary-light dark:text-text-secondary-dark">
+                            <span>0 tasks</span>
+                            <span>2 of 3 complete</span>
+                        </div>
+                    </div>
+                </section>
+                <section class="flex flex-col gap-4">
+                    <h3 class="text-xl font-bold flex items-center gap-2">
+                        <span class="material-symbols-outlined text-primary">check_circle</span>
                         To-Do List
                     </h3>
-<div class="group flex items-center gap-4 bg-surface-light dark:bg-surface-dark p-4 rounded-xl shadow-sm border border-transparent hover:border-primary/50 transition-all duration-200">
-<div class="relative flex size-8 items-center justify-center shrink-0">
-<input class="custom-checkbox appearance-none h-6 w-6 rounded-full border-2 border-gray-300 dark:border-gray-600 checked:bg-primary checked:border-primary transition-all cursor-pointer focus:ring-0 focus:ring-offset-0" type="checkbox"/>
-</div>
-<div class="flex flex-1 flex-col sm:flex-row sm:items-center justify-between gap-2">
-<div class="flex flex-col">
-<span class="text-lg font-medium text-text-primary-light dark:text-text-primary-dark group-hover:text-primary transition-colors">Read Chapter 3</span>
-<span class="text-sm text-text-secondary-light dark:text-text-secondary-dark">The Magic Treehouse</span>
-</div>
-<span class="px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-300 rounded-lg text-xs font-bold uppercase tracking-wide w-fit">Reading</span>
-</div>
-<div class="flex items-center gap-1 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-200">
-<button class="p-2 text-gray-400 hover:text-blue-500 transition-all rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20" title="Edit Task">
-<span class="material-symbols-outlined text-[20px]">edit</span>
-</button>
-<button class="p-2 text-gray-400 hover:text-red-500 transition-all rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20" title="Delete Task">
-<span class="material-symbols-outlined text-[20px]">delete</span>
-</button>
-</div>
-</div>
-<div class="group flex items-center gap-4 bg-surface-light dark:bg-surface-dark p-4 rounded-xl shadow-sm border border-transparent hover:border-primary/50 transition-all duration-200">
-<div class="relative flex size-8 items-center justify-center shrink-0">
-<input class="custom-checkbox appearance-none h-6 w-6 rounded-full border-2 border-gray-300 dark:border-gray-600 checked:bg-primary checked:border-primary transition-all cursor-pointer focus:ring-0 focus:ring-offset-0" type="checkbox"/>
-</div>
-<div class="flex flex-1 flex-col sm:flex-row sm:items-center justify-between gap-2">
-<div class="flex flex-col">
-<span class="text-lg font-medium text-text-primary-light dark:text-text-primary-dark group-hover:text-primary transition-colors">Multiplication Worksheet</span>
-<span class="text-sm text-text-secondary-light dark:text-text-secondary-dark">Pages 12-14</span>
-</div>
-<span class="px-3 py-1 bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-300 rounded-lg text-xs font-bold uppercase tracking-wide w-fit">Math</span>
-</div>
-<div class="flex items-center gap-1 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-200">
-<button class="p-2 text-gray-400 hover:text-blue-500 transition-all rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20" title="Edit Task">
-<span class="material-symbols-outlined text-[20px]">edit</span>
-</button>
-<button class="p-2 text-gray-400 hover:text-red-500 transition-all rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20" title="Delete Task">
-<span class="material-symbols-outlined text-[20px]">delete</span>
-</button>
-</div>
-</div>
-<div class="group flex items-center gap-4 bg-surface-light dark:bg-surface-dark p-4 rounded-xl shadow-sm border border-transparent hover:border-primary/50 transition-all duration-200">
-<div class="relative flex size-8 items-center justify-center shrink-0">
-<input class="custom-checkbox appearance-none h-6 w-6 rounded-full border-2 border-gray-300 dark:border-gray-600 checked:bg-primary checked:border-primary transition-all cursor-pointer focus:ring-0 focus:ring-offset-0" type="checkbox"/>
-</div>
-<div class="flex flex-1 flex-col sm:flex-row sm:items-center justify-between gap-2">
-<div class="flex flex-col">
-<span class="text-lg font-medium text-text-primary-light dark:text-text-primary-dark group-hover:text-primary transition-colors">Draw a Leaf</span>
-<span class="text-sm text-text-secondary-light dark:text-text-secondary-dark">Find one outside and sketch it</span>
-</div>
-<span class="px-3 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded-lg text-xs font-bold uppercase tracking-wide w-fit">Science</span>
-</div>
-<div class="flex items-center gap-1 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-200">
-<button class="p-2 text-gray-400 hover:text-blue-500 transition-all rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20" title="Edit Task">
-<span class="material-symbols-outlined text-[20px]">edit</span>
-</button>
-<button class="p-2 text-gray-400 hover:text-red-500 transition-all rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20" title="Delete Task">
-<span class="material-symbols-outlined text-[20px]">delete</span>
-</button>
-</div>
-</div>
-<div class="group flex items-center gap-4 bg-surface-light/50 dark:bg-surface-dark/50 p-4 rounded-xl border border-transparent transition-all duration-200 opacity-60">
-<div class="relative flex size-8 items-center justify-center shrink-0">
-<input checked="" class="custom-checkbox appearance-none h-6 w-6 rounded-full border-2 border-gray-300 dark:border-gray-600 checked:bg-primary checked:border-primary transition-all cursor-pointer focus:ring-0 focus:ring-offset-0" type="checkbox"/>
-</div>
-<div class="flex flex-1 flex-col sm:flex-row sm:items-center justify-between gap-2">
-<div class="flex flex-col">
-<span class="text-lg font-medium text-text-secondary-light dark:text-text-secondary-dark line-through decoration-2 decoration-primary/50">History Timeline</span>
-<span class="text-sm text-text-secondary-light dark:text-text-secondary-dark line-through">Civil War Events</span>
-</div>
-<span class="px-3 py-1 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300 rounded-lg text-xs font-bold uppercase tracking-wide w-fit">History</span>
-</div>
-<div class="flex items-center gap-1 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-200">
-<button class="p-2 text-gray-400 hover:text-blue-500 transition-all rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20" title="Edit Task">
-<span class="material-symbols-outlined text-[20px]">edit</span>
-</button>
-<button class="p-2 text-gray-400 hover:text-red-500 transition-all rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20" title="Delete Task">
-<span class="material-symbols-outlined text-[20px]">delete</span>
-</button>
-</div>
-</div>
-</section>
-</div>
-</main>
-<button class="md:hidden fixed bottom-6 right-6 size-16 bg-primary text-black rounded-full shadow-xl shadow-primary/40 flex items-center justify-center z-50 active:scale-90 transition-transform">
-<span class="material-symbols-outlined text-3xl font-bold">add</span>
-</button>
-</div>
-<div class="hidden fixed inset-0 z-[60] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4" id="edit-modal">
-<div class="bg-surface-light dark:bg-surface-dark p-6 rounded-2xl shadow-2xl max-w-md w-full border border-gray-100 dark:border-gray-800 animate-in fade-in zoom-in duration-200">
-<div class="flex justify-between items-center mb-6">
-<h3 class="text-xl font-bold">Edit Mission ✏️</h3>
-<button class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 rounded-full p-1 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
-<span class="material-symbols-outlined">close</span>
-</button>
-</div>
-<form class="flex flex-col gap-4">
-<div class="flex flex-col gap-2">
-<label class="text-sm font-bold text-text-secondary-light dark:text-text-secondary-dark">Task Name</label>
-<input class="w-full rounded-xl border-gray-200 dark:border-gray-700 bg-background-light dark:bg-background-dark focus:border-primary focus:ring-primary transition-all p-3 font-medium placeholder-gray-400" type="text" value="Read Chapter 3"/>
-</div>
-<div class="flex flex-col gap-2">
-<label class="text-sm font-bold text-text-secondary-light dark:text-text-secondary-dark">Description / Details</label>
-<input class="w-full rounded-xl border-gray-200 dark:border-gray-700 bg-background-light dark:bg-background-dark focus:border-primary focus:ring-primary transition-all p-3 font-medium placeholder-gray-400" type="text" value="The Magic Treehouse"/>
-</div>
-<div class="flex flex-col gap-2">
-<label class="text-sm font-bold text-text-secondary-light dark:text-text-secondary-dark">Subject</label>
-<select class="w-full rounded-xl border-gray-200 dark:border-gray-700 bg-background-light dark:bg-background-dark focus:border-primary focus:ring-primary transition-all p-3 font-medium">
-<option selected="">Reading</option>
-<option>Math</option>
-<option>Science</option>
-<option>History</option>
-<option>Art</option>
-</select>
-</div>
-<div class="flex gap-3 w-full mt-4">
-<button class="flex-1 py-3 rounded-xl border border-gray-200 dark:border-gray-700 font-medium hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors text-text-primary-light dark:text-text-primary-dark" type="button">Cancel</button>
-<button class="flex-1 py-3 rounded-xl bg-primary hover:bg-[#3cd620] text-black font-bold shadow-lg shadow-primary/30 transition-transform active:scale-95" type="submit">Save Changes</button>
-</div>
-</form>
-</div>
-</div>
-<div class="hidden fixed inset-0 z-[60] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4" id="delete-modal">
-<div class="bg-surface-light dark:bg-surface-dark p-6 rounded-2xl shadow-2xl max-w-sm w-full border border-gray-100 dark:border-gray-800 animate-in fade-in zoom-in duration-200">
-<div class="flex flex-col items-center text-center gap-4">
-<div class="size-14 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center text-red-500 dark:text-red-400 mb-2">
-<span class="material-symbols-outlined text-4xl">warning</span>
-</div>
-<div>
-<h3 class="text-xl font-bold mb-2 text-text-primary-light dark:text-text-primary-dark">Delete this mission?</h3>
-<p class="text-text-secondary-light dark:text-text-secondary-dark text-sm leading-relaxed">Are you sure you want to remove this task? <br/>You can't undo this action.</p>
-</div>
-<div class="flex gap-3 w-full mt-4">
-<button class="flex-1 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 font-medium hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors text-text-primary-light dark:text-text-primary-dark">No, keep it</button>
-<button class="flex-1 py-2.5 rounded-xl bg-red-500 hover:bg-red-600 text-white font-bold shadow-lg shadow-red-500/30 transition-transform active:scale-95">Yes, Delete</button>
-</div>
-</div>
-</div>
-</div>
+                    <div
+                        class="group flex items-center gap-4 bg-surface-light dark:bg-surface-dark p-4 rounded-xl shadow-sm border border-transparent hover:border-primary/50 transition-all duration-200">
+                        <div class="relative flex size-8 items-center justify-center shrink-0">
+                            <input
+                                class="custom-checkbox appearance-none h-6 w-6 rounded-full border-2 border-gray-300 dark:border-gray-600 checked:bg-primary checked:border-primary transition-all cursor-pointer focus:ring-0 focus:ring-offset-0"
+                                type="checkbox" />
+                        </div>
+                        <div class="flex flex-1 flex-col sm:flex-row sm:items-center justify-between gap-2">
+                            <div class="flex flex-col">
+                                <span
+                                    class="text-lg font-medium text-text-primary-light dark:text-text-primary-dark group-hover:text-primary transition-colors">Read
+                                    Chapter 3</span>
+                                <span class="text-sm text-text-secondary-light dark:text-text-secondary-dark">The Magic
+                                    Treehouse</span>
+                            </div>
+                            <span
+                                class="px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-300 rounded-lg text-xs font-bold uppercase tracking-wide w-fit">Reading</span>
+                        </div>
+                        <div
+                            class="flex items-center gap-1 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-200">
+                            <button
+                                class="p-2 text-gray-400 hover:text-blue-500 transition-all rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20"
+                                title="Edit Task">
+                                <span class="material-symbols-outlined text-[20px]">edit</span>
+                            </button>
+                            <button
+                                class="p-2 text-gray-400 hover:text-red-500 transition-all rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20"
+                                title="Delete Task">
+                                <span class="material-symbols-outlined text-[20px]">delete</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div
+                        class="group flex items-center gap-4 bg-surface-light dark:bg-surface-dark p-4 rounded-xl shadow-sm border border-transparent hover:border-primary/50 transition-all duration-200">
+                        <div class="relative flex size-8 items-center justify-center shrink-0">
+                            <input
+                                class="custom-checkbox appearance-none h-6 w-6 rounded-full border-2 border-gray-300 dark:border-gray-600 checked:bg-primary checked:border-primary transition-all cursor-pointer focus:ring-0 focus:ring-offset-0"
+                                type="checkbox" />
+                        </div>
+                        <div class="flex flex-1 flex-col sm:flex-row sm:items-center justify-between gap-2">
+                            <div class="flex flex-col">
+                                <span
+                                    class="text-lg font-medium text-text-primary-light dark:text-text-primary-dark group-hover:text-primary transition-colors">Multiplication
+                                    Worksheet</span>
+                                <span class="text-sm text-text-secondary-light dark:text-text-secondary-dark">Pages
+                                    12-14</span>
+                            </div>
+                            <span
+                                class="px-3 py-1 bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-300 rounded-lg text-xs font-bold uppercase tracking-wide w-fit">Math</span>
+                        </div>
+                        <div
+                            class="flex items-center gap-1 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-200">
+                            <button
+                                class="p-2 text-gray-400 hover:text-blue-500 transition-all rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20"
+                                title="Edit Task">
+                                <span class="material-symbols-outlined text-[20px]">edit</span>
+                            </button>
+                            <button
+                                class="p-2 text-gray-400 hover:text-red-500 transition-all rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20"
+                                title="Delete Task">
+                                <span class="material-symbols-outlined text-[20px]">delete</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div
+                        class="group flex items-center gap-4 bg-surface-light dark:bg-surface-dark p-4 rounded-xl shadow-sm border border-transparent hover:border-primary/50 transition-all duration-200">
+                        <div class="relative flex size-8 items-center justify-center shrink-0">
+                            <input
+                                class="custom-checkbox appearance-none h-6 w-6 rounded-full border-2 border-gray-300 dark:border-gray-600 checked:bg-primary checked:border-primary transition-all cursor-pointer focus:ring-0 focus:ring-offset-0"
+                                type="checkbox" />
+                        </div>
+                        <div class="flex flex-1 flex-col sm:flex-row sm:items-center justify-between gap-2">
+                            <div class="flex flex-col">
+                                <span
+                                    class="text-lg font-medium text-text-primary-light dark:text-text-primary-dark group-hover:text-primary transition-colors">Draw
+                                    a Leaf</span>
+                                <span class="text-sm text-text-secondary-light dark:text-text-secondary-dark">Find one
+                                    outside and sketch it</span>
+                            </div>
+                            <span
+                                class="px-3 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded-lg text-xs font-bold uppercase tracking-wide w-fit">Science</span>
+                        </div>
+                        <div
+                            class="flex items-center gap-1 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-200">
+                            <button
+                                class="p-2 text-gray-400 hover:text-blue-500 transition-all rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20"
+                                title="Edit Task">
+                                <span class="material-symbols-outlined text-[20px]">edit</span>
+                            </button>
+                            <button
+                                class="p-2 text-gray-400 hover:text-red-500 transition-all rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20"
+                                title="Delete Task">
+                                <span class="material-symbols-outlined text-[20px]">delete</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div
+                        class="group flex items-center gap-4 bg-surface-light/50 dark:bg-surface-dark/50 p-4 rounded-xl border border-transparent transition-all duration-200 opacity-60">
+                        <div class="relative flex size-8 items-center justify-center shrink-0">
+                            <input checked=""
+                                class="custom-checkbox appearance-none h-6 w-6 rounded-full border-2 border-gray-300 dark:border-gray-600 checked:bg-primary checked:border-primary transition-all cursor-pointer focus:ring-0 focus:ring-offset-0"
+                                type="checkbox" />
+                        </div>
+                        <div class="flex flex-1 flex-col sm:flex-row sm:items-center justify-between gap-2">
+                            <div class="flex flex-col">
+                                <span
+                                    class="text-lg font-medium text-text-secondary-light dark:text-text-secondary-dark line-through decoration-2 decoration-primary/50">History
+                                    Timeline</span>
+                                <span
+                                    class="text-sm text-text-secondary-light dark:text-text-secondary-dark line-through">Civil
+                                    War Events</span>
+                            </div>
+                            <span
+                                class="px-3 py-1 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300 rounded-lg text-xs font-bold uppercase tracking-wide w-fit">History</span>
+                        </div>
+                        <div
+                            class="flex items-center gap-1 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-200">
+                            <button
+                                class="p-2 text-gray-400 hover:text-blue-500 transition-all rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20"
+                                title="Edit Task">
+                                <span class="material-symbols-outlined text-[20px]">edit</span>
+                            </button>
+                            <button
+                                class="p-2 text-gray-400 hover:text-red-500 transition-all rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20"
+                                title="Delete Task">
+                                <span class="material-symbols-outlined text-[20px]">delete</span>
+                            </button>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+        <button
+            class="md:hidden fixed bottom-6 right-6 size-16 bg-primary text-black rounded-full shadow-xl shadow-primary/40 flex items-center justify-center z-50 active:scale-90 transition-transform">
+            <span class="material-symbols-outlined text-3xl font-bold">add</span>
+        </button>
+    </div>
+    <div class="hidden fixed inset-0 z-[60] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
+        id="edit-modal">
+        <div
+            class="bg-surface-light dark:bg-surface-dark p-6 rounded-2xl shadow-2xl max-w-md w-full border border-gray-100 dark:border-gray-800 animate-in fade-in zoom-in duration-200">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-bold">Edit Mission ✏️</h3>
+                <button
+                    class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 rounded-full p-1 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            <form class="flex flex-col gap-4">
+                <div class="flex flex-col gap-2">
+                    <label class="text-sm font-bold text-text-secondary-light dark:text-text-secondary-dark">Task
+                        Name</label>
+                    <input
+                        class="w-full rounded-xl border-gray-200 dark:border-gray-700 bg-background-light dark:bg-background-dark focus:border-primary focus:ring-primary transition-all p-3 font-medium placeholder-gray-400"
+                        type="text" value="Read Chapter 3" />
+                </div>
+                <div class="flex flex-col gap-2">
+                    <label class="text-sm font-bold text-text-secondary-light dark:text-text-secondary-dark">Description
+                        / Details</label>
+                    <input
+                        class="w-full rounded-xl border-gray-200 dark:border-gray-700 bg-background-light dark:bg-background-dark focus:border-primary focus:ring-primary transition-all p-3 font-medium placeholder-gray-400"
+                        type="text" value="The Magic Treehouse" />
+                </div>
+                <div class="flex flex-col gap-2">
+                    <label
+                        class="text-sm font-bold text-text-secondary-light dark:text-text-secondary-dark">Subject</label>
+                    <select
+                        class="w-full rounded-xl border-gray-200 dark:border-gray-700 bg-background-light dark:bg-background-dark focus:border-primary focus:ring-primary transition-all p-3 font-medium">
+                        <option selected="">Reading</option>
+                        <option>Math</option>
+                        <option>Science</option>
+                        <option>History</option>
+                        <option>Art</option>
+                    </select>
+                </div>
+                <div class="flex gap-3 w-full mt-4">
+                    <button
+                        class="flex-1 py-3 rounded-xl border border-gray-200 dark:border-gray-700 font-medium hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors text-text-primary-light dark:text-text-primary-dark"
+                        type="button">Cancel</button>
+                    <button
+                        class="flex-1 py-3 rounded-xl bg-primary hover:bg-[#3cd620] text-black font-bold shadow-lg shadow-primary/30 transition-transform active:scale-95"
+                        type="submit">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="hidden fixed inset-0 z-[60] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
+        id="delete-modal">
+        <div
+            class="bg-surface-light dark:bg-surface-dark p-6 rounded-2xl shadow-2xl max-w-sm w-full border border-gray-100 dark:border-gray-800 animate-in fade-in zoom-in duration-200">
+            <div class="flex flex-col items-center text-center gap-4">
+                <div
+                    class="size-14 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center text-red-500 dark:text-red-400 mb-2">
+                    <span class="material-symbols-outlined text-4xl">warning</span>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold mb-2 text-text-primary-light dark:text-text-primary-dark">Delete this
+                        mission?</h3>
+                    <p class="text-text-secondary-light dark:text-text-secondary-dark text-sm leading-relaxed">Are you
+                        sure you want to remove this task? <br />You can't undo this action.</p>
+                </div>
+                <div class="flex gap-3 w-full mt-4">
+                    <button
+                        class="flex-1 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 font-medium hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors text-text-primary-light dark:text-text-primary-dark">No,
+                        keep it</button>
+                    <button
+                        class="flex-1 py-2.5 rounded-xl bg-red-500 hover:bg-red-600 text-white font-bold shadow-lg shadow-red-500/30 transition-transform active:scale-95">Yes,
+                        Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
-</body></html>
+</body>
+
+</html>

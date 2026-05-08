@@ -1,70 +1,134 @@
 @import "tailwindcss";
 
 @theme {
-  --color-primary: #8080ff;
-  --color-primary-dark: #1d4ed8;
+  /* Brand / Accent */
+  --color-primary: var(--primary);
+  --color-accent-green: #00a878;
+  --color-accent-amber: #f2b84b;
+  --color-accent-red: #d44d3e;
+  --color-accent-cyan: #3aa6b9;
+  
+  /* Subjects */
+  --color-subject-chinese: #d44d3e;
+  --color-subject-math: #00a878;
+  --color-subject-english: #3aa6b9;
+  --color-subject-science: #f2b84b;
+  --color-subject-art: #ff6b6b;
+  --color-subject-reading: #4facfe;
+  --color-subject-sports: #ff9f43;
+  --color-subject-other: #5f6258;
 
-  --color-background-light: #f8fafc;
-  --color-background-dark: #0f172a;
+  /* Semantic Backgrounds */
+  --color-background-main: var(--background);
+  --color-surface-main: var(--surface);
+  
+  /* Text */
+  --color-text-main: var(--text-main);
+  --color-text-sub: var(--text-sub);
 
-  --color-surface-light: #ffffff;
-  --color-surface-dark: #1e293b;
+  /* Shadows */
+  --shadow-offset-dark: 4px 4px 0 var(--border);
+  --shadow-offset-green: 4px 4px 0 #00a878;
 
-  --color-text-main-light: #0f172a;
-  --color-text-main-dark: #f8fafc;
+  /* Fonts */
+  --font-display: "Iowan Old Style", "Charter", "Georgia", "Songti SC", serif;
+  --font-body: "Aptos", "IBM Plex Sans", "Inter", "Helvetica Neue", sans-serif;
+  --font-mono: "SFMono-Regular", "IBM Plex Mono", "Cascadia Code", monospace;
 
-  --color-text-sub-light: #475569;
-  --color-text-sub-dark: #94a3b8;
-
-  --font-display: system-ui, -apple-system, sans-serif;
-  --font-body: system-ui, -apple-system, sans-serif;
+  /* Radius */
+  --radius-card: 8px;
 }
 
-body {
-  font-family: system-ui, -apple-system, sans-serif;
-  @apply bg-background-light text-text-main-light transition-colors duration-200;
+:root {
+  --primary: #151511;
+  --background: #f7f5ef;
+  --surface: #fffdf7;
+  --text-main: #151511;
+  --text-sub: #5f6258;
+  --border: #151511;
 }
 
-.dark body {
-  @apply bg-background-dark text-text-main-dark;
+.dark {
+  --primary: #f7f5ef;
+  --background: #151511;
+  --surface: #1c1c18;
+  --text-main: #f7f5ef;
+  --text-sub: #b7b9b0;
+  --border: #f7f5ef;
 }
 
+@layer base {
+  body {
+    @apply font-body bg-background-main text-text-main transition-colors duration-200;
+    background-image: 
+      linear-gradient(90deg, rgba(21, 21, 17, 0.03) 1px, transparent 1px),
+      linear-gradient(180deg, rgba(21, 21, 17, 0.03) 1px, transparent 1px);
+    background-size: 32px 32px;
+  }
 
+  .dark body {
+    background-image: 
+      linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+      linear-gradient(180deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+  }
 
-/* Custom checkbox animation from design */
-.custom-checkbox:checked {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z'/%3E%3C/svg%3E");
-  background-size: 100% 100%;
-  background-position: center;
-  background-repeat: no-repeat;
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display leading-tight tracking-tight;
+  }
+
+  /* Mainline Button Style */
+  .btn-mainline {
+    @apply relative px-6 py-3 font-bold transition-all duration-150 border-2 border-primary bg-primary text-background-main shadow-offset-green hover:-translate-y-0.5 hover:shadow-[6px_6px_0_#00a878] active:translate-y-px active:shadow-[2px_2px_0_#00a878] disabled:opacity-50 disabled:translate-y-0 disabled:shadow-none;
+  }
+
+  .btn-mainline-secondary {
+    @apply relative px-6 py-3 font-bold transition-all duration-150 border-2 border-primary bg-surface-main text-text-main shadow-offset-dark hover:-translate-y-0.5 hover:shadow-[6px_6px_0_var(--border)] active:translate-y-px active:shadow-[2px_2px_0_var(--border)];
+  }
+
+  /* Mainline Card Style */
+  .card-mainline {
+    @apply bg-surface-main border-2 border-primary p-6 rounded-lg shadow-offset-dark transition-all;
+  }
+
+  /* Badge Style */
+  .badge-mainline {
+    @apply inline-flex items-center px-2 py-0.5 rounded-sm bg-accent-amber text-primary text-[10px] font-black uppercase tracking-wider;
+  }
+
+  /* Input Style */
+  .input-mainline {
+    @apply w-full bg-surface-main border-2 border-primary p-4 font-bold outline-none text-text-main transition-all focus:shadow-[4px_4px_0_var(--border)];
+  }
+
+  .badge-green { @apply !bg-accent-green !text-background-main; }
+  .badge-amber { @apply !bg-accent-amber !text-primary; }
+  .badge-cyan { @apply !bg-accent-cyan !text-background-main; }
+  .badge-red { @apply !bg-accent-red !text-background-main; }
 }
 
-@keyframes fadeIn {
+/* Custom scrollbar for editorial feel */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  @apply bg-transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  @apply bg-primary/20 rounded-full;
+}
+
+/* Animations (Restrained) */
+@keyframes fadeInRise {
   from {
     opacity: 0;
+    transform: translateY(4px);
   }
-
   to {
     opacity: 1;
+    transform: translateY(0);
   }
 }
 
-@keyframes zoomIn {
-  from {
-    opacity: 0;
-    transform: scale(0.95) translateY(10px);
-  }
-
-  to {
-    opacity: 1;
-    transform: scale(1) translateY(0);
-  }
-}
-
-.animate-in.fade-in {
-  animation: fadeIn 0.3s ease-out forwards;
-}
-
-.animate-in.zoom-in {
-  animation: zoomIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+.animate-rise {
+  animation: fadeInRise 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }

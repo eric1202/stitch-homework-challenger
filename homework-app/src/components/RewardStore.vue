@@ -361,49 +361,50 @@ const formatTime = (ts) => {
 <template>
   <div class="flex flex-col gap-8 pb-10">
     <!-- Header -->
-    <header class="flex flex-col md:flex-row md:items-center justify-between gap-6">
-      <div class="flex flex-col gap-2">
-        <h2 class="text-4xl md:text-5xl font-black tracking-tight leading-tight">
-          {{ isAdmin ? t('rewards.manageTitle') : t('rewards.title') }} 🎁
-        </h2>
-        <p class="text-lg font-medium text-text-sub-light dark:text-text-sub-dark">
-          {{ t('rewards.subtitle') }}
-        </p>
-      </div>
+    <header class="flex flex-col gap-8 mb-4">
+      <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
+        <div class="flex flex-col gap-4">
+          <span class="badge-mainline w-fit">Marketplace</span>
+          <h1 class="text-5xl md:text-7xl font-black text-primary leading-[0.9] -ml-1">
+            {{ isAdmin ? t('rewards.manageTitle') : t('rewards.title') }}
+          </h1>
+          <p class="text-lg md:text-xl font-medium text-text-sub max-w-xl leading-relaxed">
+            {{ t('rewards.subtitle') }}
+          </p>
+        </div>
+        
+        <div class="flex items-center gap-4">
+          <button 
+            @click="isAdmin = !isAdmin"
+            class="btn-mainline-secondary flex items-center gap-2"
+            :class="{ '!bg-primary !text-background-main shadow-offset-green': isAdmin }"
+          >
+            <Edit2 class="size-4" />
+            <span>{{ isAdmin ? t('rewards.exitParentMode') : t('rewards.parentMode') }}</span>
+          </button>
 
-      <div class="flex items-center gap-4">
-        <!-- Admin Toggle -->
-        <button 
-          @click="isAdmin = !isAdmin"
-          class="flex items-center gap-2 px-4 py-2 rounded-xl transition-all font-bold text-sm"
-          :class="isAdmin ? 'bg-primary text-black' : 'bg-surface-light dark:bg-surface-dark border border-gray-100 dark:border-gray-800'"
-        >
-          <Edit2 class="w-4 h-4" />
-          {{ isAdmin ? t('rewards.exitParentMode') : t('rewards.parentMode') }}
-        </button>
-
-        <button 
-          v-if="isAdmin" 
-          @click="openAddModal" 
-          class="bg-black text-white dark:bg-white dark:text-black font-black px-6 py-3 rounded-2xl flex items-center gap-2 hover:scale-105 active:scale-95 transition-all shadow-lg"
-        >
-          <Plus class="w-5 h-5" />
-          <span>{{ t('rewards.addNew') }}</span>
-        </button>
+          <button 
+            v-if="isAdmin" 
+            @click="openAddModal" 
+            class="btn-mainline flex items-center gap-2 group"
+          >
+            <Plus class="transition-transform group-hover:rotate-90" />
+            <span>{{ t('rewards.addNew') }}</span>
+          </button>
+        </div>
       </div>
     </header>
 
     <!-- Points Banner -->
-    <div class="bg-primary p-6 rounded-3xl shadow-lg shadow-primary/20 flex items-center justify-between text-white overflow-hidden relative group">
-      <div class="absolute -right-4 -top-4 size-32 bg-white/20 rounded-full blur-2xl group-hover:scale-110 transition-transform duration-700"></div>
-      <div class="relative z-10">
-        <p class="text-xs font-black uppercase tracking-widest opacity-70">{{ t('rewards.availableBalance') }}</p>
+    <div class="card-mainline !p-8 bg-accent-green/5 flex items-center justify-between group">
+      <div class="flex flex-col gap-2">
+        <p class="text-[10px] font-black uppercase tracking-widest text-text-sub">{{ t('rewards.availableBalance') }}</p>
         <div class="flex items-baseline gap-2">
-          <span class="text-5xl font-black">{{ totalPoints }}</span>
-          <span class="text-xl font-bold">pts</span>
+          <span class="text-6xl font-black text-primary leading-none">{{ totalPoints }}</span>
+          <span class="text-xl font-black text-primary uppercase">pts</span>
         </div>
       </div>
-      <History class="w-16 h-16 opacity-20 relative z-10" />
+      <History class="size-16 text-primary opacity-20 group-hover:rotate-12 transition-transform" />
     </div>
 
     <!-- Rewards Grid -->
@@ -427,19 +428,17 @@ const formatTime = (ts) => {
         </div>
       </div>
       
-      <div class="flex items-center justify-between mb-6">
-        <h3 class="text-2xl font-black flex items-center gap-2">
-          <Gift class="w-8 h-8 text-primary" />
-          {{ t('rewards.rewardsList') || '奖励列表' }}
+      <div class="flex items-center justify-between mb-8 border-b-2 border-primary pb-2">
+        <h3 class="text-3xl font-black text-primary">
+          {{ t('rewards.rewardsList') || 'Rewards' }}
         </h3>
         <button 
           @click="refreshRewards"
           :disabled="isRefreshing"
-          class="p-2 rounded-xl text-primary hover:bg-primary/10 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed active:scale-95"
-          :title="isRefreshing ? t('rewards.refreshing') : t('rewards.refreshList')"
+          class="btn-mainline-secondary !p-2 !shadow-none hover:rotate-12"
         >
           <RefreshCw 
-            class="w-5 h-5 transition-transform duration-200"
+            class="size-5 transition-transform"
             :class="{ 'animate-spin': isRefreshing }"
           />
         </button>
@@ -453,8 +452,8 @@ const formatTime = (ts) => {
           @click="selectedCategory = cat.key"
           class="flex items-center gap-1.5 px-4 py-2.5 rounded-2xl font-bold text-sm whitespace-nowrap transition-all duration-200 shrink-0 border"
           :class="selectedCategory === cat.key
-            ? 'bg-primary text-white border-primary shadow-md shadow-primary/20'
-            : 'bg-surface-light dark:bg-surface-dark border-gray-100 dark:border-gray-800 text-text-sub-light dark:text-text-sub-dark hover:border-primary/30'"
+            ? 'bg-primary text-background-main border-primary shadow-soft shadow-primary/20'
+            : 'bg-surface-main border-primary/20 text-text-sub hover:border-primary/50'"
         >
           <component
             v-if="cat.icon"
@@ -465,19 +464,19 @@ const formatTime = (ts) => {
           <span
             class="text-[10px] font-black px-1.5 py-0.5 rounded-lg min-w-[20px] text-center"
             :class="selectedCategory === cat.key
-              ? 'bg-white/20 text-white'
-              : 'bg-gray-100 dark:bg-gray-800 text-text-sub-light dark:text-text-sub-dark'"
+              ? 'bg-surface-main/20 text-background-main'
+              : 'bg-primary/5 text-text-sub'"
           >{{ cat.count }}</span>
         </button>
       </div>
 
-      <div v-if="rewards.length === 0" class="py-20 text-center bg-surface-light dark:bg-surface-dark rounded-3xl border-2 border-dashed border-gray-100 dark:border-gray-800">
-        <p class="text-xl font-black text-text-sub-light">{{ t('rewards.noRewards') }}</p>
+      <div v-if="rewards.length === 0" class="py-20 text-center bg-surface-main rounded-3xl border-2 border-dashed border-primary/10">
+        <p class="text-xl font-black text-text-sub">{{ t('rewards.noRewards') }}</p>
         <button v-if="isAdmin" @click="openAddModal" class="mt-4 text-primary font-bold hover:underline">{{ t('rewards.addFirst') }}</button>
       </div>
 
-      <div v-else-if="filteredRewards.length === 0" class="py-16 text-center bg-surface-light dark:bg-surface-dark rounded-3xl border-2 border-dashed border-gray-100 dark:border-gray-800">
-        <p class="text-lg font-bold text-text-sub-light">{{ t('rewards.noRewardsInCategory') }}</p>
+      <div v-else-if="filteredRewards.length === 0" class="py-16 text-center bg-surface-main rounded-3xl border-2 border-dashed border-primary/10">
+        <p class="text-lg font-bold text-text-sub">{{ t('rewards.noRewardsInCategory') }}</p>
       </div>
 
       <TransitionGroup
@@ -486,59 +485,52 @@ const formatTime = (ts) => {
         tag="div"
         class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
       >
-        <div
+        <div 
           v-for="reward in filteredRewards" 
           :key="reward.id"
-          class="relative bg-surface-light dark:bg-surface-dark p-6 rounded-[2rem] border border-gray-100 dark:border-gray-800 shadow-sm transition-all duration-300 flex flex-col gap-4 group hover:-translate-y-1 hover:shadow-xl hover:shadow-primary/10"
-          :class="{ 'opacity-60 grayscale scale-[0.98]': isExpired(reward.expiry_date) || reward.stock <= 0 }"
+          class="card-mainline !p-6 flex flex-col gap-6 group hover:shadow-offset-green"
+          :class="{ 'opacity-50 grayscale': isExpired(reward.expiry_date) || reward.stock <= 0 }"
         >
           <!-- Expiry/Stock Badger -->
-          <div class="absolute top-4 right-4 flex flex-col items-end gap-1">
-            <span v-if="isExpired(reward.expiry_date)" class="px-2 py-0.5 bg-red-100 text-red-600 text-[10px] font-black rounded-lg uppercase">{{ t('rewards.expired') }}</span>
-            <span v-else-if="reward.stock <= 0" class="px-2 py-0.5 bg-gray-100 text-gray-500 text-[10px] font-black rounded-lg uppercase">{{ t('rewards.soldOut') }}</span>
-            <span v-else class="px-2 py-0.5 bg-blue-100 text-blue-600 text-[10px] font-black rounded-lg uppercase whitespace-nowrap">{{ t('rewards.left', { count: reward.stock }) }}</span>
-          </div>
-
-          <!-- Icon Box -->
-          <div class="size-16 rounded-2xl bg-background-light dark:bg-background-dark flex items-center justify-center transition-transform group-hover:scale-110 duration-500">
-            <component :is="getIconComponent(reward.icon)" :class="['w-8 h-8', getIconColor(reward.icon)]" />
+          <div class="flex justify-between items-start">
+            <div class="size-14 border-2 border-primary rounded-xl flex items-center justify-center bg-surface-main shadow-offset-dark group-hover:bg-accent-green group-hover:text-background-main transition-all">
+              <component :is="getIconComponent(reward.icon)" class="size-6" />
+            </div>
+            <div class="flex flex-col items-end gap-1">
+              <span v-if="isExpired(reward.expiry_date)" class="badge-mainline !bg-accent-red !text-background-main">{{ t('rewards.expired') }}</span>
+              <span v-else-if="reward.stock <= 0" class="badge-mainline !bg-text-sub/10 !text-text-sub">{{ t('rewards.soldOut') }}</span>
+              <span v-else class="badge-mainline !bg-accent-green/10 !text-accent-green">{{ t('rewards.left', { count: reward.stock }) }}</span>
+            </div>
           </div>
 
           <!-- Content -->
-          <div>
-            <h4 class="text-lg font-black truncate">{{ reward.title }}</h4>
-            <div class="flex items-center gap-1.5 text-text-sub-light dark:text-text-sub-dark mt-1">
-              <span class="text-base font-black text-primary">{{ reward.points }}</span>
-              <span class="text-xs font-bold uppercase tracking-wider">pts</span>
-            </div>
-            <div v-if="reward.expiry_date" class="flex items-center gap-1 mt-2 text-[10px] font-bold text-text-sub-light">
-              <Clock class="w-3 h-3" />
-              <span>{{ t('rewards.ends', { date: new Date(reward.expiry_date).toLocaleDateString() }) }}</span>
+          <div class="flex-1">
+            <h4 class="text-xl font-black text-primary leading-tight mb-2 truncate">{{ reward.title }}</h4>
+            <div class="flex items-center gap-2">
+              <span class="text-2xl font-black text-primary">{{ reward.points }}</span>
+              <span class="text-[10px] font-black uppercase tracking-widest text-text-sub">pts</span>
             </div>
           </div>
 
           <!-- Action -->
-          <div class="mt-auto pt-4 border-t border-gray-50 dark:border-gray-800/50 flex gap-2">
+          <div class="flex gap-2">
             <template v-if="isAdmin">
-              <button @click="openEditModal(reward)" class="flex-1 py-3 bg-gray-50 dark:bg-gray-800 hover:bg-primary transition-all rounded-xl flex items-center justify-center group/btn">
-                <Edit2 class="w-4 h-4 group-hover/btn:text-white" />
+              <button @click="openEditModal(reward)" class="btn-mainline-secondary flex-1 !p-3 hover:rotate-12">
+                <Edit2 class="size-5" />
               </button>
-              <button @click="deleteReward(reward.id)" class="flex-1 py-3 bg-red-50 dark:bg-red-900/20 text-red-500 hover:bg-red-500 hover:text-white transition-all rounded-xl flex items-center justify-center">
-                <Trash2 class="w-4 h-4" />
+              <button @click="deleteReward(reward.id)" class="btn-mainline-secondary flex-1 !p-3 hover:rotate-12 hover:bg-red-50 hover:text-red-500">
+                <Trash2 class="size-5" />
               </button>
             </template>
             <template v-else>
               <button 
-                @click="redeemReward(reward)"
-                :disabled="totalPoints < reward.points || reward.stock <= 0 || isExpired(reward.expiry_date) || isRedeemingReward"
-                class="w-full py-4 rounded-2xl font-black text-xs uppercase tracking-widest transition-all shadow-md active:scale-95 disabled:bg-gray-100 disabled:text-gray-400 disabled:shadow-none disabled:active:scale-100 flex items-center justify-center gap-2"
-                :class="totalPoints >= reward.points && !isRedeemingReward ? 'bg-primary text-white hover:bg-primary-dark shadow-primary/20' : 'bg-gray-100 text-gray-400'"
+                @click="redeemReward(reward)" 
+                :disabled="isRedeemingReward || totalPoints < reward.points || reward.stock <= 0"
+                class="btn-mainline flex-1 !p-3 flex items-center justify-center gap-2"
+                :class="{ '!bg-primary/10 !text-text-sub !shadow-none !border-primary/5': totalPoints < reward.points || reward.stock <= 0 }"
               >
-                <RefreshCw 
-                  v-if="isRedeemingReward"
-                  class="w-4 h-4 animate-spin"
-                />
-                <span>{{ isRedeemingReward ? t('rewards.redeeming') : (totalPoints < reward.points ? t('rewards.needPoints') : t('rewards.redeem')) }}</span>
+                <RefreshCw v-if="isRedeemingReward" class="size-4 animate-spin" />
+                <span class="text-xs">{{ isRedeemingReward ? t('rewards.redeeming') : (totalPoints < reward.points ? t('rewards.needPoints') : t('rewards.redeem')) }}</span>
               </button>
             </template>
           </div>
@@ -547,37 +539,37 @@ const formatTime = (ts) => {
     </section>
 
     <!-- Redemption Logs -->
-    <section class="mt-8 border-t border-gray-100 dark:border-gray-800 pt-12">
+    <section class="mt-8 border-t border-border-main pt-12">
       <div class="flex items-center gap-3 mb-8">
         <History class="text-primary w-8 h-8" />
         <h3 class="text-2xl font-black">{{ t('rewards.history') }}</h3>
       </div>
 
-      <div class="bg-surface-light dark:bg-surface-dark rounded-3xl border border-gray-100 dark:border-gray-800 overflow-hidden shadow-sm">
+      <div class="card-mainline !p-0 overflow-hidden bg-surface-main">
         <table class="w-full text-left">
           <thead>
-            <tr class="bg-background-light dark:bg-background-dark/50 border-b border-gray-100 dark:border-gray-800">
-              <th class="px-6 py-4 text-[10px] font-black text-text-sub-light uppercase tracking-widest">{{ t('rewards.table.reward') }}</th>
-              <th class="px-6 py-4 text-[10px] font-black text-text-sub-light uppercase tracking-widest">{{ t('rewards.table.cost') }}</th>
-              <th class="px-6 py-4 text-[10px] font-black text-text-sub-light uppercase tracking-widest">{{ t('rewards.table.date') }}</th>
-              <th class="px-6 py-4 text-[10px] font-black text-text-sub-light uppercase tracking-widest text-right">{{ t('rewards.table.status') }}</th>
+            <tr class="bg-primary text-background-main border-b-2 border-primary">
+              <th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest">{{ t('rewards.table.reward') }}</th>
+              <th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest">{{ t('rewards.table.cost') }}</th>
+              <th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest">{{ t('rewards.table.date') }}</th>
+              <th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-right">{{ t('rewards.table.status') }}</th>
             </tr>
           </thead>
-          <tbody class="divide-y divide-gray-50 dark:divide-gray-800">
+          <tbody class="divide-y-2 divide-primary/5">
             <tr v-if="logs.length === 0">
-              <td colspan="4" class="px-6 py-12 text-center text-text-sub-light font-medium italic">{{ t('rewards.emptyHistory') }}</td>
+              <td colspan="4" class="px-6 py-12 text-center text-text-sub font-black italic">{{ t('rewards.emptyHistory') }}</td>
             </tr>
-            <tr v-for="log in logs" :key="log.id" class="group hover:bg-gray-50 dark:hover:bg-gray-800/30 transition-colors">
-              <td class="px-6 py-4">
-                <span class="font-black">{{ log.reward_title }}</span>
+            <tr v-for="log in logs" :key="log.id" class="group hover:bg-primary/5 transition-colors">
+              <td class="px-6 py-6">
+                <span class="font-black text-primary">{{ log.reward_title }}</span>
               </td>
-              <td class="px-6 py-4">
-                <span class="font-bold text-red-500">-{{ log.spent_points }} pts</span>
+              <td class="px-6 py-6">
+                <span class="font-black text-accent-amber">-{{ log.spent_points }} pts</span>
               </td>
-              <td class="px-6 py-4 text-xs font-medium text-text-sub-light">{{ formatTime(log.timestamp) }}</td>
-              <td class="px-6 py-4 text-right">
-                <span class="inline-flex items-center gap-1 text-[10px] font-black text-blue-500 uppercase">
-                  <CheckCircle2 class="w-3 h-3" /> {{ t('rewards.table.success') }}
+              <td class="px-6 py-6 text-xs font-black text-text-sub uppercase tracking-widest">{{ formatTime(log.timestamp) }}</td>
+              <td class="px-6 py-6 text-right">
+                <span class="badge-mainline !bg-accent-green/10 !text-accent-green">
+                  {{ t('rewards.table.success') }}
                 </span>
               </td>
             </tr>
@@ -587,68 +579,70 @@ const formatTime = (ts) => {
     </section>
 
     <!-- Add/Edit Modal -->
-    <div v-if="showAddModal || showEditModal" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
-      <div class="bg-surface-light dark:bg-surface-dark p-8 rounded-[2.5rem] shadow-2xl max-w-md w-full border border-gray-100 dark:border-gray-800 animate-in zoom-in duration-300 flex flex-col gap-6 max-h-[90vh] overflow-y-auto">
-        <header class="flex justify-between items-center">
-          <h3 class="text-2xl font-black">{{ showEditModal ? t('rewards.modal.edit') : t('rewards.modal.create') }} 🎁</h3>
-          <button @click="showAddModal = false; showEditModal = false" class="p-2 bg-gray-50 dark:bg-gray-800 rounded-full hover:bg-red-50 dark:hover:bg-red-900/30 text-gray-400 hover:text-red-500 transition-all">
-            <X class="w-5 h-5" />
+    <div v-if="showAddModal || showEditModal" class="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-background-main/20 backdrop-blur-[2px]" @click="showAddModal = false; showEditModal = false">
+      <div 
+        class="card-mainline max-w-lg w-full animate-rise flex flex-col !p-0 overflow-hidden bg-surface-main shadow-[20px_20px_0_var(--border)]"
+        @click.stop
+      >
+        <header class="flex justify-between items-center border-b-2 border-primary p-8">
+          <h3 class="text-3xl font-black">{{ showEditModal ? t('rewards.modal.edit') : t('rewards.modal.create') }}</h3>
+          <button @click="showAddModal = false; showEditModal = false" class="hover:rotate-90 transition-transform">
+            <X class="size-8" />
           </button>
         </header>
 
-        <div class="flex flex-col gap-4">
+        <div class="p-8 flex flex-col gap-8 overflow-y-auto max-h-[60vh]">
           <!-- Title -->
-          <div class="flex flex-col gap-1.5">
-            <label class="text-[10px] font-black uppercase tracking-widest text-text-sub-light px-1">{{ t('rewards.modal.name') }}</label>
-            <input v-model="rewardForm.title" type="text" :placeholder="t('rewards.modal.namePlaceholder')" class="bg-background-light dark:bg-background-dark border-transparent focus:border-primary rounded-2xl p-4 font-bold outline-none ring-1 ring-gray-100 dark:ring-gray-800 focus:ring-primary transition-all">
+          <div class="flex flex-col gap-2">
+            <label class="text-[10px] font-black uppercase tracking-widest text-text-sub">{{ t('rewards.modal.name') }}</label>
+            <input v-model="rewardForm.title" type="text" :placeholder="t('rewards.modal.namePlaceholder')" class="input-mainline">
           </div>
 
           <!-- Points & Stock -->
-          <div class="grid grid-cols-2 gap-4">
-            <div class="flex flex-col gap-1.5">
-              <label class="text-[10px] font-black uppercase tracking-widest text-text-sub-light px-1">{{ t('rewards.modal.price') }}</label>
-              <input v-model.number="rewardForm.points" type="number" class="bg-background-light dark:bg-background-dark border-transparent focus:border-primary rounded-2xl p-4 font-bold outline-none ring-1 ring-gray-100 dark:ring-gray-800 focus:ring-primary transition-all text-center">
+          <div class="grid grid-cols-2 gap-6">
+            <div class="flex flex-col gap-2">
+              <label class="text-[10px] font-black uppercase tracking-widest text-text-sub">{{ t('rewards.modal.price') }}</label>
+              <input v-model.number="rewardForm.points" type="number" class="input-mainline text-center">
             </div>
-            <div class="flex flex-col gap-1.5">
-              <label class="text-[10px] font-black uppercase tracking-widest text-text-sub-light px-1">{{ t('rewards.modal.stock') }}</label>
-              <input v-model.number="rewardForm.stock" type="number" class="bg-background-light dark:bg-background-dark border-transparent focus:border-primary rounded-2xl p-4 font-bold outline-none ring-1 ring-gray-100 dark:ring-gray-800 focus:ring-primary transition-all text-center">
+            <div class="flex flex-col gap-2">
+              <label class="text-[10px] font-black uppercase tracking-widest text-text-sub">{{ t('rewards.modal.stock') }}</label>
+              <input v-model.number="rewardForm.stock" type="number" class="input-mainline text-center">
             </div>
           </div>
 
           <!-- Icon Select -->
-          <div class="flex flex-col gap-1.5">
-            <label class="text-[10px] font-black uppercase tracking-widest text-text-sub-light px-1">{{ t('rewards.modal.icon') }}</label>
-            <div class="flex gap-3 mt-1">
+          <div class="flex flex-col gap-2">
+            <label class="text-[10px] font-black uppercase tracking-widest text-text-sub">{{ t('rewards.modal.icon') }}</label>
+            <div class="flex gap-4">
               <button 
                 v-for="preset in iconPresets" 
                 :key="preset.name"
                 @click="rewardForm.icon = preset.name"
-                class="size-12 rounded-xl flex items-center justify-center transition-all border-2"
-                :class="rewardForm.icon === preset.name ? 'border-primary bg-primary/10 shadow-sm' : 'border-transparent bg-background-light dark:bg-background-dark hover:border-gray-200'"
+                class="size-12 border-2 border-primary rounded-xl flex items-center justify-center transition-all"
+                :class="rewardForm.icon === preset.name ? 'bg-primary text-background-main shadow-offset-green' : 'bg-surface-main text-primary hover:bg-primary/5'"
               >
-                <component :is="preset.icon" :class="['w-6 h-6', preset.color]" />
+                <component :is="preset.icon" class="size-6" />
               </button>
             </div>
           </div>
 
           <!-- Expiry Date -->
-          <div class="flex flex-col gap-1.5">
-            <label class="text-[10px] font-black uppercase tracking-widest text-text-sub-light px-1">{{ t('rewards.modal.expiry') }}</label>
-            <input v-model="rewardForm.expiryDate" type="date" class="bg-background-light dark:bg-background-dark border-transparent focus:border-primary rounded-2xl p-4 font-bold outline-none ring-1 ring-gray-100 dark:ring-gray-800 focus:ring-primary transition-all">
+          <div class="flex flex-col gap-2">
+            <label class="text-[10px] font-black uppercase tracking-widest text-text-sub">{{ t('rewards.modal.expiry') }}</label>
+            <input v-model="rewardForm.expiryDate" type="date" class="input-mainline">
           </div>
         </div>
 
-        <button 
-          @click="saveReward" 
-          :disabled="isSavingReward"
-          class="w-full py-5 bg-primary text-white font-black rounded-3xl shadow-xl shadow-primary/20 hover:bg-primary-dark transition-all active:scale-95 uppercase tracking-widest text-sm mt-4 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-        >
-          <RefreshCw 
-            v-if="isSavingReward"
-            class="w-5 h-5 animate-spin"
-          />
-          <span>{{ isSavingReward ? t('rewards.saving') : (showEditModal ? t('rewards.modal.btnUpdate') : t('rewards.modal.btnCreate')) }}</span>
-        </button>
+        <div class="p-8 border-t-2 border-primary">
+          <button 
+            @click="saveReward" 
+            :disabled="isSavingReward"
+            class="btn-mainline w-full !py-4 flex items-center justify-center gap-2"
+          >
+            <RefreshCw v-if="isSavingReward" class="size-5 animate-spin" />
+            <span>{{ isSavingReward ? t('rewards.saving') : (showEditModal ? t('rewards.modal.btnUpdate') : t('rewards.modal.btnCreate')) }}</span>
+          </button>
+        </div>
       </div>
     </div>
   </div>

@@ -1,268 +1,250 @@
 <script setup>
-import { ChevronDown, CloudOff, CloudRain, Database, Edit2, TriangleAlert, User } from 'lucide-vue-next';
-
-import { ref, onMounted } from 'vue';
-import { db, liveQuery } from '../db';
+import { 
+  User, 
+  Database, 
+  Trash2, 
+  X, 
+  ChevronDown, 
+  Edit2, 
+  CloudRain, 
+  CloudOff, 
+  TriangleAlert,
+  Edit3,
+  Monitor,
+  Moon,
+  Sun
+} from 'lucide-vue-next';
+import { ref, onMounted, onUnmounted } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { db, liveQuery } from '../db';
 
 const { t, locale } = useI18n();
-const fileInput = ref(null);
+
+const userName = ref('Hero');
+const totalPoints = ref(0);
 const isEditingName = ref(false);
 const editNameValue = ref('');
 
-// Change language and persist
-const changeLanguage = async (lang) => {
-  console.log('Changing language to:', lang);
-  locale.value = lang;
-  try {
-    await db.settings.put({ key: 'language', value: lang });
-    console.log('Language saved to DB');
-  } catch (err) {
-    console.error('Failed to save language:', err);
-  }
-};
+const nameSubscription = liveQuery(() => db.settings.get('userName'))
+  .subscribe(result => {
+    userName.value = result?.value || 'Hero';
+  });
 
-// Live reactive username
-const userName = ref('Hero');
-const settingsSubscription = liveQuery(() => db.settings.toArray())
-    .subscribe(results => {
-      const nameSetting = results.find(s => s.key === 'userName');
-      if (nameSetting) userName.value = nameSetting.value;
-      
-      const langSetting = results.find(s => s.key === 'language');
-      if (langSetting && langSetting.value !== locale.value) {
-        locale.value = langSetting.value;
-      }
-    });
+const pointsSubscription = liveQuery(() => db.tasks.toArray())
+  .subscribe(tasks => {
+    totalPoints.value = tasks.filter(t => t.completed).reduce((sum, t) => sum + (t.points || 0), 0);
+  });
 
-onMounted(() => {
-  editNameValue.value = userName.value;
+onUnmounted(() => {
+  nameSubscription.unsubscribe();
+  pointsSubscription.unsubscribe();
 });
 
+const changeLanguage = (newLocale) => {
+  locale.value = newLocale;
+  db.settings.put({ id: 'language', value: newLocale });
+};
+
 const saveName = async () => {
-  if (!editNameValue.value.trim()) return;
-  await db.settings.put({ key: 'userName', value: editNameValue.value.trim() });
-  isEditingName.value = false;
+  if (editNameValue.value.trim()) {
+    await db.settings.put({ key: 'userName', value: editNameValue.value.trim() });
+    isEditingName.value = false;
+  }
 };
 
 const exportData = async () => {
-  try {
-    const tasks = await db.tasks.toArray();
-    const settings = await db.settings.toArray();
-    const rewards = await db.rewards.toArray();
-    const redemptionLogs = await db.redemptionLogs.toArray();
-    
-    const backup = {
-      version: 2.1,
-      timestamp: new Date().toISOString(),
-      data: { tasks, settings, rewards, redemptionLogs }
-    };
-    
-    const blob = new Blob([JSON.stringify(backup, null, 2)], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `${t('settings.dataManagement.backupFileName')}_${new Date().toISOString().split('T')[0]}.json`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
-  } catch (error) {
-    alert(t('settings.alerts.exportFail') + error.message);
-  }
+  const tasks = await db.tasks.toArray();
+  const templates = await db.templates.toArray();
+  const settings = await db.settings.toArray();
+  const data = JSON.stringify({ tasks, templates, settings }, null, 2);
+  const blob = new Blob([data], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = `stitch-backup-${new Date().toISOString().split('T')[0]}.json`;
+  link.click();
 };
 
 const triggerImport = () => {
-  fileInput.value.click();
-};
-
-const importData = async (event) => {
-  const file = event.target.files[0];
-  if (!file) return;
-
-  if (!confirm(t('settings.alerts.importConfirm'))) {
-    event.target.value = '';
-    return;
-  }
-
-  const reader = new FileReader();
-  reader.onload = async (e) => {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = '.json';
+  input.onchange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const text = await file.text();
     try {
-      const backup = JSON.parse(e.target.result);
-      if (backup.data) {
-        if (backup.data.tasks) {
-          await db.tasks.bulkPut(backup.data.tasks);
-        }
-        if (backup.data.settings) {
-          await db.settings.bulkPut(backup.data.settings);
-        }
-        if (backup.data.rewards) {
-          await db.rewards.bulkPut(backup.data.rewards);
-        }
-        if (backup.data.redemptionLogs) {
-          await db.redemptionLogs.bulkPut(backup.data.redemptionLogs);
-        }
-        alert(t('settings.alerts.importSuccess', { count: (backup.data.tasks?.length || 0) }));
-      } else {
-        throw new Error(t('settings.alerts.invalidFormat'));
-      }
-    } catch (error) {
-      alert(t('settings.alerts.importFail') + error.message);
+      const data = JSON.parse(text);
+      if (data.tasks) await db.tasks.bulkPut(data.tasks);
+      if (data.templates) await db.templates.bulkPut(data.templates);
+      if (data.settings) await db.settings.bulkPut(data.settings);
+      alert('Data imported successfully!');
+      window.location.reload();
+    } catch (err) {
+      alert('Invalid backup file');
     }
-    event.target.value = '';
   };
-  reader.readAsText(file);
+  input.click();
 };
 
 const clearAllData = async () => {
-  if (confirm(t('settings.alerts.deleteConfirm1'))) {
-    if (confirm(t('settings.alerts.deleteConfirm2'))) {
-      const name = userName.value;
-      await db.tasks.clearByUser(name);
-      await db.rewards.clearByUser(name);
-      await db.redemptionLogs.clearByUser(name);
-      await db.dailyCheckinTemplates.clearByUser(name);
-      // Clear settings last (no user_name field, use clear)
-      await db.settings.clear();
-      alert(t('settings.alerts.resetSuccess'));
-      window.location.reload(); // Refresh to clear state
-    }
+  if (confirm(t('settings.clearDataConfirm'))) {
+    await db.tasks.clear();
+    await db.templates.clear();
+    await db.settings.clear();
+    window.location.reload();
   }
 };
 </script>
 
 <template>
-  <div class="flex flex-col gap-8 pb-10">
+  <div class="flex flex-col gap-12 pb-20 max-w-5xl mx-auto">
     <!-- Header -->
-    <div class="flex flex-col gap-2">
-      <h1 class="text-4xl md:text-5xl font-black tracking-tight leading-tight">{{ t('settings.title') }}</h1>
-      <p class="text-lg font-medium text-text-sub-light dark:text-text-sub-dark">{{ t('settings.subtitle') }} ⚙️</p>
-    </div>
+    <header class="flex flex-col gap-4">
+      <span class="badge-mainline w-fit">Configuration</span>
+      <h1 class="text-5xl md:text-7xl font-black text-primary leading-[0.9] -ml-1">
+        {{ t('settings.title') }}
+      </h1>
+      <p class="text-lg font-medium text-text-sub max-w-xl leading-relaxed">
+        {{ t('settings.subtitle') }}
+      </p>
+    </header>
 
-    <div class="grid gap-8">
+    <div class="grid grid-cols-1 gap-8">
       
       <!-- User Account Section -->
-      <section class="bg-surface-light dark:bg-surface-dark p-8 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm flex flex-col md:flex-row items-center gap-6 relative overflow-hidden">
-        <div class="absolute -right-10 -bottom-10 size-40 bg-primary/5 rounded-full blur-3xl"></div>
-        
-        <div class="size-24 rounded-full bg-primary/20 flex items-center justify-center text-primary-dark ring-4 ring-primary/10 overflow-hidden shrink-0">
-           <User  class=" text-5xl"/>
+      <section class="card-mainline !p-8 flex flex-col md:flex-row items-center gap-8 bg-accent-green/5">
+        <div class="size-24 border-4 border-primary rounded-full flex items-center justify-center bg-surface-main shadow-offset-dark shrink-0">
+           <User class="size-12 text-primary" />
         </div>
-        <div class="flex-1 text-center md:text-left relative z-10">
-           <h3 class="text-2xl font-black">{{ userName }}</h3>
-           <p class="text-text-sub-light font-bold">Scholar • {{ t('app.offlineReady') }}</p>
-           <button 
+        <div class="flex flex-col gap-2 flex-1 text-center md:text-left">
+          <h2 class="text-4xl font-black text-primary">{{ userName }}</h2>
+          <div class="flex items-center gap-3 justify-center md:justify-start">
+            <span class="badge-mainline !bg-accent-green !text-background-main">Explorer</span>
+            <span class="text-xs font-black text-text-sub uppercase tracking-widest">{{ t('app.nav.points') }}: {{ totalPoints }}</span>
+          </div>
+          <button 
             @click="isEditingName = true; editNameValue = userName"
-            class="mt-4 text-primary text-xs font-black uppercase tracking-widest hover:underline flex items-center gap-1 mx-auto md:mx-0"
+            class="mt-2 text-primary text-[10px] font-black uppercase tracking-widest hover:underline flex items-center gap-1 mx-auto md:mx-0"
            >
-             <Edit2  class=" text-sm"/>
+             <Edit2 class="size-3"/>
              {{ t('settings.dataManagement.editProfile') }}
            </button>
         </div>
         
-        <div class="bg-background-light dark:bg-background-dark p-4 rounded-2xl flex flex-col items-center border border-gray-100 dark:border-gray-800 shrink-0 min-w-[120px]">
-           <span class="text-[10px] font-black uppercase text-text-sub-light opacity-60 mb-2">Language</span>
-           <div class="relative w-full">
+        <div class="flex flex-col gap-2 min-w-[160px]">
+           <label class="text-[10px] font-black uppercase text-text-sub tracking-widest">{{ t('settings.language') }}</label>
+           <div class="relative">
              <select 
                :value="locale"
                @change="e => changeLanguage(e.target.value)"
-               class="w-full bg-surface-light dark:bg-surface-dark border-2 border-primary/20 rounded-xl px-4 py-2 font-bold text-xs appearance-none cursor-pointer focus:outline-none focus:border-primary transition-all pr-10"
+               class="input-mainline !py-2 !px-4 text-sm appearance-none"
              >
-               <option value="zh">简体中文</option>
-               <option value="en">English (US)</option>
+               <option value="en">English</option>
+               <option value="zh">中文</option>
              </select>
-             <div class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-primary">
-               <ChevronDown  class=" text-lg"/>
-             </div>
+             <ChevronDown class="absolute right-3 top-1/2 -translate-y-1/2 size-4 pointer-events-none opacity-50" />
            </div>
         </div>
       </section>
 
       <!-- Data Management -->
-      <section class="bg-surface-light dark:bg-surface-dark p-8 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm">
-        <div class="flex items-center gap-3 mb-6">
-           <Database  class=" text-primary text-3xl"/>
-           <h3 class="text-xl font-bold">{{ t('settings.dataManagement.title') }}</h3>
+      <section class="flex flex-col gap-6">
+        <div class="flex items-center gap-4">
+           <h3 class="text-2xl font-black text-primary">{{ t('settings.dataManagement.title') }}</h3>
+           <span class="badge-mainline">Tools</span>
         </div>
-        <p class="text-text-sub-light dark:text-text-sub-dark font-medium mb-8 leading-relaxed">{{ t('settings.dataManagement.desc') }}</p>
+        <p class="text-text-sub font-medium mb-4 leading-relaxed max-w-2xl">{{ t('settings.dataManagement.desc') }}</p>
         
-        <div class="grid md:grid-cols-2 gap-5">
+        <div class="grid md:grid-cols-2 gap-6">
           <button 
             @click="exportData"
-            class="group flex items-center gap-4 p-6 rounded-2xl bg-primary/10 dark:bg-primary/5 hover:bg-primary transition-all duration-300 border-2 border-transparent hover:border-primary-dark shadow-sm"
+            class="btn-mainline-secondary !p-8 flex items-center gap-6 group hover:!bg-primary hover:!text-background-main"
           >
-            <div class="size-12 rounded-xl bg-white dark:bg-gray-800 flex items-center justify-center text-primary group-hover:bg-black group-hover:text-primary transition-all duration-300">
-              <CloudRain  class=" text-3xl"/>
+            <div class="size-14 border-2 border-primary rounded-xl flex items-center justify-center bg-surface-main shadow-offset-dark group-hover:shadow-none group-hover:rotate-12 transition-all">
+              <Database class="size-7 text-primary" />
             </div>
             <div class="text-left">
-              <div class="text-lg font-black text-text-main-light dark:text-white group-hover:text-black transition-colors">{{ t('settings.dataManagement.backupBtn') }}</div>
-              <div class="text-[10px] font-black uppercase text-text-sub-light group-hover:text-black/60 transition-colors">{{ t('settings.dataManagement.backupSub') }}</div>
+              <h4 class="text-xl font-black">{{ t('settings.exportData') }}</h4>
+              <p class="text-xs font-bold text-text-sub">{{ t('settings.exportDataDesc') }}</p>
             </div>
           </button>
 
           <button 
             @click="triggerImport"
-            class="group flex items-center gap-4 p-6 rounded-2xl bg-gray-50 dark:bg-gray-800/50 hover:bg-black transition-all duration-300 border-2 border-transparent hover:border-primary shadow-sm"
+            class="btn-mainline-secondary !p-8 flex items-center gap-6 group hover:!bg-primary hover:!text-background-main"
           >
-            <div class="size-12 rounded-xl bg-white dark:bg-gray-800 flex items-center justify-center text-gray-500 group-hover:bg-primary group-hover:text-black transition-all duration-300">
-              <CloudOff  class=" text-3xl"/>
+            <div class="size-14 border-2 border-primary rounded-xl flex items-center justify-center bg-surface-main shadow-offset-dark group-hover:shadow-none group-hover:rotate-12 transition-all">
+              <Edit3 class="size-7 text-primary" />
             </div>
             <div class="text-left">
-              <div class="text-lg font-black text-text-main-light dark:text-white group-hover:text-primary transition-colors">{{ t('settings.dataManagement.restoreBtn') }}</div>
-              <div class="text-[10px] font-black uppercase text-text-sub-light group-hover:text-primary/60 transition-colors">{{ t('settings.dataManagement.restoreSub') }}</div>
+              <h4 class="text-xl font-black">{{ t('settings.importData') }}</h4>
+              <p class="text-xs font-bold text-text-sub">{{ t('settings.importDataDesc') }}</p>
             </div>
           </button>
-          
-          <input 
-            type="file" 
-            ref="fileInput" 
-            class="hidden" 
-            accept=".json"
-            @change="importData"
-          >
         </div>
       </section>
 
       <!-- Danger Zone -->
-      <section class="bg-red-50 dark:bg-red-900/10 p-8 rounded-3xl border border-red-100 dark:border-red-900/30">
-        <h3 class="text-xl font-bold text-red-600 dark:text-red-400 mb-2 flex items-center gap-3">
-          <TriangleAlert  class=" text-3xl"/>
-          {{ t('settings.danger.title') }}
-        </h3>
-        <p class="text-text-sub-light dark:text-red-400/70 font-medium mb-8">{{ t('settings.danger.desc') }}</p>
+      <section class="card-mainline !p-8 !bg-accent-red/10 !border-accent-red/20 !shadow-none">
+        <div class="flex items-center gap-4 mb-8">
+          <div class="size-10 bg-accent-red text-background-main rounded-lg flex items-center justify-center">
+            <Trash2 class="size-6" />
+          </div>
+          <h3 class="text-2xl font-black text-accent-red">
+            {{ t('settings.dangerZone') }}
+          </h3>
+        </div>
         
-        <button 
-          @click="clearAllData"
-          class="w-full md:w-fit px-8 py-4 rounded-2xl bg-white dark:bg-red-900/20 border-2 border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 font-black hover:bg-red-600 hover:text-white transition-all duration-300 shadow-sm active:scale-95 uppercase tracking-widest text-xs"
-        >
-          {{ t('settings.danger.resetBtn') }}
-        </button>
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
+          <div class="flex flex-col gap-2">
+            <p class="font-black text-primary">{{ t('settings.clearData') }}</p>
+            <p class="text-xs font-bold text-text-sub max-w-md">{{ t('settings.clearDataDesc') }}</p>
+          </div>
+          <button 
+            @click="clearAllData"
+            class="btn-mainline !bg-accent-red !text-background-main !border-accent-red hover:!bg-accent-red/90 !shadow-none"
+          >
+            {{ t('settings.clearDataBtn') }}
+          </button>
+        </div>
       </section>
 
     </div>
 
     <!-- Edit Name Modal -->
-    <div v-if="isEditingName" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
-      <div class="bg-surface-light dark:bg-surface-dark p-8 rounded-[2rem] shadow-2xl max-w-sm w-full border border-gray-100 dark:border-gray-800 animate-in zoom-in duration-300">
-        <h3 class="text-2xl font-black mb-6 flex items-center gap-2">
-          {{ t('settings.dataManagement.editProfile') }} ✏️
-        </h3>
-        <div class="flex flex-col gap-2 mb-8">
-           <label class="text-xs font-black uppercase tracking-widest text-text-sub-light px-1">{{ t('settings.dataManagement.userName') }}</label>
-           <input 
-            v-model="editNameValue" 
-            @keyup.enter="saveName"
-            type="text" 
-            class="w-full bg-background-light dark:bg-background-dark border-transparent focus:border-primary rounded-2xl p-4 font-bold transition-all outline-none text-lg shadow-inner ring-1 ring-gray-100 dark:ring-gray-700 focus:ring-primary"
-            autofocus
-           >
-        </div>
-        <div class="flex gap-4">
-          <button @click="isEditingName = false" class="flex-1 py-4 rounded-2xl border border-gray-200 dark:border-gray-700 font-bold text-text-sub-light hover:bg-gray-50 transition-colors uppercase tracking-widest text-xs">Cancel</button>
-          <button @click="saveName" class="flex-1 py-4 bg-primary text-black font-black rounded-2xl shadow-lg shadow-primary/20 hover:bg-primary-dark transition-all active:scale-95 uppercase tracking-widest text-xs">Save</button>
+    <Transition name="fade">
+      <div v-if="isEditingName" class="fixed inset-0 z-[100] flex items-center justify-center bg-background-main/20 backdrop-blur-[2px] p-4" @click="isEditingName = false">
+        <div class="card-mainline max-w-md w-full animate-rise flex flex-col gap-8 !p-0 overflow-hidden shadow-[20px_20px_0_var(--border)]" @click.stop>
+          <header class="flex justify-between items-center border-b-2 border-primary p-8">
+            <h3 class="text-3xl font-black">{{ t('settings.dataManagement.editProfile') }}</h3>
+            <button @click="isEditingName = false" class="hover:rotate-90 transition-transform">
+              <X class="size-8" />
+            </button>
+          </header>
+
+          <div class="p-8 flex flex-col gap-6">
+            <div class="flex flex-col gap-2">
+              <label class="text-[10px] font-black uppercase tracking-widest text-text-sub">{{ t('settings.dataManagement.userName') }}</label>
+              <input 
+                v-model="editNameValue" 
+                @keyup.enter="saveName"
+                type="text" 
+                class="input-mainline text-2xl"
+                autofocus
+              >
+            </div>
+
+            <div class="flex gap-4">
+              <button @click="isEditingName = false" class="btn-mainline-secondary flex-1 !py-4 uppercase tracking-widest text-xs !shadow-none">{{ t('common.cancel') }}</button>
+              <button @click="saveName" class="btn-mainline flex-1 !py-4 uppercase tracking-widest text-xs">{{ t('common.save') }}</button>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
+    </Transition>
   </div>
 </template>
+
+<style scoped>
+</style>

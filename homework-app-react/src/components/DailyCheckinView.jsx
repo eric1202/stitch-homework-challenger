@@ -248,7 +248,7 @@ export default function DailyCheckinView() {
         </div>
         <button
           onClick={openCreateModal}
-          className="hidden md:flex items-center gap-2 bg-primary hover:bg-primary-dark text-black font-bold py-4 px-8 rounded-2xl shadow-lg shadow-primary/30 transition-all hover:-translate-y-1 active:scale-95 duration-200"
+          className="hidden md:flex items-center bg-surface-light dark:bg-surface-dark  hover:bg-primary-dark text-black font-bold py-4 px-8 rounded-2xl shadow-lg shadow-primary/30 transition-all hover:-translate-y-1 active:scale-95 duration-200"
         >
           <Plus className="w-5 h-5" />
           <span>{t('dailyCheckin.addNew')}</span>

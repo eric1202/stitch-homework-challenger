@@ -1,9 +1,9 @@
 import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, TextInput, Modal, Alert, ActivityIndicator } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { 
-  Rocket, Calendar, CalendarDays, CalendarPlus, Check, CheckCircle2, 
-  ChevronLeft, ChevronRight, Plus, RotateCw, Trash2, X, Book 
+import {
+  Rocket, Calendar, CalendarDays, CalendarPlus, Check, CheckCircle2,
+  ChevronLeft, ChevronRight, Plus, RotateCw, Trash2, X, Book
 } from 'lucide-react-native';
 
 import { db, liveQuery } from '../../src/services/db';
@@ -14,7 +14,7 @@ import { useData } from '../../src/hooks/useData';
 const parseBatchTasks = (text) => {
   let parts = text.split(/(?:\s+)?\d+\s*[.、,，]+\s*/);
   if (parts.length <= 1 && text.includes('\n')) {
-      parts = text.split(/\n+/);
+    parts = text.split(/\n+/);
   }
   return parts.map(p => p.trim()).filter(p => p.length > 0);
 };
@@ -35,7 +35,7 @@ export default function HomeView() {
   const [isInitialLoading, setIsInitialLoading] = useState(true);
   const [tasks, setTasks] = useState([]);
   const { userName } = useData();
-  
+
   const selectedDateRef = useRef(today);
   useEffect(() => { selectedDateRef.current = selectedDate; }, [selectedDate]);
 
@@ -51,7 +51,7 @@ export default function HomeView() {
   }, [newTaskTitle, newTaskSubject]);
 
   const subjects = ["Chinese", 'Math', 'English', 'Science', 'Art', 'Reading', 'Sports', 'Other'];
-  
+
   const subjectColors = {
     Chinese: { text: 'text-emerald-600', bg: 'bg-emerald-100', darkBg: 'dark:bg-emerald-900/30', darkText: 'dark:text-emerald-300', dot: 'bg-emerald-600' },
     Math: { text: 'text-purple-600', bg: 'bg-purple-100', darkBg: 'dark:bg-purple-900/30', darkText: 'dark:text-purple-300', dot: 'bg-purple-600' },
@@ -69,7 +69,7 @@ export default function HomeView() {
       if (isInitialLoading) setIsInitialLoading(false);
     }, 5000);
 
-    const sub = liveQuery(() => 
+    const sub = liveQuery(() =>
       db.tasks.where('user_name').equals(userName).toArray()
     ).subscribe(result => {
       setTasks(result.filter(t => t.date === selectedDateRef.current));
@@ -121,7 +121,7 @@ export default function HomeView() {
 
   const addTask = async () => {
     if (!newTaskTitle.trim() || isAddingTask) return;
-    
+
     if (isBatchMode) {
       const parsed = parseBatchTasks(newTaskTitle);
       if (parsed.length === 0) return;
@@ -157,13 +157,13 @@ export default function HomeView() {
           hash |= 0;
         }
         const pts = (Math.abs(hash) % 26) + 10;
-        
+
         await db.tasks.add({
-          title: title, 
-          subject: newTaskSubject, 
+          title: title,
+          subject: newTaskSubject,
           points: pts,
-          completed: false, 
-          date: selectedDate, 
+          completed: false,
+          date: selectedDate,
           user_name: userName
         });
       }
@@ -207,10 +207,12 @@ export default function HomeView() {
       t('home.deleteConfirm'),
       [
         { text: t('common.cancel'), style: 'cancel' },
-        { text: t('common.delete'), style: 'destructive', onPress: async () => {
-          await db.tasks.delete(id);
-          refreshTasks();
-        }}
+        {
+          text: t('common.delete'), style: 'destructive', onPress: async () => {
+            await db.tasks.delete(id);
+            refreshTasks();
+          }
+        }
       ]
     );
   };
@@ -219,7 +221,7 @@ export default function HomeView() {
     return (
       <View className="flex-1 items-center justify-center bg-background-light dark:bg-background-dark">
         <ActivityIndicator size="large" color="#6366f1" />
-        <Text className="mt-4 font-bold text-lg dark:text-white">Stitch Challenger</Text>
+        <Text className="mt-4 font-bold text-lg dark:text-white">Homework Challenger</Text>
       </View>
     );
   }
@@ -285,7 +287,7 @@ export default function HomeView() {
               <Text className="text-gray-500 font-bold dark:text-gray-400">
                 {isBatchMode ? '批量输入多项作业' : '输入作业内容'}
               </Text>
-              <TouchableOpacity 
+              <TouchableOpacity
                 onPress={() => setIsBatchMode(!isBatchMode)}
                 className="flex flex-row items-center gap-2"
               >
@@ -306,8 +308,8 @@ export default function HomeView() {
             />
             <ScrollView horizontal showsHorizontalScrollIndicator={false} className="mb-4">
               {subjects.map(s => (
-                <TouchableOpacity 
-                  key={s} 
+                <TouchableOpacity
+                  key={s}
                   onPress={() => setNewTaskSubject(s)}
                   className={`mr-2 px-4 py-2 rounded-full ${newTaskSubject === s ? 'bg-primary' : 'bg-gray-100 dark:bg-gray-800'}`}
                 >

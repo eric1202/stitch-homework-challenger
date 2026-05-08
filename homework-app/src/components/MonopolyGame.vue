@@ -107,6 +107,7 @@ const leaderboardData = ref([]);
 const isLoadingLeaderboard = ref(false);
 const leaderboardError = ref(null);
 
+
 // Math quiz gate
 const showMathQuiz = ref(false);
 const mathA = ref(0);
@@ -116,11 +117,14 @@ const mathAnswer = ref('');
 const mathCorrectAnswer = ref(0);
 const mathWrong = ref(false);
 const mathTimer = ref(5);
+const mathQuizMode = ref('start'); // 'start', 'challenge', or 'gate_resume'
 let mathTimerInterval = null;
 
 function generateMathQuiz() {
   const op = Math.random() < 0.5 ? '+' : '-';
   let a, b;
+  const max = 20;
+
   if (op === '+') {
     a = Math.floor(Math.random() * 18) + 1;
     b = Math.floor(Math.random() * (20 - a)) + 1;
@@ -147,6 +151,9 @@ function startMathTimer() {
       setTimeout(() => {
         showMathQuiz.value = false;
         mathWrong.value = false;
+        if (mathQuizMode.value === 'start' || mathQuizMode.value === 'gate_resume') {
+          gamePhase.value = 'start';
+        }
       }, 1000);
     }
   }, 1000);
@@ -165,6 +172,15 @@ function onStartClick() {
     return;
   }
   localStorage.setItem('monopoly_username', username.value.trim());
+  mathQuizMode.value = 'start';
+  generateMathQuiz();
+  showMathQuiz.value = true;
+  startMathTimer();
+}
+
+function onMathChallengeClick() {
+  if (isRolling.value || isMoving.value || showEvent.value) return;
+  mathQuizMode.value = 'challenge';
   generateMathQuiz();
   showMathQuiz.value = true;
   startMathTimer();
@@ -173,13 +189,28 @@ function onStartClick() {
 function dismissMathQuiz() {
   stopMathTimer();
   showMathQuiz.value = false;
+  // If dismissing a mandatory gate quiz, go back to start screen
+  if (mathQuizMode.value === 'start' || mathQuizMode.value === 'gate_resume') {
+    gamePhase.value = 'start';
+  }
 }
 
 function checkMathAnswer() {
   if (parseInt(mathAnswer.value) === mathCorrectAnswer.value) {
     stopMathTimer();
     showMathQuiz.value = false;
-    startGame();
+    if (mathQuizMode.value === 'start') {
+      startGame();
+    } else if (mathQuizMode.value === 'gate_resume') {
+      // Quiz passed, allow resuming the loaded game (already in 'playing' phase)
+    } else {
+      // Challenge reward
+      player.score += 30;
+      gameStats.mathSolved = (gameStats.mathSolved || 0) + 1;
+      eventMessage.value = t('monopoly.mathQuiz.success', { points: 30 });
+      currentEvent.value = { type: 'reward', points: 30 };
+      showEvent.value = true;
+    }
   } else {
     mathWrong.value = true;
     setTimeout(() => { mathWrong.value = false; }, 800);
@@ -552,11 +583,11 @@ function tileIcon(tile) {
 
 function tileColorClass(tile) {
   const classes = {
-    normal: 'from-slate-100 to-slate-200 dark:from-slate-700 dark:to-slate-600 border-slate-300 dark:border-slate-500',
-    reward: 'from-emerald-100 to-emerald-200 dark:from-emerald-800 dark:to-emerald-700 border-emerald-400 dark:border-emerald-500',
-    penalty: 'from-red-100 to-red-200 dark:from-red-800 dark:to-red-700 border-red-400 dark:border-red-500',
-    item: 'from-violet-100 to-violet-200 dark:from-violet-800 dark:to-violet-700 border-violet-400 dark:border-violet-500',
-    event: 'from-amber-100 to-amber-200 dark:from-amber-800 dark:to-amber-700 border-amber-400 dark:border-amber-500',
+    normal: 'from-primary/5 to-primary/10 border-primary/20',
+    reward: 'from-accent-green/10 to-accent-green/20 border-accent-green/40',
+    penalty: 'from-accent-red/10 to-accent-red/20 border-accent-red/40',
+    item: 'from-accent-cyan/10 to-accent-cyan/20 border-accent-cyan/40',
+    event: 'from-accent-amber/10 to-accent-amber/20 border-accent-amber/40',
   };
   return classes[tile.type] || classes.normal;
 }
@@ -574,14 +605,14 @@ function eventTypeIcon() {
 }
 
 function eventBgClass() {
-  if (!currentEvent.value) return 'bg-blue-500';
+  if (!currentEvent.value) return 'bg-primary';
   const eType = currentEvent.value.type;
-  if (eType === 'reward' || eType === 'itemUse') return 'bg-emerald-500';
-  if (eType === 'penalty') return 'bg-red-500';
-  if (eType === 'shield' || eType === 'freeze') return 'bg-blue-500';
-  if (eType === 'item') return 'bg-violet-500';
-  if (currentEvent.value.points > 0) return 'bg-emerald-500';
-  return 'bg-red-500';
+  if (eType === 'reward' || eType === 'itemUse') return 'bg-accent-green';
+  if (eType === 'penalty') return 'bg-accent-red';
+  if (eType === 'shield' || eType === 'freeze') return 'bg-accent-cyan';
+  if (eType === 'item') return 'bg-accent-amber';
+  if (currentEvent.value.points > 0) return 'bg-accent-green';
+  return 'bg-accent-red';
 }
 
 // ==================== SAVE / LOAD ====================
@@ -632,6 +663,12 @@ onMounted(() => {
   const loaded = loadGame();
   if (!loaded) {
     gamePhase.value = 'start';
+  } else {
+    // Game loaded from save — still require math quiz before playing
+    mathQuizMode.value = 'gate_resume';
+    generateMathQuiz();
+    showMathQuiz.value = true;
+    startMathTimer();
   }
   fetchLeaderboard();
 });
@@ -650,12 +687,12 @@ const diceFaces = {
 // Grade label
 const gradeLabel = computed(() => {
   const s = player.score;
-  if (s >= 900) return { label: 'S+', color: 'text-yellow-400' };
-  if (s >= 700) return { label: 'S', color: 'text-yellow-500' };
-  if (s >= 500) return { label: 'A', color: 'text-emerald-400' };
-  if (s >= 300) return { label: 'B', color: 'text-blue-400' };
-  if (s >= 100) return { label: 'C', color: 'text-violet-400' };
-  return { label: 'D', color: 'text-slate-400' };
+  if (s >= 1000) return { label: 'SSS', color: 'text-accent-amber' };
+  if (s >= 800) return { label: 'SS', color: 'text-accent-amber' };
+  if (s >= 600) return { label: 'S', color: 'text-accent-amber' };
+  if (s >= 400) return { label: 'A', color: 'text-accent-green' };
+  if (s >= 200) return { label: 'B', color: 'text-accent-cyan' };
+  return { label: 'C', color: 'text-text-sub' };
 });
 </script>
 
@@ -663,89 +700,96 @@ const gradeLabel = computed(() => {
   <div class="monopoly-game select-none">
     <!-- ==================== START SCREEN ==================== -->
     <Transition name="fade">
-      <div v-if="gamePhase === 'start'" class="flex flex-col items-center justify-center min-h-[70vh] gap-8 text-center px-4">
+      <div v-if="gamePhase === 'start'" class="flex flex-col items-center justify-center min-h-[70vh] gap-12 text-center px-4 max-w-4xl mx-auto py-12">
         <!-- Logo -->
-        <div class="relative">
-          <div class="text-7xl lg:text-8xl mb-2 animate-bounce-slow">🎲</div>
-          <div class="absolute -inset-4 bg-primary/10 rounded-full blur-3xl -z-10"></div>
-        </div>
-
-        <div>
-          <h1 class="text-3xl lg:text-5xl font-black bg-linear-to-r from-primary via-violet-500 to-emerald-500 bg-clip-text text-transparent leading-tight pb-1">
+        <div class="flex flex-col items-center gap-6">
+          <div class="badge-mainline">Adventure</div>
+          <h1 class="text-6xl md:text-8xl font-black text-primary leading-[0.9] -ml-1">
             {{ t('monopoly.title') }}
           </h1>
-          <p class="text-text-sub-light dark:text-text-sub-dark mt-3 text-sm lg:text-base max-w-md mx-auto leading-relaxed">
+          <p class="text-xl md:text-2xl font-medium text-text-sub max-w-xl leading-relaxed">
             {{ t('monopoly.subtitle') }}
           </p>
         </div>
 
         <!-- Rules cards -->
-        <div class="grid grid-cols-2 gap-3 max-w-sm w-full">
-          <div class="bg-surface-light dark:bg-surface-dark rounded-2xl p-4 border border-gray-100 dark:border-gray-800 text-left">
-            <div class="text-2xl mb-1">🎯</div>
-            <p class="text-xs font-bold text-text-sub-light dark:text-text-sub-dark">{{ t('monopoly.rules.goal') }}</p>
-            <p class="text-sm font-black mt-1">{{ TARGET_SCORE }} pts</p>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-6 w-full">
+          <div class="card-mainline !p-6 flex flex-col gap-3 group hover:rotate-1">
+            <div class="text-3xl transition-transform group-hover:scale-125 group-hover:-rotate-12">🎯</div>
+            <div class="text-left">
+              <p class="text-[10px] font-black text-text-sub uppercase tracking-widest">{{ t('monopoly.rules.goal') }}</p>
+              <p class="text-xl font-black text-primary mt-1">{{ TARGET_SCORE }} pts</p>
+            </div>
           </div>
-          <div class="bg-surface-light dark:bg-surface-dark rounded-2xl p-4 border border-gray-100 dark:border-gray-800 text-left">
-            <div class="text-2xl mb-1">⏱️</div>
-            <p class="text-xs font-bold text-text-sub-light dark:text-text-sub-dark">{{ t('monopoly.rules.rounds') }}</p>
-            <p class="text-sm font-black mt-1">{{ MAX_ROUNDS }} {{ t('monopoly.round') }}</p>
+          <div class="card-mainline !p-6 flex flex-col gap-3 group hover:-rotate-1">
+            <div class="text-3xl transition-transform group-hover:scale-125 group-hover:rotate-12">⏱️</div>
+            <div class="text-left">
+              <p class="text-[10px] font-black text-text-sub uppercase tracking-widest">{{ t('monopoly.rules.rounds') }}</p>
+              <p class="text-xl font-black text-primary mt-1">{{ MAX_ROUNDS }} {{ t('monopoly.round') }}</p>
+            </div>
           </div>
-          <div class="bg-surface-light dark:bg-surface-dark rounded-2xl p-4 border border-gray-100 dark:border-gray-800 text-left">
-            <div class="text-2xl mb-1">🎒</div>
-            <p class="text-xs font-bold text-text-sub-light dark:text-text-sub-dark">{{ t('monopoly.rules.items') }}</p>
-            <p class="text-sm font-black mt-1">8 {{ t('monopoly.rules.types') }}</p>
+          <div class="card-mainline !p-6 flex flex-col gap-3 group hover:rotate-1">
+            <div class="text-3xl transition-transform group-hover:scale-125 group-hover:-rotate-12">🎒</div>
+            <div class="text-left">
+              <p class="text-[10px] font-black text-text-sub uppercase tracking-widest">{{ t('monopoly.rules.items') }}</p>
+              <p class="text-xl font-black text-primary mt-1">8 {{ t('monopoly.rules.types') }}</p>
+            </div>
           </div>
-          <div class="bg-surface-light dark:bg-surface-dark rounded-2xl p-4 border border-gray-100 dark:border-gray-800 text-left">
-            <div class="text-2xl mb-1">⚡</div>
-            <p class="text-xs font-bold text-text-sub-light dark:text-text-sub-dark">{{ t('monopoly.rules.events') }}</p>
-            <p class="text-sm font-black mt-1">15 {{ t('monopoly.rules.random') }}</p>
+          <div class="card-mainline !p-6 flex flex-col gap-3 group hover:-rotate-1">
+            <div class="text-3xl transition-transform group-hover:scale-125 group-hover:rotate-12">⚡</div>
+            <div class="text-left">
+              <p class="text-[10px] font-black text-text-sub uppercase tracking-widest">{{ t('monopoly.rules.events') }}</p>
+              <p class="text-[10px] font-black text-text-sub uppercase tracking-widest">{{ t('monopoly.rules.events') }}</p>
+              <p class="text-xl font-black text-primary mt-1">15 {{ t('monopoly.rules.random') }}</p>
+            </div>
           </div>
         </div>
 
         <!-- Username Input -->
-        <div class="w-full max-w-sm">
-          <label class="block text-left text-xs font-bold text-text-sub-light dark:text-text-sub-dark mb-2 uppercase px-1">
-            {{ t('monopoly.username.label') }}
-          </label>
-          <input
-            v-model="username"
-            type="text"
-            :placeholder="t('monopoly.username.placeholder')"
-            class="w-full px-4 py-3 rounded-2xl border-2 bg-surface-light dark:bg-surface-dark border-gray-100 dark:border-gray-800 focus:border-primary focus:outline-none transition-all font-bold text-center"
-          />
-        </div>
+        <div class="w-full max-w-sm flex flex-col gap-4">
+          <div class="flex flex-col gap-2">
+            <label class="text-[10px] font-black uppercase tracking-widest text-text-sub px-1 text-left">
+              {{ t('monopoly.username.label') }}
+            </label>
+            <input
+              v-model="username"
+              type="text"
+              :placeholder="t('monopoly.username.placeholder')"
+              class="input-mainline text-center text-xl"
+            />
+          </div>
 
-        <button
-          @click="onStartClick"
-          class="bg-linear-to-r from-primary to-violet-500 text-white font-black text-lg px-10 py-4 rounded-2xl shadow-lg shadow-primary/30 hover:shadow-xl hover:shadow-primary/40 hover:scale-105 active:scale-95 transition-all duration-300"
-        >
-          {{ t('monopoly.startBtn') }} 🚀
-        </button>
+          <button
+            @click="onStartClick"
+            class="btn-mainline w-full !py-5 text-xl group"
+          >
+            <span class="inline-block transition-transform group-hover:translate-x-1">{{ t('monopoly.startBtn') }} 🚀</span>
+          </button>
+        </div>
 
         <!-- Leaderboard -->
         <div class="w-full max-w-xl mt-4">
-          <div class="bg-surface-light dark:bg-surface-dark rounded-3xl p-6 border border-gray-100 dark:border-gray-800 shadow-sm overflow-hidden">
+          <div class="card-mainline !p-6 !shadow-none">
             <div class="flex items-center justify-between mb-4">
-              <h3 class="text-xl font-black bg-linear-to-r from-primary to-violet-500 bg-clip-text text-transparent">
+              <h3 class="text-xl font-black text-primary uppercase tracking-widest">
                 🏆 {{ t('monopoly.leaderboard.title') }}
               </h3>
-              <button @click="fetchLeaderboard" class="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors" :disabled="isLoadingLeaderboard">
+              <button @click="fetchLeaderboard" class="p-2 hover:bg-primary/10 rounded-full transition-colors" :disabled="isLoadingLeaderboard">
                 <RotateCw  class=" text-sm" :class="{ 'animate-spin': isLoadingLeaderboard }"/>
               </button>
             </div>
 
-            <div v-if="isLoadingLeaderboard && !leaderboardData.length" class="py-12 text-center text-text-sub-light dark:text-text-sub-dark">
+            <div v-if="isLoadingLeaderboard && !leaderboardData.length" class="py-12 text-center text-text-sub">
               <div class="animate-spin text-3xl mb-2">🎲</div>
               <p class="text-xs font-bold">{{ t('monopoly.leaderboard.loading') }}</p>
             </div>
 
-            <div v-else-if="leaderboardError" class="py-8 text-center text-red-500">
+            <div v-else-if="leaderboardError" class="py-8 text-center text-accent-red">
                <p class="text-xs font-bold">{{ t('monopoly.leaderboard.error') }}</p>
                <p class="text-[10px] mt-1 opacity-70">{{ leaderboardError }}</p>
             </div>
 
-            <div v-else-if="!leaderboardData.length" class="py-12 text-center text-text-sub-light dark:text-text-sub-dark">
+            <div v-else-if="!leaderboardData.length" class="py-12 text-center text-text-sub">
               <p class="text-4xl mb-2">📭</p>
               <p class="text-xs font-bold">{{ t('monopoly.leaderboard.noData') }}</p>
             </div>
@@ -753,7 +797,7 @@ const gradeLabel = computed(() => {
             <div v-else class="overflow-x-auto">
               <table class="w-full text-left">
                 <thead>
-                  <tr class="text-[10px] uppercase font-bold text-text-sub-light dark:text-text-sub-dark border-b border-gray-50 dark:border-gray-800">
+                  <tr class="text-[10px] uppercase font-bold text-text-sub border-b border-border-main">
                     <th class="pb-2 px-2 w-12">{{ t('monopoly.leaderboard.rank') }}</th>
                     <th class="pb-2 px-2">{{ t('monopoly.leaderboard.nickname') }}</th>
                     <th class="pb-2 px-2 text-right">{{ t('monopoly.leaderboard.score') }}</th>
@@ -764,25 +808,25 @@ const gradeLabel = computed(() => {
                   <tr
                     v-for="(item, idx) in leaderboardData"
                     :key="item.id"
-                    class="border-b border-gray-50/50 dark:border-gray-800/50 last:border-0 hover:bg-gray-50/50 dark:hover:bg-gray-800/20 transition-colors"
+                    class="border-b border-primary/5 last:border-0 hover:bg-primary/5 transition-colors"
                   >
                     <td class="py-3 px-2">
                        <span v-if="idx === 0" class="text-lg">🥇</span>
                        <span v-else-if="idx === 1" class="text-lg">🥈</span>
                        <span v-else-if="idx === 2" class="text-lg">🥉</span>
-                       <span v-else class="font-black text-text-sub-light dark:text-text-sub-dark pl-1">#{{ idx + 1 }}</span>
+                       <span v-else class="font-black text-text-sub pl-1">#{{ idx + 1 }}</span>
                     </td>
                     <td class="py-3 px-2">
                       <div class="font-bold flex items-center gap-1.5">
                         {{ item.username }}
-                        <span v-if="item.username === username" class="text-[8px] bg-primary/10 text-primary px-1.5 py-0.5 rounded-full">YOU</span>
+                        <span v-if="item.username === username" class="text-[8px] bg-primary/10 text-primary px-1.5 py-0.5 rounded-full">{{ t('common.you') }}</span>
                       </div>
-                      <div class="text-[10px] text-text-sub-light dark:text-text-sub-dark opacity-70">
+                      <div class="text-[10px] text-text-sub opacity-70">
                         {{ new Date(item.start_time).toLocaleDateString() }}
                       </div>
                     </td>
                     <td class="py-3 px-2 text-right">
-                      <span class="font-black text-emerald-500">{{ item.score }}</span>
+                      <span class="font-black text-accent-emerald">{{ item.score }}</span>
                     </td>
                     <td class="py-3 px-2 text-right">
                       <span class="font-bold">{{ item.rounds }}</span>
@@ -799,25 +843,25 @@ const gradeLabel = computed(() => {
     <!-- ==================== MATH QUIZ GATE ==================== -->
     <Transition name="zoom">
       <div v-if="showMathQuiz" class="fixed inset-0 z-100 flex items-center justify-center p-4">
-        <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" @click="dismissMathQuiz"></div>
-        <div class="relative bg-surface-light dark:bg-surface-dark rounded-3xl p-6 lg:p-8 max-w-sm w-full shadow-2xl border border-gray-100 dark:border-gray-800 text-center">
+        <div class="absolute inset-0 bg-background-main/50 backdrop-blur-sm" @click="dismissMathQuiz"></div>
+        <div class="relative card-mainline p-6 lg:p-8 max-w-sm w-full shadow-2xl text-center">
           <!-- Timer circle -->
           <div class="absolute top-4 right-4 w-10 h-10">
             <svg class="w-10 h-10 -rotate-90" viewBox="0 0 36 36">
-              <circle cx="18" cy="18" r="15.5" fill="none" stroke="currentColor" stroke-width="2" class="text-gray-200 dark:text-gray-700" />
+              <circle cx="18" cy="18" r="15.5" fill="none" stroke="currentColor" stroke-width="2" class="text-border-main" />
               <circle cx="18" cy="18" r="15.5" fill="none" stroke-width="3" stroke-linecap="round"
                 class="transition-all duration-1000 ease-linear"
-                :class="mathTimer <= 2 ? 'text-red-500' : 'text-primary'"
+                :class="mathTimer <= 2 ? 'text-accent-red' : 'text-primary'"
                 :stroke-dasharray="97.4"
                 :stroke-dashoffset="97.4 - (97.4 * mathTimer / 5)"
               />
             </svg>
-            <span class="absolute inset-0 flex items-center justify-center text-sm font-black" :class="mathTimer <= 2 ? 'text-red-500' : ''">{{ mathTimer }}</span>
+            <span class="absolute inset-0 flex items-center justify-center text-sm font-black" :class="mathTimer <= 2 ? 'text-accent-red' : ''">{{ mathTimer }}</span>
           </div>
 
           <div class="text-4xl mb-2">🧮</div>
           <h3 class="text-lg font-black mb-1">{{ t('monopoly.mathQuiz.title') }}</h3>
-          <p class="text-xs text-text-sub-light dark:text-text-sub-dark mb-5">{{ t('monopoly.mathQuiz.hint') }}</p>
+          <p class="text-xs text-text-sub mb-5">{{ t('monopoly.mathQuiz.hint') }}</p>
 
           <div class="text-3xl lg:text-4xl font-black mb-5 tracking-wide" :class="{ 'animate-wrong': mathWrong }">
             {{ mathA }} {{ mathOp }} {{ mathB }} = ?
@@ -827,8 +871,8 @@ const gradeLabel = computed(() => {
             v-model="mathAnswer"
             type="number"
             inputmode="numeric"
-            class="w-full text-center text-2xl font-black py-3 px-4 rounded-xl border-2 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-600 focus:border-primary focus:outline-none transition-colors mb-4"
-            :class="{ 'border-red-400 dark:border-red-500': mathWrong }"
+            class="w-full text-center text-3xl font-black py-4 px-6 rounded-2xl border-2 bg-surface-main border-primary focus:shadow-offset-green focus:outline-none transition-all mb-6"
+            :class="{ 'border-accent-red': mathWrong }"
             :placeholder="t('monopoly.mathQuiz.placeholder')"
             @keyup.enter="checkMathAnswer"
             autofocus
@@ -837,19 +881,19 @@ const gradeLabel = computed(() => {
           <div class="flex gap-3">
             <button
               @click="dismissMathQuiz"
-              class="flex-1 py-3 rounded-xl font-bold border border-gray-200 dark:border-gray-600 text-text-sub-light dark:text-text-sub-dark hover:bg-gray-50 dark:hover:bg-gray-800 transition-all"
+              class="flex-1 py-4 rounded-2xl font-black border-2 border-primary text-text-sub hover:bg-primary/5 transition-all"
             >
               {{ t('monopoly.mathQuiz.cancel') }}
             </button>
             <button
               @click="checkMathAnswer"
-              class="flex-1 py-3 rounded-xl font-black bg-linear-to-r from-primary to-violet-500 text-white shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 transition-all"
+              class="flex-1 py-3 rounded-xl font-black bg-primary text-background-main shadow-lg hover:scale-105 active:scale-95 transition-all"
             >
               {{ t('monopoly.mathQuiz.confirm') }}
             </button>
           </div>
 
-          <p v-if="mathWrong" class="text-red-500 text-sm font-bold mt-3 animate-bounce-slow">{{ t('monopoly.mathQuiz.wrong') }}</p>
+          <p v-if="mathWrong" class="text-accent-red text-sm font-bold mt-3 animate-bounce-slow">{{ t('monopoly.mathQuiz.wrong') }}</p>
         </div>
       </div>
     </Transition>
@@ -858,67 +902,51 @@ const gradeLabel = computed(() => {
     <Transition name="fade">
       <div v-if="gamePhase === 'playing'" class="flex flex-col gap-4">
         <!-- Top HUD -->
-        <div class="flex flex-wrap items-center justify-between gap-3">
-          <div class="flex items-center gap-4">
-            <div class="bg-surface-light dark:bg-surface-dark rounded-2xl px-4 py-2 border border-gray-100 dark:border-gray-800 flex items-center gap-2">
-              <span class="text-xs font-bold text-text-sub-light dark:text-text-sub-dark uppercase">{{ t('monopoly.roundLabel') }}</span>
-              <span class="text-lg font-black text-primary">{{ round }}<span class="text-text-sub-light dark:text-text-sub-dark text-xs">/{{ MAX_ROUNDS }}</span></span>
+        <div class="flex items-center gap-4 mb-8">
+            <div class="size-12 bg-primary text-background-main rounded-xl flex items-center justify-center shadow-offset-green">
+              <Zap class="size-7" />
             </div>
-            <div class="bg-surface-light dark:bg-surface-dark rounded-2xl px-4 py-2 border border-gray-100 dark:border-gray-800 flex items-center gap-2">
-              <span class="text-xs font-bold text-text-sub-light dark:text-text-sub-dark uppercase">{{ t('monopoly.score') }}</span>
-              <span class="text-lg font-black text-emerald-500">{{ player.score }}</span>
+            <div>
+              <h2 class="text-3xl font-black text-primary uppercase tracking-tighter">Stitch Adventure</h2>
+              <div class="flex items-center gap-2">
+                <span class="badge-mainline">Season 1</span>
+                <span class="text-[10px] font-black text-text-sub uppercase tracking-widest">{{ t('monopoly.roundsLeft', { count: MAX_ROUNDS - round + 1 }) }}</span>
+              </div>
             </div>
-          </div>
-          <div class="flex items-center gap-2">
-            <!-- Active buffs -->
-            <span v-if="shieldActive" class="text-lg" title="Shield Active">🛡️</span>
-            <span v-if="freezeRounds > 0" class="text-lg" :title="`Freeze: ${freezeRounds} rounds`">❄️</span>
-            <span v-if="doubleRewardActive" class="text-lg" title="Double Reward">💰</span>
-            <span v-if="extraTurnPending" class="text-lg" title="Extra Turn">🎲</span>
-
-            <button
-              @click="showBackpack = !showBackpack"
-              class="relative bg-surface-light dark:bg-surface-dark rounded-xl px-3 py-2 border border-gray-100 dark:border-gray-800 hover:border-primary/50 transition-all"
-            >
-              🎒
-              <span v-if="player.items.length" class="absolute -top-1 -right-1 bg-primary text-white text-[10px] font-black w-4 h-4 rounded-full flex items-center justify-center">{{ player.items.length }}</span>
-            </button>
-          </div>
         </div>
 
-        <!-- Score progress bar -->
-        <div class="bg-surface-light dark:bg-surface-dark rounded-2xl p-3 border border-gray-100 dark:border-gray-800">
-          <div class="flex justify-between items-center mb-1.5">
-            <span class="text-[10px] font-bold text-text-sub-light dark:text-text-sub-dark uppercase">{{ t('monopoly.progress') }}</span>
-            <span class="text-xs font-black" :class="gradeLabel.color">{{ gradeLabel.label }}</span>
-          </div>
-          <div class="h-2.5 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
-            <div
-              class="h-full bg-linear-to-r from-primary via-violet-500 to-emerald-500 rounded-full transition-all duration-700 ease-out"
-              :style="{ width: progressPercent + '%' }"
-            ></div>
-          </div>
-          <div class="flex justify-between mt-1">
-            <span class="text-[10px] font-bold text-text-sub-light dark:text-text-sub-dark">0</span>
-            <span class="text-[10px] font-bold text-text-sub-light dark:text-text-sub-dark">{{ TARGET_SCORE }}</span>
-          </div>
+        <div class="grid grid-cols-2 gap-4">
+            <div class="card-mainline !p-5 !bg-accent-amber/5 !shadow-none rotate-1">
+              <div class="flex items-center gap-3 mb-2">
+                <Zap class="size-5 text-accent-amber fill-accent-amber" />
+                <span class="text-[10px] font-black uppercase tracking-widest text-text-sub">Score</span>
+              </div>
+              <div class="text-4xl font-black text-primary">{{ player.score }}</div>
+            </div>
+            <div class="card-mainline !p-5 !bg-accent-cyan/5 !shadow-none -rotate-1">
+              <div class="flex items-center gap-3 mb-2">
+                <LayoutDashboard class="size-5 text-accent-cyan" />
+                <span class="text-[10px] font-black uppercase tracking-widest text-text-sub">Items</span>
+              </div>
+              <div class="text-4xl font-black text-primary">{{ player.items.length }}</div>
+            </div>
         </div>
 
         <!-- Board Grid (rectangular loop) -->
-        <div class="board-container bg-surface-light dark:bg-surface-dark rounded-3xl p-3 lg:p-5 border border-gray-100 dark:border-gray-800 shadow-sm">
+        <div class="board-container bg-surface-main rounded-3xl p-3 lg:p-5 border-2 border-border-main shadow-sm">
           <!-- Top row -->
           <div class="flex gap-1.5 lg:gap-2 mb-1.5 lg:mb-2">
             <div
               v-for="tile in topRow"
               :key="'t'+tile.id"
-              class="tile-cell flex-1 aspect-square rounded-xl lg:rounded-2xl border-2 bg-linear-to-br flex flex-col items-center justify-center cursor-pointer transition-all duration-300 hover:scale-105 relative overflow-hidden min-w-0"
-              :class="[tileColorClass(tile), player.position === tile.id ? 'ring-2 ring-primary ring-offset-2 dark:ring-offset-gray-900 scale-110 shadow-lg' : '']"
+              class="tile-cell flex-1 aspect-square rounded-xl lg:rounded-2xl border-2 bg-gradient-to-br flex flex-col items-center justify-center cursor-pointer transition-all duration-300 hover:scale-105 relative overflow-hidden min-w-0"
+              :class="[tileColorClass(tile), player.position === tile.id ? 'ring-2 ring-primary ring-offset-2 scale-110 shadow-lg' : '']"
             >
               <span class="text-base lg:text-xl leading-none">{{ tileIcon(tile) }}</span>
-              <span class="text-[8px] lg:text-[10px] font-bold mt-0.5 text-text-sub-light dark:text-text-sub-dark">{{ tile.id + 1 }}</span>
+              <span class="text-[8px] lg:text-[10px] font-bold mt-0.5 text-text-sub">{{ tile.id + 1 }}</span>
               <!-- Player token -->
               <div v-if="player.position === tile.id" class="absolute inset-0 flex items-center justify-center">
-                <div class="w-5 h-5 lg:w-7 lg:h-7 bg-primary rounded-full flex items-center justify-center text-white text-xs lg:text-sm font-black shadow-lg shadow-primary/40 animate-pulse-slow border-2 border-white dark:border-gray-800">
+                <div class="w-5 h-5 lg:w-7 lg:h-7 bg-primary rounded-full flex items-center justify-center text-background-main text-xs lg:text-sm font-black shadow-lg animate-pulse-slow border-2 border-background-main">
                   ★
                 </div>
               </div>
@@ -932,13 +960,13 @@ const gradeLabel = computed(() => {
               <div
                 v-for="tile in leftCol"
                 :key="'l'+tile.id"
-                class="tile-cell w-10 h-10 lg:w-14 lg:h-14 rounded-xl lg:rounded-2xl border-2 bg-linear-to-br flex flex-col items-center justify-center cursor-pointer transition-all duration-300 hover:scale-105 relative overflow-hidden"
-                :class="[tileColorClass(tile), player.position === tile.id ? 'ring-2 ring-primary ring-offset-2 dark:ring-offset-gray-900 scale-110 shadow-lg' : '']"
+                class="tile-cell w-10 h-10 lg:w-14 lg:h-14 rounded-xl lg:rounded-2xl border-2 bg-gradient-to-br flex flex-col items-center justify-center cursor-pointer transition-all duration-300 hover:scale-105 relative overflow-hidden"
+                :class="[tileColorClass(tile), player.position === tile.id ? 'ring-2 ring-primary ring-offset-2 scale-110 shadow-lg' : '']"
               >
                 <span class="text-base lg:text-xl leading-none">{{ tileIcon(tile) }}</span>
-                <span class="text-[8px] lg:text-[10px] font-bold mt-0.5 text-text-sub-light dark:text-text-sub-dark">{{ tile.id + 1 }}</span>
+                <span class="text-[8px] lg:text-[10px] font-bold mt-0.5 text-text-sub">{{ tile.id + 1 }}</span>
                 <div v-if="player.position === tile.id" class="absolute inset-0 flex items-center justify-center">
-                  <div class="w-5 h-5 lg:w-7 lg:h-7 bg-primary rounded-full flex items-center justify-center text-white text-xs lg:text-sm font-black shadow-lg shadow-primary/40 animate-pulse-slow border-2 border-white dark:border-gray-800">★</div>
+                  <div class="w-5 h-5 lg:w-7 lg:h-7 bg-primary rounded-full flex items-center justify-center text-background-main text-xs lg:text-sm font-black shadow-lg animate-pulse-slow border-2 border-background-main">★</div>
                 </div>
               </div>
             </div>
@@ -947,7 +975,7 @@ const gradeLabel = computed(() => {
             <div class="flex-1 flex flex-col items-center justify-center gap-3 lg:gap-4 min-h-[160px] lg:min-h-[250px]">
               <!-- Dice -->
               <div
-                class="dice-container w-16 h-16 lg:w-24 lg:h-24 bg-white dark:bg-gray-800 rounded-2xl lg:rounded-3xl shadow-xl border-2 border-gray-200 dark:border-gray-600 grid grid-cols-3 grid-rows-3 p-2 lg:p-3 gap-0.5 lg:gap-1 transition-transform duration-100"
+                class="dice-container w-16 h-16 lg:w-24 lg:h-24 bg-surface-main rounded-2xl lg:rounded-3xl shadow-offset-dark border-2 border-primary grid grid-cols-3 grid-rows-3 p-2 lg:p-3 gap-0.5 lg:gap-1 transition-transform duration-100"
                 :class="{ 'animate-shake': isRolling }"
               >
                 <template v-for="row in 3" :key="row">
@@ -966,7 +994,7 @@ const gradeLabel = computed(() => {
               <button
                 @click="rollDice"
                 :disabled="isRolling || isMoving || showEvent"
-                class="bg-linear-to-r from-primary to-violet-500 text-white font-black text-sm lg:text-base px-6 lg:px-8 py-2.5 lg:py-3 rounded-xl shadow-lg shadow-primary/30 hover:shadow-xl hover:shadow-primary/40 hover:scale-105 active:scale-95 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+                class="bg-primary text-background-main font-black text-sm lg:text-base px-6 lg:px-8 py-2.5 lg:py-3 rounded-xl shadow-lg shadow-primary/30 hover:scale-105 active:scale-95 transition-all duration-300 disabled:opacity-50"
               >
                 <span v-if="isRolling" class="inline-flex items-center gap-1">
                   <span class="animate-spin">🎲</span> ...
@@ -975,13 +1003,13 @@ const gradeLabel = computed(() => {
                 <span v-else>{{ t('monopoly.rollBtn') }} 🎲</span>
               </button>
 
-              <!-- Tile legend (small) -->
-              <div class="flex flex-wrap justify-center gap-2 text-[10px] lg:text-xs font-bold text-text-sub-light dark:text-text-sub-dark">
-                <span>🎁{{ t('monopoly.tileTypes.reward') }}</span>
-                <span>⛈️{{ t('monopoly.tileTypes.penalty') }}</span>
-                <span>🎒{{ t('monopoly.tileTypes.item') }}</span>
-                <span>⚡{{ t('monopoly.tileTypes.event') }}</span>
-              </div>
+              <button
+                @click="onMathChallengeClick"
+                :disabled="isRolling || isMoving || showEvent"
+                class="bg-surface-main text-primary border-2 border-primary/20 hover:border-primary/50 font-black text-[10px] lg:text-xs px-4 py-2 rounded-xl transition-all duration-300 flex items-center justify-center gap-1.5 active:scale-95 disabled:opacity-50"
+              >
+                <span>🧮 {{ t('monopoly.mathQuiz.entry') }}</span>
+              </button>
             </div>
 
             <!-- Right column -->
@@ -989,13 +1017,13 @@ const gradeLabel = computed(() => {
               <div
                 v-for="tile in rightCol"
                 :key="'r'+tile.id"
-                class="tile-cell w-10 h-10 lg:w-14 lg:h-14 rounded-xl lg:rounded-2xl border-2 bg-linear-to-br flex flex-col items-center justify-center cursor-pointer transition-all duration-300 hover:scale-105 relative overflow-hidden"
-                :class="[tileColorClass(tile), player.position === tile.id ? 'ring-2 ring-primary ring-offset-2 dark:ring-offset-gray-900 scale-110 shadow-lg' : '']"
+                class="tile-cell w-10 h-10 lg:w-14 lg:h-14 rounded-xl lg:rounded-2xl border-2 bg-gradient-to-br flex flex-col items-center justify-center cursor-pointer transition-all duration-300 hover:scale-105 relative overflow-hidden"
+                :class="[tileColorClass(tile), player.position === tile.id ? 'ring-2 ring-primary ring-offset-2 scale-110 shadow-lg' : '']"
               >
                 <span class="text-base lg:text-xl leading-none">{{ tileIcon(tile) }}</span>
-                <span class="text-[8px] lg:text-[10px] font-bold mt-0.5 text-text-sub-light dark:text-text-sub-dark">{{ tile.id + 1 }}</span>
+                <span class="text-[8px] lg:text-[10px] font-bold mt-0.5 text-text-sub">{{ tile.id + 1 }}</span>
                 <div v-if="player.position === tile.id" class="absolute inset-0 flex items-center justify-center">
-                  <div class="w-5 h-5 lg:w-7 lg:h-7 bg-primary rounded-full flex items-center justify-center text-white text-xs lg:text-sm font-black shadow-lg shadow-primary/40 animate-pulse-slow border-2 border-white dark:border-gray-800">★</div>
+                  <div class="w-5 h-5 lg:w-7 lg:h-7 bg-primary rounded-full flex items-center justify-center text-background-main text-xs lg:text-sm font-black shadow-lg animate-pulse-slow border-2 border-background-main">★</div>
                 </div>
               </div>
             </div>
@@ -1006,123 +1034,112 @@ const gradeLabel = computed(() => {
             <div
               v-for="tile in bottomRow"
               :key="'b'+tile.id"
-              class="tile-cell flex-1 aspect-square rounded-xl lg:rounded-2xl border-2 bg-linear-to-br flex flex-col items-center justify-center cursor-pointer transition-all duration-300 hover:scale-105 relative overflow-hidden min-w-0"
-              :class="[tileColorClass(tile), player.position === tile.id ? 'ring-2 ring-primary ring-offset-2 dark:ring-offset-gray-900 scale-110 shadow-lg' : '']"
+              class="tile-cell flex-1 aspect-square rounded-xl lg:rounded-2xl border-2 bg-gradient-to-br flex flex-col items-center justify-center cursor-pointer transition-all duration-300 hover:scale-105 relative overflow-hidden min-w-0"
+              :class="[tileColorClass(tile), player.position === tile.id ? 'ring-2 ring-primary ring-offset-2 scale-110 shadow-lg' : '']"
             >
               <span class="text-base lg:text-xl leading-none">{{ tileIcon(tile) }}</span>
-              <span class="text-[8px] lg:text-[10px] font-bold mt-0.5 text-text-sub-light dark:text-text-sub-dark">{{ tile.id + 1 }}</span>
+              <span class="text-[8px] lg:text-[10px] font-bold mt-0.5 text-text-sub">{{ tile.id + 1 }}</span>
               <div v-if="player.position === tile.id" class="absolute inset-0 flex items-center justify-center">
-                <div class="w-5 h-5 lg:w-7 lg:h-7 bg-primary rounded-full flex items-center justify-center text-white text-xs lg:text-sm font-black shadow-lg shadow-primary/40 animate-pulse-slow border-2 border-white dark:border-gray-800">★</div>
+                <div class="w-5 h-5 lg:w-7 lg:h-7 bg-primary rounded-full flex items-center justify-center text-background-main text-xs lg:text-sm font-black shadow-lg animate-pulse-slow border-2 border-background-main">★</div>
               </div>
             </div>
           </div>
         </div>
 
         <!-- ==================== BACKPACK PANEL ==================== -->
-        <Transition name="slide-up">
-          <div v-if="showBackpack" class="bg-surface-light dark:bg-surface-dark rounded-2xl p-4 border border-gray-100 dark:border-gray-800 shadow-lg">
-            <div class="flex justify-between items-center mb-3">
-              <h3 class="font-black text-sm flex items-center gap-2">🎒 {{ t('monopoly.backpack') }} <span class="text-text-sub-light dark:text-text-sub-dark text-xs">({{ player.items.length }}/6)</span></h3>
-              <button @click="showBackpack = false" class="text-text-sub-light dark:text-text-sub-dark hover:text-text-main-light dark:hover:text-text-main-dark transition-colors">
-                <X  class=" text-xl"/>
-              </button>
+        <div class="card-mainline !p-6 !shadow-none">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="text-xl font-black text-primary uppercase tracking-widest">{{ t('monopoly.inventory.title') }}</h3>
+              <span class="badge-mainline">{{ player.items.length }}/5</span>
             </div>
-            <div v-if="player.items.length === 0" class="text-center py-6 text-text-sub-light dark:text-text-sub-dark text-sm">
-              {{ t('monopoly.emptyBackpack') }}
-            </div>
-            <div v-else class="grid grid-cols-3 gap-2">
-              <button
+            
+            <div class="flex flex-wrap gap-3">
+              <div
                 v-for="(item, idx) in player.items"
-                :key="item.uid"
+                :key="idx"
                 @click="useItem(idx)"
-                :disabled="isRolling || isMoving || showEvent"
-                class="bg-linear-to-br from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-600 rounded-xl p-3 border border-gray-200 dark:border-gray-600 hover:border-primary/50 hover:shadow-md transition-all active:scale-95 disabled:opacity-50 flex flex-col items-center gap-1"
+                class="size-12 bg-surface-main border-2 border-primary rounded-xl flex items-center justify-center text-2xl shadow-offset-dark hover:rotate-12 transition-transform cursor-help group relative"
               >
-                <span class="text-2xl">{{ item.icon }}</span>
-                <span class="text-[10px] font-bold text-text-sub-light dark:text-text-sub-dark leading-tight text-center">{{ t(`monopoly.items.${item.id}`) }}</span>
-              </button>
+                {{ item.icon }}
+                <!-- Tooltip -->
+                <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-primary text-background-main text-[10px] font-black rounded opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity whitespace-nowrap z-20">
+                  {{ t(`monopoly.items.${item.id}.name`) }}
+                </div>
+              </div>
+              <div v-if="player.items.length === 0" class="w-full py-4 text-center text-text-sub italic font-black text-sm border-2 border-dashed border-primary/10 rounded-xl">
+                 {{ t('monopoly.inventory.empty') }}
+              </div>
             </div>
           </div>
-        </Transition>
 
         <!-- ==================== EVENT POPUP ==================== -->
         <Transition name="zoom">
           <div v-if="showEvent" class="fixed inset-0 z-100 flex items-center justify-center p-4" @click.self="dismissEvent">
-            <div class="absolute inset-0 bg-black/40 backdrop-blur-sm"></div>
-            <div class="relative bg-surface-light dark:bg-surface-dark rounded-3xl p-6 lg:p-8 max-w-sm w-full shadow-2xl border border-gray-100 dark:border-gray-800 text-center">
+            <div class="absolute inset-0 bg-primary/40 backdrop-blur-sm"></div>
+            <div class="relative bg-surface-main rounded-3xl p-6 lg:p-8 max-w-sm w-full border-2 border-primary text-center">
               <div class="text-5xl mb-3 animate-bounce-slow">{{ eventTypeIcon() }}</div>
               <p class="text-base lg:text-lg font-bold leading-relaxed mb-5">{{ eventMessage }}</p>
               <button
                 @click="dismissEvent"
-                class="bg-linear-to-r from-primary to-violet-500 text-white font-black px-8 py-3 rounded-xl shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 transition-all"
+                class="bg-primary text-background-main font-black px-8 py-3 rounded-xl shadow-lg hover:scale-105 active:scale-95 transition-all"
               >
                 {{ t('monopoly.ok') }}
               </button>
             </div>
           </div>
         </Transition>
-
-        <!-- Quit Button -->
-        <div class="mt-4 flex justify-center">
-          <button
-            @click="quitGame"
-            class="text-xs font-bold text-text-sub-light dark:text-text-sub-dark hover:text-red-500 transition-colors flex items-center gap-1 opacity-60 hover:opacity-100"
-          >
-            <LogOut  class=" text-sm"/>
-            {{ t('monopoly.quitBtn') }}
-          </button>
-        </div>
       </div>
     </Transition>
 
     <!-- ==================== GAME OVER SCREEN ==================== -->
     <Transition name="fade">
-      <div v-if="gamePhase === 'gameover'" class="flex flex-col items-center justify-center min-h-[70vh] gap-6 text-center px-4">
-        <div class="text-6xl lg:text-7xl animate-bounce-slow">🏆</div>
+      <div v-if="gamePhase === 'gameover'" class="flex flex-col items-center justify-center min-h-[70vh] gap-8 text-center px-4">
+        <div class="text-7xl lg:text-8xl animate-bounce-slow mb-4">🏆</div>
 
-        <div>
-          <h2 class="text-3xl lg:text-4xl font-black bg-linear-to-r from-yellow-400 via-amber-500 to-orange-500 bg-clip-text text-transparent">
+        <div class="flex flex-col gap-2">
+          <h2 class="text-5xl font-black text-primary tracking-tight leading-tight">
             {{ t('monopoly.gameOver') }}
           </h2>
-          <p class="text-text-sub-light dark:text-text-sub-dark mt-2 text-sm">
+          <p class="text-text-sub font-bold text-lg">
             {{ player.score >= TARGET_SCORE ? t('monopoly.result.goalReached') : t('monopoly.result.roundsEnd') }}
           </p>
         </div>
 
         <!-- Score display -->
-        <div class="bg-surface-light dark:bg-surface-dark rounded-3xl p-6 border border-gray-100 dark:border-gray-800 shadow-lg w-full max-w-sm">
-          <div class="text-5xl font-black text-primary mb-1">{{ player.score }}</div>
-          <p class="text-xs font-bold text-text-sub-light dark:text-text-sub-dark uppercase">{{ t('monopoly.finalScore') }}</p>
-          <div class="mt-3" :class="gradeLabel.color">
-            <span class="text-4xl font-black">{{ gradeLabel.label }}</span>
+        <div class="card-mainline !p-10 !bg-primary !text-background-main !shadow-none rotate-1 w-full max-w-sm">
+          <div class="text-6xl font-black mb-2">{{ player.score }}</div>
+          <p class="text-xs font-black uppercase tracking-widest opacity-60">{{ t('monopoly.finalScore') }}</p>
+          <div class="mt-6 text-4xl font-black opacity-90">
+            {{ gradeLabel.label }}
           </div>
         </div>
 
         <!-- Stats -->
-        <div class="grid grid-cols-2 gap-3 w-full max-w-sm">
-          <div class="bg-surface-light dark:bg-surface-dark rounded-2xl p-3 border border-gray-100 dark:border-gray-800 text-left">
-            <p class="text-[10px] font-bold text-text-sub-light dark:text-text-sub-dark uppercase">{{ t('monopoly.stats.rounds') }}</p>
-            <p class="text-lg font-black">{{ round - 1 }}</p>
+        <div class="grid grid-cols-2 gap-4 w-full max-w-sm">
+          <div class="card-mainline !p-4 !shadow-none text-left bg-surface-main">
+            <p class="text-[10px] font-black text-text-sub uppercase tracking-widest mb-1">{{ t('monopoly.stats.rounds') }}</p>
+            <p class="text-2xl font-black text-primary">{{ round - 1 }}</p>
           </div>
-          <div class="bg-surface-light dark:bg-surface-dark rounded-2xl p-3 border border-gray-100 dark:border-gray-800 text-left">
-            <p class="text-[10px] font-bold text-text-sub-light dark:text-text-sub-dark uppercase">{{ t('monopoly.stats.laps') }}</p>
-            <p class="text-lg font-black">{{ gameStats.lapsCompleted }}</p>
+          <div class="card-mainline !p-4 !shadow-none text-left bg-surface-main">
+            <p class="text-[10px] font-black text-text-sub uppercase tracking-widest mb-1">{{ t('monopoly.stats.laps') }}</p>
+            <p class="text-2xl font-black text-primary">{{ gameStats.lapsCompleted }}</p>
           </div>
-          <div class="bg-surface-light dark:bg-surface-dark rounded-2xl p-3 border border-gray-100 dark:border-gray-800 text-left">
-            <p class="text-[10px] font-bold text-text-sub-light dark:text-text-sub-dark uppercase">{{ t('monopoly.stats.itemsUsed') }}</p>
-            <p class="text-lg font-black">{{ gameStats.itemsUsed }}</p>
+          <div class="card-mainline !p-4 !shadow-none text-left bg-surface-main">
+            <p class="text-[10px] font-black text-text-sub uppercase tracking-widest mb-1">{{ t('monopoly.stats.itemsUsed') }}</p>
+            <p class="text-2xl font-black text-primary">{{ gameStats.itemsUsed }}</p>
           </div>
-          <div class="bg-surface-light dark:bg-surface-dark rounded-2xl p-3 border border-gray-100 dark:border-gray-800 text-left">
-            <p class="text-[10px] font-bold text-text-sub-light dark:text-text-sub-dark uppercase">{{ t('monopoly.stats.bestRound') }}</p>
-            <p class="text-lg font-black">+{{ gameStats.maxScoreInOneRound }}</p>
+          <div class="card-mainline !p-4 !shadow-none text-left bg-surface-main">
+            <p class="text-[10px] font-black text-text-sub uppercase tracking-widest mb-1">{{ t('monopoly.stats.bestRound') }}</p>
+            <p class="text-2xl font-black text-primary">+{{ gameStats.maxScoreInOneRound }}</p>
           </div>
         </div>
 
         <button
           @click="startGame"
-          class="bg-linear-to-r from-primary to-violet-500 text-white font-black text-lg px-10 py-4 rounded-2xl shadow-lg shadow-primary/30 hover:shadow-xl hover:shadow-primary/40 hover:scale-105 active:scale-95 transition-all duration-300"
+          class="btn-mainline !py-5 !px-12 flex items-center justify-center gap-3 mt-4"
         >
-          {{ t('monopoly.playAgain') }} 🔄
+          <RotateCw class="size-6" />
+          <span class="text-xl">{{ t('monopoly.playAgain') }}</span>
         </button>
       </div>
     </Transition>

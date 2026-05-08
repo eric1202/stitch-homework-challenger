@@ -54,14 +54,14 @@ const isInitialLoading = ref(true);
 
 const subjects = ["Chinese", 'Math', 'English', 'Science', 'Art', 'Reading', 'Sports', 'Other'];
 const subjectColors = {
-  Chinese: 'text-emerald-600 bg-emerald-100 dark:bg-emerald-900/30 dark:text-emerald-300',
-  Math: 'text-purple-600 bg-purple-100 dark:bg-purple-900/30 dark:text-purple-300',
-  English: 'text-blue-600 bg-blue-100 dark:bg-blue-900/30 dark:text-blue-300',
-  Science: 'text-indigo-700 bg-indigo-100 dark:bg-indigo-900/30 dark:text-indigo-300',
-  Art: 'text-rose-600 bg-rose-100 dark:bg-rose-900/30 dark:text-rose-300',
-  Reading: 'text-amber-600 bg-amber-100 dark:bg-amber-900/30 dark:text-amber-300',
-  Sports: 'text-orange-600 bg-orange-100 dark:bg-orange-900/30 dark:text-orange-400',
-  Other: 'text-slate-600 bg-slate-100 dark:bg-slate-800 dark:text-slate-300',
+  Chinese: 'text-subject-chinese bg-subject-chinese/10 dark:bg-subject-chinese/20',
+  Math: 'text-subject-math bg-subject-math/10 dark:bg-subject-math/20',
+  English: 'text-subject-english bg-subject-english/10 dark:bg-subject-english/20',
+  Science: 'text-subject-science bg-subject-science/10 dark:bg-subject-science/20',
+  Art: 'text-subject-art bg-subject-art/10 dark:bg-subject-art/20',
+  Reading: 'text-subject-reading bg-subject-reading/10 dark:bg-subject-reading/20',
+  Sports: 'text-subject-sports bg-subject-sports/10 dark:bg-subject-sports/20',
+  Other: 'text-subject-other bg-subject-other/10 dark:bg-subject-other/20',
 };
 
 const tasks = ref([]);
@@ -78,7 +78,7 @@ const refreshTasks = async () => {
     tasks.value = result.filter(t => t.date === selectedDate.value);
   } catch (error) {
     console.error('Failed to refresh tasks:', error);
-    alert('刷新失败，请重试');
+    alert(t('common.refreshFail'));
   } finally {
     setTimeout(() => {
       isRefreshing.value = false;
@@ -208,7 +208,7 @@ const addTask = async () => {
     await refreshTasks();
   } catch (error) {
     console.error('Failed to add task:', error);
-    alert(t('home.addTaskError') || '添加任务失败，请重试');
+    alert(t('home.addTaskError'));
   } finally {
     isAddingTask.value = false;
   }
@@ -241,7 +241,7 @@ const confirmBatchAdd = async () => {
     await refreshTasks();
   } catch (error) {
     console.error('Failed to batch add tasks:', error);
-    alert(t('home.addTaskError') || '批量添加失败，请重试');
+    alert(t('home.addTaskError'));
   } finally {
     isAddingTask.value = false;
   }
@@ -332,7 +332,7 @@ const deleteTask = async (id) => {
   <div class="flex flex-col gap-8 pb-10">
     <!-- Initial Loading Overlay -->
     <Transition name="fade">
-      <div v-if="isInitialLoading" class="fixed inset-0 z-[100] bg-background-light dark:bg-background-dark flex flex-col items-center justify-center gap-6">
+      <div v-if="isInitialLoading" class="fixed inset-0 z-[100] bg-background-main dark:bg-background-main flex flex-col items-center justify-center gap-6">
         <div class="relative">
           <div class="size-20 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
           <div class="absolute inset-0 flex items-center justify-center">
@@ -340,7 +340,7 @@ const deleteTask = async (id) => {
           </div>
         </div>
         <div class="flex flex-col items-center gap-2">
-          <h2 class="text-3xl font-black text-text-main-light dark:text-text-main-dark tracking-tight">Stitch Challenger</h2>
+          <h2 class="text-3xl font-black text-text-main-light dark:text-text-main-dark tracking-tight">Homework Challenger</h2>
           <div class="flex items-center gap-2">
             <div class="size-1.5 bg-primary rounded-full animate-bounce"></div>
             <div class="size-1.5 bg-primary rounded-full animate-bounce [animation-delay:0.2s]"></div>
@@ -349,229 +349,155 @@ const deleteTask = async (id) => {
         </div>
       </div>
     </Transition>
-    <!-- Header -->
-    <header class="flex flex-col md:flex-row md:items-end justify-between gap-6">
-      <div class="flex flex-col gap-2">
-        <SplitText
-          :text="t('home.greeting', { name: userName }).replace(/<br\s*\/?>/gi, ' ')"
-          className="text-4xl md:text-5xl font-black tracking-tight leading-tight"
-          :delay="100"
-          :duration="0.6"
-          :from="{ opacity: 0, y: 40 }"
-          :to="{ opacity: 1, y: 0 }"
-          textAlign="left"
-        />
-        <div class="flex items-center gap-2 flex-wrap">
-          <div class="flex items-center gap-1.5 md:gap-2">
-            <!-- 前一天按钮 -->
-            <button 
-              @click="changeDate(-1)"
-              class="p-1.5 md:p-2 rounded-lg md:rounded-xl text-text-sub-light dark:text-text-sub-dark hover:bg-primary/10 hover:text-primary transition-all duration-200 active:scale-95"
-              title="前一天"
-            >
-              <ChevronLeft  class=" text-lg md:text-xl"/>
-            </button>
+    <!-- Hero Section -->
+    <header class="flex flex-col gap-8 mb-4">
+      <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
+        <div class="flex flex-col gap-4">
+          <span class="badge-mainline w-fit">Daily Challenge</span>
+          <h1 class="text-5xl md:text-7xl font-black text-primary leading-[0.9] -ml-1">
+            {{ t('home.greeting', { name: userName }).split('<br/>')[0] }}
+          </h1>
+          <p class="text-lg md:text-xl font-medium text-text-sub max-w-xl leading-relaxed">
+            {{ t('home.subtitle') }}
+          </p>
+          
+          <div class="flex items-center gap-2 flex-wrap mt-2">
+            <div class="flex items-center gap-1 border-2 border-primary rounded-xl p-1 bg-surface-main shadow-offset-dark">
+              <button 
+                @click="changeDate(-1)"
+                class="p-2 rounded-lg text-text-sub hover:bg-primary/5 hover:text-primary transition-all"
+              >
+                <ChevronLeft class="size-5"/>
+              </button>
+              
+              <button 
+                @click="openDatePicker"
+                class="flex items-center gap-2 px-4 py-2 font-bold text-sm text-primary hover:bg-primary/5 transition-all"
+              >
+                <Calendar class="size-4"/>
+                <span>{{ formatDateDisplay(selectedDate) }}</span>
+              </button>
+              
+              <button 
+                @click="changeDate(1)"
+                class="p-2 rounded-lg text-text-sub hover:bg-primary/5 hover:text-primary transition-all"
+              >
+                <ChevronRight class="size-5"/>
+              </button>
+            </div>
             
-            <!-- 日期显示和选择器触发按钮 -->
             <button 
-              @click="openDatePicker"
-              class="flex items-center gap-2 px-3 py-1.5 md:px-4 md:py-2 rounded-xl md:rounded-2xl text-text-sub-light dark:text-text-sub-dark hover:bg-primary/10 hover:text-primary transition-all duration-200 active:scale-95 group"
+              v-if="!isToday"
+              @click="goToToday"
+              class="btn-mainline-secondary py-2 px-4 text-xs"
             >
-              <Calendar  class=" text-primary text-lg md:text-xl group-hover:scale-110 transition-transform"/>
-              <p class="text-base md:text-lg font-medium">{{ formatDateDisplay(selectedDate) }}</p>
-            </button>
-            
-            <!-- 后一天按钮 -->
-            <button 
-              @click="changeDate(1)"
-              class="p-1.5 md:p-2 rounded-lg md:rounded-xl text-text-sub-light dark:text-text-sub-dark hover:bg-primary/10 hover:text-primary transition-all duration-200 active:scale-95"
-              title="后一天"
-            >
-              <ChevronRight  class=" text-lg md:text-xl"/>
+              <CalendarDays class="size-4 inline mr-1"/>
+              {{ t('common.today') }}
             </button>
           </div>
-          
-          <!-- 返回今天按钮 -->
-          <button 
-            v-if="!isToday"
-            @click="goToToday"
-            class="flex items-center gap-1 px-2.5 py-1 md:px-3 md:py-1.5 rounded-lg md:rounded-xl bg-primary/10 text-primary hover:bg-primary hover:text-white font-bold text-xs md:text-sm transition-all duration-200 active:scale-95"
-          >
-            <CalendarDays  class=" text-sm md:text-base"/>
-            <span>今天</span>
-          </button>
         </div>
+
+        <button 
+          @click="isAddingFormOpen = !isAddingFormOpen"
+          class="btn-mainline whitespace-nowrap flex items-center gap-2 group"
+        >
+          <Plus class="transition-transform group-hover:rotate-90"/>
+          <span>{{ isAddingFormOpen ? t('common.cancel') : t('home.addTaskTitle') }}</span>
+        </button>
       </div>
-      <button 
-        @click="isAddingFormOpen = !isAddingFormOpen"
-        class="hidden md:flex items-center gap-2 bg-primary hover:bg-primary-dark text-white font-bold py-4 px-8 rounded-2xl shadow-lg shadow-primary/30 transition-all hover:-translate-y-1 active:scale-95 duration-200"
-      >
-        <Plus  class=" font-bold"/>
-        <span>{{ isAddingFormOpen ? t('settings.danger.resetBtn') : t('home.addTaskTitle') }}</span>
-      </button>
     </header>
 
     <!-- Date Picker Modal -->
-    <Transition name="modal">
-      <div v-if="isDatePickerOpen" class="fixed inset-0 z-[60] flex items-center justify-center p-4" @click="closeDatePicker">
-        <div class="absolute inset-0 bg-black/50 backdrop-blur-sm"></div>
-        <div 
-          class="relative bg-surface-light dark:bg-surface-dark rounded-3xl shadow-2xl border border-gray-200 dark:border-gray-700 p-6 md:p-8 max-w-md w-full"
-          @click.stop
-        >
+    <Transition name="fade">
+      <div v-if="isDatePickerOpen" class="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-background-main/20 backdrop-blur-[2px]" @click="closeDatePicker">
+        <div class="card-mainline max-w-md w-full animate-rise" @click.stop>
           <!-- Header -->
-          <div class="flex items-center justify-between mb-6">
-            <h3 class="text-2xl font-black flex items-center gap-2">
-              <Calendar  class=" text-primary text-3xl"/>
-              选择日期
-            </h3>
-            <button 
-              @click="closeDatePicker"
-              class="p-2 rounded-xl text-text-sub-light hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200 active:scale-95"
-            >
-              <X  class=" text-2xl"/>
+          <div class="flex items-center justify-between mb-8">
+            <h3 class="text-3xl font-black">Select Date</h3>
+            <button @click="closeDatePicker" class="hover:rotate-90 transition-transform">
+              <X class="size-6"/>
             </button>
           </div>
 
-          <!-- Quick Date Selection -->
-          <div class="flex flex-col gap-3 mb-6">
-            <p class="text-xs font-bold text-text-sub-light uppercase tracking-widest px-1">快捷选择</p>
-            <div class="grid grid-cols-2 gap-2">
-              <button 
-                @click="selectDate(today)"
-                class="flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-bold transition-all duration-200 active:scale-95"
-                :class="selectedDate === today ? 'bg-primary text-white' : 'bg-background-light dark:bg-background-dark hover:bg-primary/10'"
-              >
-                <CalendarDays  class=" text-xl"/>
-                <span>今天</span>
-              </button>
-              <button 
-                @click="selectDate((() => {
-                  const tomorrow = new Date(today);
-                  tomorrow.setDate(tomorrow.getDate() + 1);
-                  const year = tomorrow.getFullYear();
-                  const month = String(tomorrow.getMonth() + 1).padStart(2, '0');
-                  const day = String(tomorrow.getDate()).padStart(2, '0');
-                  return `${year}-${month}-${day}`;
-                })())"
-                class="flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-background-light dark:bg-background-dark hover:bg-primary/10 font-bold transition-all duration-200 active:scale-95"
-              >
-                <CalendarPlus  class=" text-xl"/>
-                <span>明天</span>
-              </button>
+          <div class="flex flex-col gap-6">
+            <div class="grid grid-cols-2 gap-4">
+              <button @click="selectDate(today)" :class="selectedDate === today ? 'btn-mainline' : 'btn-mainline-secondary'" class="py-4">{{ t('common.today') }}</button>
+              <button @click="selectDate((() => {
+                const tomorrow = new Date(today);
+                tomorrow.setDate(tomorrow.getDate() + 1);
+                const year = tomorrow.getFullYear();
+                const month = String(tomorrow.getMonth() + 1).padStart(2, '0');
+                const day = String(tomorrow.getDate()).padStart(2, '0');
+                return `${year}-${month}-${day}`;
+              })())" class="btn-mainline-secondary py-4">{{ t('common.tomorrow') }}</button>
             </div>
-          </div>
-
-          <!-- Custom Date Input -->
-          <div class="flex flex-col gap-2">
-            <label class="text-xs font-bold text-text-sub-light uppercase tracking-widest px-1">自定义日期</label>
-            <input 
-              type="date" 
-              :value="selectedDate"
-              @change="(e) => selectDate(e.target.value)"
-              class="w-full bg-background-light dark:bg-background-dark border-2 border-transparent focus:border-primary rounded-xl p-4 font-bold transition-all outline-none text-base"
-            >
-          </div>
-
-          <!-- Selected Date Display -->
-          <div class="mt-6 p-4 bg-primary/10 rounded-xl">
-            <p class="text-xs font-bold text-text-sub-light uppercase tracking-widest mb-1">当前选择</p>
-            <p class="text-lg font-black text-primary">{{ formatDateDisplay(selectedDate) }}</p>
+            
+            <input type="date" :value="selectedDate" @change="(e) => selectDate(e.target.value)" class="input-mainline">
           </div>
         </div>
       </div>
     </Transition>
 
     <!-- Progress Card -->
-    <section v-if="tasks.length > 0" class="bg-surface-light dark:bg-surface-dark p-4 md:p-6 md:px-7 rounded-2xl md:rounded-3xl shadow-sm border border-gray-100 dark:border-gray-800 relative overflow-hidden group">
-      <div class="absolute -right-10 -top-10 size-40 bg-primary/10 rounded-full blur-3xl group-hover:bg-primary/20 transition-all duration-500"></div>
-      
-      <div class="flex flex-col gap-3 md:gap-5 relative z-10">
-        <div class="flex justify-between items-end">
-          <div>
-            <h3 class="text-lg md:text-xl font-bold mb-1">{{ t('home.progress') }}</h3>
-            <p v-if="tasks.filter(t => t.completed).length === tasks.length" class="text-text-sub-light dark:text-text-sub-dark text-xs md:text-sm font-medium">Mission Accomplished! 🏆</p>
-            <p v-else class="text-text-sub-light dark:text-text-sub-dark text-xs md:text-sm font-medium">Keep going! You are doing great. 🔥</p>
-          </div>
-          <div class="text-2xl md:text-3xl font-black text-primary">
+    <section v-if="tasks.length > 0" class="card-mainline !p-0 overflow-hidden">
+      <div class="flex flex-col md:flex-row">
+        <div class="flex-1 p-8 border-b-2 md:border-b-0 md:border-r-2 border-primary bg-accent-green/5">
+          <span class="badge-mainline mb-4">Analytics</span>
+          <h3 class="text-4xl font-black mb-2">{{ t('home.progress') }}</h3>
+          <p class="text-text-sub font-medium max-w-sm">
+            {{ tasks.filter(t => t.completed).length === tasks.length ? 'Outstanding performance! All tasks are cleared.' : 'Focus on the remaining goals to complete your session.' }}
+          </p>
+        </div>
+        <div class="w-full md:w-64 p-8 flex flex-col items-center justify-center bg-surface-main">
+          <div class="text-6xl font-black text-primary leading-none mb-2">
             {{ tasks.length === 0 ? 0 : Math.round((tasks.filter(t => t.completed).length / tasks.length) * 100) }}%
           </div>
-        </div>
-        
-        <div class="h-4 md:h-5 w-full bg-background-light dark:bg-background-dark rounded-full overflow-hidden p-1">
-          <div 
-            class="h-full bg-primary rounded-full transition-all duration-700 ease-out shadow-[0_0_12px_rgba(37,99,235,0.4)]" 
-            :style="{ width: `${tasks.length === 0 ? 0 : (tasks.filter(t => t.completed).length / tasks.length) * 100}%` }"
-          ></div>
-        </div>
-        
-        <div class="flex justify-between text-xs md:text-sm font-bold text-text-sub-light dark:text-text-sub-dark uppercase tracking-wider">
-          <span>{{ tasks.length }} {{ t('app.nav.tasks') }}</span>
-          <span>{{ tasks.filter(t => t.completed).length }} of {{ tasks.length }} {{ t('analytics.status.completed') }}</span>
+          <div class="text-xs font-black uppercase tracking-widest text-text-sub">{{ t('analytics.status.completed') }}</div>
         </div>
       </div>
     </section>
 
-    <!-- Add Task Dialog/Form (Inline for simplicity now) -->
-    <Transition name="expand">
-      <div v-if="isAddingFormOpen" class="bg-surface-light dark:bg-surface-dark p-4 md:p-6 rounded-2xl md:rounded-3xl border-2 border-primary/20 shadow-xl shadow-primary/5">
-        <div class="grid md:grid-cols-12 gap-3 md:gap-5">
-           <div class="md:col-span-12 flex items-center justify-between mb-3 md:mb-4">
-             <h3 class="text-lg md:text-xl font-bold">{{ t('home.addTaskTitle') }} ✏️</h3>
-             <label class="flex items-center gap-2 cursor-pointer group">
-               <div class="relative flex items-center justify-center">
-                 <input 
-                   type="checkbox" 
-                   v-model="isBatchMode"
-                   class="appearance-none size-5 rounded border-2 border-gray-300 dark:border-gray-600 checked:bg-primary checked:border-primary transition-all cursor-pointer"
-                 >
-                 <Check v-if="isBatchMode" class="absolute pointer-events-none text-white w-3 h-3" />
-               </div>
-               <span class="text-sm font-bold text-gray-600 dark:text-gray-300 group-hover:text-primary transition-colors">批量添加</span>
-             </label>
-           </div>
-           <div class="md:col-span-5 flex flex-col gap-1.5 md:gap-2">
-             <label class="text-[10px] md:text-xs font-bold text-text-sub-light uppercase tracking-widest px-1">{{ t('home.inputs.taskName') }}</label>
-             <textarea 
-               v-if="isBatchMode"
-               v-model="newTaskTitle" 
-               rows="3"
-               class="w-full bg-background-light dark:bg-background-dark border-transparent focus:border-primary rounded-xl md:rounded-2xl p-3 md:p-4 font-bold transition-all outline-none text-sm md:text-base resize-none" 
-               placeholder="例如：1.抄写生字&#10;2.背诵课文..."
-             ></textarea>
-             <input 
-               v-else
-               v-model="newTaskTitle" 
-               type="text" 
-               class="w-full bg-background-light dark:bg-background-dark border-transparent focus:border-primary rounded-xl md:rounded-2xl p-3 md:p-4 font-bold transition-all outline-none text-sm md:text-base" 
-               :placeholder="t('home.inputs.placeholder')"
-             >
-           </div>
-           <div class="md:col-span-3 flex flex-col gap-1.5 md:gap-2">
-             <label class="text-[10px] md:text-xs font-bold text-text-sub-light uppercase tracking-widest px-1">{{ t('home.inputs.subject') }}</label>
-             <select v-model="newTaskSubject" class="w-full bg-background-light dark:bg-background-dark border-transparent focus:border-primary rounded-xl md:rounded-2xl p-3 md:p-4 font-bold transition-all outline-none text-sm md:text-base">
+    <!-- Add Task Form -->
+    <Transition name="fade">
+      <div v-if="isAddingFormOpen" class="card-mainline !bg-accent-amber/5 animate-rise">
+        <div class="flex flex-col gap-8">
+          <div class="flex items-center justify-between">
+            <h3 class="text-3xl font-black">{{ t('home.addTaskTitle') }}</h3>
+            <div class="flex items-center gap-4">
+               <button @click="isBatchMode = !isBatchMode" class="text-xs font-black uppercase tracking-widest hover:underline">
+                 {{ isBatchMode ? 'Switch to Single' : 'Bulk Import' }}
+               </button>
+            </div>
+          </div>
+
+          <div class="grid md:grid-cols-12 gap-6">
+            <div class="md:col-span-12 flex flex-col gap-2">
+              <label class="text-[10px] font-black uppercase tracking-widest text-text-sub">{{ t('home.inputs.taskName') }}</label>
+              <textarea v-if="isBatchMode" v-model="newTaskTitle" rows="4" class="input-mainline resize-none" placeholder="1. Task A\n2. Task B..."></textarea>
+              <input v-else v-model="newTaskTitle" type="text" class="input-mainline" :placeholder="t('home.inputs.placeholder')">
+            </div>
+
+            <div class="md:col-span-6 flex flex-col gap-2">
+              <label class="text-[10px] font-black uppercase tracking-widest text-text-sub">{{ t('home.inputs.subject') }}</label>
+              <select v-model="newTaskSubject" class="input-mainline appearance-none">
                 <option v-for="s in subjects" :key="s" :value="s">{{ t(`home.subjects.${s}`) }}</option>
-             </select>
-           </div>
-           <div class="md:col-span-2 flex flex-col gap-1.5 md:gap-2">
-             <label class="text-[10px] md:text-xs font-bold text-text-sub-light uppercase tracking-widest px-1">{{ t('home.inputs.points') }}</label>
-             <div class="w-full h-full bg-background-light dark:bg-background-dark border-transparent rounded-xl md:rounded-2xl p-3 md:p-4 font-black transition-all outline-none text-center text-sm md:text-base text-primary/80 flex items-center justify-center select-none shadow-inner">
-               {{ isBatchMode ? '-' : (calculatedPoints || '-') }}
-             </div>
-           </div>
-           <div class="md:col-span-2 flex items-end">
-             <button 
-               @click="addTask" 
-               :disabled="isAddingTask"
-               class="w-full bg-primary hover:bg-primary-dark text-white font-black py-3 md:py-4 rounded-xl md:rounded-2xl shadow-lg shadow-primary/20 transition-all active:scale-95 duration-200 uppercase tracking-widest text-[10px] md:text-xs disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-             >
-               <RotateCw  
-                 v-if="isAddingTask"
-                 class=" animate-spin text-base md:text-lg"
-               />
-               <span>{{ isAddingTask ? '添加中...' : t('home.buttons.add') }}</span>
-             </button>
-           </div>
+              </select>
+            </div>
+
+            <div class="md:col-span-3 flex flex-col gap-2">
+              <label class="text-[10px] font-black uppercase tracking-widest text-text-sub">{{ t('home.inputs.points') }}</label>
+              <div class="input-mainline bg-primary/5 flex items-center justify-center font-black">
+                {{ isBatchMode ? '-' : (calculatedPoints || '-') }}
+              </div>
+            </div>
+
+            <div class="md:col-span-3 flex items-end">
+              <button @click="addTask" :disabled="isAddingTask" class="btn-mainline w-full !py-4 flex items-center justify-center gap-2">
+                <RotateCw v-if="isAddingTask" class="animate-spin size-4"/>
+                <span>{{ isAddingTask ? t('common.processing') : t('home.buttons.add') }}</span>
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </Transition>
@@ -593,35 +519,33 @@ const deleteTask = async (id) => {
             :class="{ 'animate-spin': isRefreshing }"
             :style="{ transform: isRefreshing ? 'rotate(0deg)' : `rotate(${Math.min(pullDistance * 3.6, 180)}deg)` }"
           />
-          <span class="text-xs font-bold">{{ isRefreshing ? '刷新中...' : '下拉刷新' }}</span>
+            <span class="text-xs font-bold">{{ isRefreshing ? t('common.refreshing') : t('common.pullToRefresh') }}</span>
         </div>
       </div>
       
-      <div class="flex items-center justify-between mb-2 md:mb-0">
-        <h3 class="text-lg md:text-2xl font-black flex items-center gap-1.5 md:gap-2">
-          <CheckCircle2  class=" text-primary text-xl md:text-3xl"/>
-          {{ t('home.title') }}
-        </h3>
+      <div class="flex items-center justify-between mb-8">
+        <div class="flex items-center gap-4">
+          <span class="badge-mainline">Tasks</span>
+          <h2 class="text-4xl font-black">{{ t('home.title') }}</h2>
+        </div>
         <button 
           @click="refreshTasks"
           :disabled="isRefreshing"
-          class="p-2 rounded-xl text-primary hover:bg-primary/10 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed active:scale-95"
-          :title="isRefreshing ? '刷新中...' : '刷新列表'"
+          class="btn-mainline-secondary !p-2 !shadow-none hover:rotate-12"
         >
           <RotateCw  
-            class=" text-2xl transition-transform duration-200"
+            class="size-5 transition-transform duration-200"
             :class="{ 'animate-spin': isRefreshing }"
           />
         </button>
       </div>
-
       <!-- Empty State -->
-      <div v-if="tasks.length === 0" class="py-10 md:py-16 text-center bg-surface-light dark:bg-surface-dark rounded-2xl md:rounded-3xl border border-dashed border-gray-200 dark:border-gray-800">
-        <div class="size-16 md:size-20 bg-gray-50 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-3 md:mb-4 text-gray-300">
+      <div v-if="tasks.length === 0" class="py-10 md:py-16 text-center bg-surface-main rounded-2xl md:rounded-3xl border border-dashed border-primary/20">
+        <div class="size-16 md:size-20 bg-primary/5 rounded-full flex items-center justify-center mx-auto mb-3 md:mb-4 text-text-sub opacity-30">
           <Book  class=" text-4xl md:text-5xl"/>
         </div>
-        <p class="text-lg md:text-xl font-black text-gray-400">{{ t('home.noTasksTitle') }}</p>
-        <p class="text-sm md:text-base text-gray-300 font-bold">{{ t('home.noTasksDesc') }}</p>
+        <p class="text-lg md:text-xl font-black text-text-sub opacity-50">{{ t('home.noTasksTitle') }}</p>
+        <p class="text-sm md:text-base text-text-sub opacity-40 font-bold">{{ t('home.noTasksDesc') }}</p>
         <button @click="isAddingFormOpen = true" class="mt-4 md:mt-6 text-primary font-bold flex items-center justify-center gap-1 mx-auto hover:underline text-sm md:text-base">
           <Plus  class=""/> {{ t('home.addTaskTitle') }}
         </button>
@@ -630,17 +554,13 @@ const deleteTask = async (id) => {
       <div 
         v-for="group in groupedTasks" 
         :key="group.subject" 
-        class="flex flex-col gap-2 md:gap-4 p-2.5 md:p-5 rounded-xl md:rounded-[2rem] transition-all duration-300"
-        :class="[
-          subjectColors[group.subject]?.split(' ').filter(c => c.startsWith('bg-') || c.includes('/30')).join(' ') || 'bg-slate-50 dark:bg-slate-900/20'
-        ]"
+        class="flex flex-col gap-6"
       >
-        <div class="flex items-center justify-between px-1">
-          <h4 class="text-xs md:text-lg font-black uppercase tracking-[0.15em] md:tracking-[0.2em] flex items-center gap-1.5 md:gap-3" :class="subjectColors[group.subject]?.split(' ')[0]">
-            <span class="size-1.5 md:size-3 rounded-full shadow-sm" :class="subjectColors[group.subject]?.split(' ')[0].replace('text-', 'bg-')"></span>
+        <div class="flex items-center gap-4 border-b-2 border-primary pb-2">
+          <h4 class="text-xl font-black uppercase tracking-widest text-primary">
             {{ t(`home.subjects.${group.subject}`) }}
           </h4>
-          <span class="text-[9px] md:text-xs font-bold opacity-50">{{ group.tasks.length }} {{ t('app.nav.tasks') }}</span>
+          <span class="text-xs font-black text-text-sub opacity-50">{{ group.tasks.length }} {{ t('app.nav.tasks') }}</span>
         </div>
         
         <div class="flex flex-col gap-1.5 md:gap-3">
@@ -648,8 +568,8 @@ const deleteTask = async (id) => {
             <div 
               v-for="task in group.tasks" 
               :key="task.id"
-              class="group flex items-center gap-2 md:gap-5 bg-surface-light dark:bg-surface-dark py-2 px-2.5 md:py-3 md:px-5 rounded-lg md:rounded-2xl shadow-sm border-2 border-transparent hover:border-primary/40 transition-all duration-300 hover:-translate-y-0.5"
-              :class="{ 'opacity-60 grayscale-[0.5]': task.completed }"
+              class="group flex items-center gap-6 card-mainline !p-4 hover:shadow-offset-green"
+              :class="{ 'opacity-60 grayscale-[0.5] !shadow-none !border-primary/20': task.completed }"
             >
               <div class="relative flex items-center justify-center flex-shrink-0">
                 <input 
@@ -657,20 +577,19 @@ const deleteTask = async (id) => {
                   :checked="task.completed" 
                   @change="toggleTask(task)"
                   :disabled="isLocked && task.completed"
-                  class="custom-checkbox appearance-none size-5 md:size-8 rounded-full border-2 border-gray-200 dark:border-gray-700 checked:bg-primary checked:border-primary transition-all cursor-pointer ring-offset-1 md:ring-offset-2 ring-primary/20 focus:ring-2 md:focus:ring-4 disabled:opacity-50 disabled:cursor-not-allowed"
+                  class="custom-checkbox appearance-none size-8 border-2 border-primary rounded-sm checked:bg-primary transition-all cursor-pointer"
                 >
-                <Check  v-if="task.completed" class=" absolute pointer-events-none text-white font-black text-xs md:text-lg"/>
               </div>
 
-              <div class="flex-1 flex items-center justify-between gap-2 md:gap-3 min-w-0">
-                <h4 class="flex-1 text-base md:text-lg font-bold text-text-main-light dark:text-text-main-dark group-hover:text-primary transition-colors duration-300 break-words leading-snug pr-2" :class="{ 'line-through decoration-2 decoration-primary/50 text-text-sub-light opacity-70': task.completed }">
+              <div class="flex-1 flex items-center justify-between gap-4 min-w-0">
+                <h4 class="flex-1 text-xl font-bold text-text-main group-hover:text-accent-green transition-colors leading-snug" :class="{ 'line-through opacity-70': task.completed }">
                   {{ task.title }}
                 </h4>
 
-                <div class="flex items-center gap-2 flex-shrink-0">
-                  <span class="text-xs md:text-sm font-bold text-text-sub-light whitespace-nowrap">+{{ task.points }} pts</span>
-                  <button @click="deleteTask(task.id)" class="p-1.5 md:p-3 text-gray-300 hover:text-red-500 transition-colors rounded-lg md:rounded-xl hover:bg-red-50 dark:hover:bg-red-900/20">
-                    <Trash2  class=" text-base md:text-xl"/>
+                <div class="flex items-center gap-4 flex-shrink-0">
+                  <span class="text-sm font-black text-text-sub whitespace-nowrap">+{{ task.points }} pts</span>
+                  <button @click="deleteTask(task.id)" class="text-text-sub hover:text-accent-red transition-colors">
+                    <Trash2 class="size-5" />
                   </button>
                 </div>
               </div>
@@ -678,52 +597,34 @@ const deleteTask = async (id) => {
           </TransitionGroup>
         </div>
       </div>
+
     </section>
 
     <!-- Batch Confirm Modal -->
-    <Transition name="modal">
-      <div v-if="isBatchConfirmModalOpen" class="fixed inset-0 z-[70] flex items-center justify-center p-4" @click="isBatchConfirmModalOpen = false">
-        <div class="absolute inset-0 bg-black/50 backdrop-blur-sm"></div>
-        <div 
-          class="relative bg-surface-light dark:bg-surface-dark rounded-3xl shadow-2xl border border-gray-200 dark:border-gray-700 p-6 md:p-8 max-w-md w-full max-h-[80vh] flex flex-col"
-          @click.stop
-        >
+    <Transition name="fade">
+      <div v-if="isBatchConfirmModalOpen" class="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-background-main/20 backdrop-blur-[2px]" @click="isBatchConfirmModalOpen = false">
+        <div class="card-mainline max-w-md w-full animate-rise flex flex-col" @click.stop>
           <!-- Header -->
-          <div class="flex items-center justify-between mb-6 flex-shrink-0">
-            <h3 class="text-2xl font-black">确认批量添加</h3>
-            <button 
-              @click="isBatchConfirmModalOpen = false"
-              class="p-2 rounded-xl text-text-sub-light hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200 active:scale-95"
-            >
-              <X class="text-2xl"/>
+          <div class="flex items-center justify-between mb-8">
+            <h3 class="text-3xl font-black">Confirm Batch</h3>
+            <button @click="isBatchConfirmModalOpen = false" class="hover:rotate-90 transition-transform">
+              <X class="size-6"/>
             </button>
           </div>
 
-          <!-- Content -->
-          <p class="text-sm text-text-sub-light dark:text-text-sub-dark mb-4 flex-shrink-0">
-            即将添加以下 {{ batchParsedTasks.length }} 项作业（科目：{{ t(`home.subjects.${newTaskSubject}`) }}）：
-          </p>
-          
-          <div class="overflow-y-auto flex-1 mb-6 -mx-2 px-2">
-            <div class="flex flex-col gap-2">
-              <div 
-                v-for="(task, idx) in batchParsedTasks" 
-                :key="idx" 
-                class="bg-background-light dark:bg-background-dark p-3 rounded-xl"
-              >
-                <p class="font-bold text-text-main-light dark:text-text-main-dark">{{ idx + 1 }}. {{ task }}</p>
-              </div>
+          <div class="flex-1 overflow-y-auto mb-8 flex flex-col gap-4">
+            <div 
+              v-for="(task, idx) in batchParsedTasks" 
+              :key="idx" 
+              class="p-4 border-2 border-primary/10 rounded-lg bg-primary/5 font-bold"
+            >
+              {{ idx + 1 }}. {{ task }}
             </div>
           </div>
 
-          <!-- Action -->
-          <button 
-            @click="confirmBatchAdd" 
-            :disabled="isAddingTask"
-            class="w-full bg-primary hover:bg-primary-dark text-white font-black py-3 md:py-4 rounded-xl md:rounded-2xl shadow-lg shadow-primary/20 transition-all active:scale-95 duration-200 uppercase tracking-widest text-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 flex-shrink-0"
-          >
-            <RotateCw v-if="isAddingTask" class="animate-spin text-lg" />
-            <span>{{ isAddingTask ? '添加中...' : '确认添加' }}</span>
+          <button @click="confirmBatchAdd" :disabled="isAddingTask" class="btn-mainline w-full !py-4 flex items-center justify-center gap-2">
+            <RotateCw v-if="isAddingTask" class="animate-spin size-4" />
+            <span>{{ isAddingTask ? 'Processing...' : 'Confirm Bulk Add' }}</span>
           </button>
         </div>
       </div>
@@ -732,9 +633,9 @@ const deleteTask = async (id) => {
     <!-- Mobile Floating Add Button -->
     <button 
       @click="isAddingFormOpen = true"
-      class="md:hidden fixed bottom-24 right-6 size-16 bg-primary text-white rounded-full shadow-2xl shadow-primary/40 flex items-center justify-center z-50 active:scale-90 transition-transform duration-200"
+      class="md:hidden fixed bottom-24 right-6 size-16 btn-mainline !rounded-full !p-0 flex items-center justify-center z-50 !shadow-offset-green"
     >
-      <Plus  class=" text-3xl font-black"/>
+      <Plus  class="size-8"/>
     </button>
   </div>
 </template>

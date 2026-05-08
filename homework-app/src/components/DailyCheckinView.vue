@@ -28,14 +28,14 @@ const formEndDate = ref('');
 
 const subjects = ["Chinese", 'Math', 'English', 'Science', 'Art', 'Reading', 'Sports', 'Other'];
 const subjectColors = {
-  Chinese: 'text-emerald-600 bg-emerald-100 dark:bg-emerald-900/30 dark:text-emerald-300',
-  Math: 'text-purple-600 bg-purple-100 dark:bg-purple-900/30 dark:text-purple-300',
-  English: 'text-blue-600 bg-blue-100 dark:bg-blue-900/30 dark:text-blue-300',
-  Science: 'text-indigo-700 bg-indigo-100 dark:bg-indigo-900/30 dark:text-indigo-300',
-  Art: 'text-rose-600 bg-rose-100 dark:bg-rose-900/30 dark:text-rose-300',
-  Reading: 'text-amber-600 bg-amber-100 dark:bg-amber-900/30 dark:text-amber-300',
-  Sports: 'text-orange-600 bg-orange-100 dark:bg-orange-900/30 dark:text-orange-400',
-  Other: 'text-slate-600 bg-slate-100 dark:bg-slate-800 dark:text-slate-300',
+  Chinese: 'text-subject-chinese bg-subject-chinese/10 dark:bg-subject-chinese/20',
+  Math: 'text-subject-math bg-subject-math/10 dark:bg-subject-math/20',
+  English: 'text-subject-english bg-subject-english/10 dark:bg-subject-english/20',
+  Science: 'text-subject-science bg-subject-science/10 dark:bg-subject-science/20',
+  Art: 'text-subject-art bg-subject-art/10 dark:bg-subject-art/20',
+  Reading: 'text-subject-reading bg-subject-reading/10 dark:bg-subject-reading/20',
+  Sports: 'text-subject-sports bg-subject-sports/10 dark:bg-subject-sports/20',
+  Other: 'text-subject-other bg-subject-other/10 dark:bg-subject-other/20',
 };
 
 const scheduleTypes = ['daily', 'weekdays', 'weekends', 'custom'];
@@ -243,7 +243,7 @@ const createTemplate = async () => {
     alert(t('dailyCheckin.tasksGenerated', { count: dates.length }));
   } catch (error) {
     console.error('Failed to create template:', error);
-    alert('创建失败: ' + error.message);
+    alert(t('common.createFail') + error.message);
   } finally {
     isLoading.value = false;
   }
@@ -268,7 +268,7 @@ const updateTemplate = async () => {
     closeModal();
   } catch (error) {
     console.error('Failed to update template:', error);
-    alert('更新失败: ' + error.message);
+    alert(t('common.updateFail') + error.message);
   } finally {
     isLoading.value = false;
   }
@@ -282,7 +282,7 @@ const deleteTemplate = async (template) => {
     await db.dailyCheckinTemplates.delete(template.id);
   } catch (error) {
     console.error('Failed to delete template:', error);
-    alert('删除失败: ' + error.message);
+    alert(t('common.deleteFail') + error.message);
   }
 };
 
@@ -302,44 +302,48 @@ const formatSchedule = (template) => {
 <template>
   <div class="flex flex-col gap-4 md:gap-8 pb-24 md:pb-10">
     <!-- Header -->
-    <header class="flex flex-col md:flex-row md:items-end justify-between gap-3 md:gap-6">
-      <div class="flex flex-col gap-1 md:gap-2">
-        <div class="flex items-center gap-2 md:gap-3">
-          <h1 class="text-2xl md:text-5xl font-black tracking-tight leading-tight">
-            {{ t('dailyCheckin.title') }} 📅
+    <header class="flex flex-col gap-8 mb-8">
+      <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
+        <div class="flex flex-col gap-4">
+          <span class="badge-mainline w-fit">Automation</span>
+          <h1 class="text-5xl md:text-7xl font-black text-primary leading-[0.9] -ml-1">
+            {{ t('dailyCheckin.title') }}
           </h1>
+          <p class="text-lg md:text-xl font-medium text-text-sub max-w-xl leading-relaxed">
+            {{ t('dailyCheckin.subtitle') }}
+          </p>
+        </div>
+        
+        <div class="flex items-center gap-4">
           <button
             @click="refreshTemplates"
             :disabled="isRefreshing"
-            class="p-1.5 md:p-2 rounded-lg md:rounded-xl text-primary hover:bg-primary/10 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed active:scale-95"
-            title="刷新列表"
+            class="btn-mainline-secondary !p-4 !shadow-none hover:rotate-12"
           >
             <RotateCw 
-              class=" text-xl md:text-2xl transition-transform duration-200"
+              class="size-6 transition-transform duration-200"
               :class="{ 'animate-spin': isRefreshing }"
             />
           </button>
+          
+          <button
+            @click="openCreateModal"
+            class="btn-mainline flex items-center gap-2 group"
+          >
+            <Plus class="transition-transform group-hover:rotate-90"/>
+            <span>{{ t('dailyCheckin.addNew') }}</span>
+          </button>
         </div>
-        <p class="text-text-sub-light dark:text-text-sub-dark text-sm md:text-lg font-medium">
-          {{ t('dailyCheckin.subtitle') }}
-        </p>
       </div>
-      <button
-        @click="openCreateModal"
-        class="hidden md:flex items-center gap-2 bg-primary hover:bg-primary-dark text-black font-bold py-4 px-8 rounded-2xl shadow-lg shadow-primary/30 transition-all hover:-translate-y-1 active:scale-95 duration-200"
-      >
-        <Plus  class=" font-bold"/>
-        <span>{{ t('dailyCheckin.addNew') }}</span>
-      </button>
     </header>
 
     <!-- Empty State -->
-    <div v-if="templates.length === 0" class="py-10 md:py-16 text-center bg-surface-light dark:bg-surface-dark rounded-2xl md:rounded-3xl border border-dashed border-gray-200 dark:border-gray-800">
-      <div class="size-14 md:size-20 bg-gray-50 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-3 md:mb-4 text-gray-300">
+    <div v-if="templates.length === 0" class="py-10 md:py-16 text-center bg-surface-main rounded-2xl md:rounded-3xl border border-dashed border-primary/20">
+      <div class="size-14 md:size-20 bg-primary/5 rounded-full flex items-center justify-center mx-auto mb-3 md:mb-4 text-text-sub opacity-30">
         <CalendarSync  class=" text-3xl md:text-5xl"/>
       </div>
-      <p class="text-base md:text-xl font-black text-gray-400">{{ t('dailyCheckin.noTemplates') }}</p>
-      <p class="text-sm md:text-base text-gray-300 font-bold mb-4 md:mb-6 px-4">{{ t('dailyCheckin.noTemplatesDesc') }}</p>
+      <p class="text-base md:text-xl font-black text-text-sub opacity-50">{{ t('dailyCheckin.noTemplates') }}</p>
+      <p class="text-sm md:text-base text-text-sub opacity-40 font-bold mb-4 md:mb-6 px-4">{{ t('dailyCheckin.noTemplatesDesc') }}</p>
       <button @click="openCreateModal" class="text-primary font-bold flex items-center justify-center gap-1 mx-auto hover:underline text-sm md:text-base">
         <Plus  class=" text-lg md:text-xl"/> {{ t('dailyCheckin.addNew') }}
       </button>
@@ -350,15 +354,14 @@ const formatSchedule = (template) => {
       <div
         v-for="group in groupedTemplates"
         :key="group.subject"
-        class="flex flex-col gap-2 md:gap-4 p-3 md:p-5 rounded-2xl md:rounded-[2rem] transition-all duration-300"
-        :class="[subjectColors[group.subject]?.split(' ').filter(c => c.startsWith('bg-') || c.includes('/30')).join(' ') || 'bg-slate-50 dark:bg-slate-900/20']"
+        class="flex flex-col gap-6 p-6 rounded-3xl border-2 border-primary/10 transition-all hover:border-primary/30"
+        :class="[subjectColors[group.subject]?.split(' ').filter(c => c.startsWith('bg-') || c.includes('/30')).join(' ') || 'bg-surface-main']"
       >
-        <div class="flex items-center justify-between px-1">
-          <h4 class="text-xs md:text-lg font-black uppercase tracking-[0.15em] md:tracking-[0.2em] flex items-center gap-2 md:gap-3" :class="subjectColors[group.subject]?.split(' ')[0]">
-            <span class="size-2 md:size-3 rounded-full shadow-sm" :class="subjectColors[group.subject]?.split(' ')[0].replace('text-', 'bg-')"></span>
+        <div class="flex items-center gap-4 border-b-2 border-primary pb-2">
+          <h4 class="text-xl font-black uppercase tracking-widest text-primary">
             {{ t(`home.subjects.${group.subject}`) }}
           </h4>
-          <span class="text-[10px] md:text-xs font-bold opacity-50 uppercase tracking-widest">{{ group.templates.length }} {{ t('app.nav.tasks') }}</span>
+          <span class="text-xs font-black text-text-sub opacity-50 uppercase tracking-widest">{{ group.templates.length }} {{ t('app.nav.tasks') }}</span>
         </div>
 
         <div class="flex flex-col gap-2 md:gap-3">
@@ -366,30 +369,30 @@ const formatSchedule = (template) => {
             <div
               v-for="tpl in group.templates"
               :key="tpl.id"
-              class="group flex items-center gap-2 md:gap-5 bg-surface-light dark:bg-surface-dark py-2.5 md:py-4 px-3 md:px-5 rounded-xl md:rounded-2xl shadow-sm border-2 border-transparent hover:border-primary/40 transition-all duration-300"
+              class="group flex items-center gap-6 card-mainline !p-6 hover:shadow-offset-green"
             >
               <div class="flex-1 min-w-0">
-                <h4 class="text-sm md:text-lg font-bold text-text-main-light dark:text-text-main-dark group-hover:text-primary transition-colors duration-300 leading-tight truncate">
+                <h4 class="text-2xl font-black text-primary group-hover:text-accent-green transition-colors leading-none truncate mb-2">
                   {{ tpl.title }}
                 </h4>
-                <div class="flex flex-wrap items-center gap-x-2 md:gap-x-3 gap-y-0.5 mt-0.5 md:mt-1 text-[10px] md:text-sm text-text-sub-light dark:text-text-sub-dark">
-                  <span class="flex items-center gap-0.5 md:gap-1">
-                    <CalendarSync  class=" text-xs md:text-base"/>
+                <div class="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs font-black uppercase tracking-widest text-text-sub">
+                  <span class="flex items-center gap-2">
+                    <CalendarSync class="size-4"/>
                     {{ formatSchedule(tpl) }}
                   </span>
-                  <span class="flex items-center gap-0.5 md:gap-1 font-black text-primary/80">
-                    <Star  class=" text-xs md:text-base"/>
-                    +{{ tpl.points }}
+                  <span class="flex items-center gap-2 text-primary">
+                    <Star class="size-4 fill-primary"/>
+                    +{{ tpl.points }} pts
                   </span>
                 </div>
               </div>
 
-              <div class="flex items-center gap-0 flex-shrink-0">
-                <button @click="openEditModal(tpl)" class="p-2 md:p-3 text-gray-400 hover:text-primary transition-colors rounded-lg md:rounded-xl hover:bg-primary/10 active:scale-95">
-                  <Edit2  class=" text-lg md:text-xl"/>
+              <div class="flex items-center gap-2 flex-shrink-0">
+                <button @click="openEditModal(tpl)" class="btn-mainline-secondary !p-2 !shadow-none hover:rotate-12">
+                  <Edit2 class="size-5"/>
                 </button>
-                <button @click="deleteTemplate(tpl)" class="p-2 md:p-3 text-gray-300 hover:text-red-500 transition-colors rounded-lg md:rounded-xl hover:bg-red-50 dark:hover:bg-red-900/20 active:scale-95">
-                  <Trash2  class=" text-lg md:text-xl"/>
+                <button @click="deleteTemplate(tpl)" class="btn-mainline-secondary !p-2 !shadow-none hover:rotate-12 hover:bg-red-50 hover:text-red-500">
+                  <Trash2 class="size-5"/>
                 </button>
               </div>
             </div>
@@ -401,71 +404,62 @@ const formatSchedule = (template) => {
     <!-- Mobile Floating Add Button -->
     <button
       @click="openCreateModal"
-      class="md:hidden fixed bottom-[calc(5rem+env(safe-area-inset-bottom))] right-4 size-14 bg-primary text-black rounded-full shadow-2xl shadow-primary/40 flex items-center justify-center z-50 active:scale-90 transition-transform duration-200"
+      class="md:hidden fixed bottom-24 right-6 size-16 btn-mainline !rounded-full !p-0 flex items-center justify-center z-50 !shadow-offset-green"
     >
-      <Plus  class=" text-2xl font-black"/>
+      <Plus  class="size-8"/>
     </button>
 
     <!-- Create/Edit Modal -->
     <Transition name="modal">
       <div v-if="isModalOpen" class="fixed inset-0 z-[60] flex items-end md:items-center justify-center" @click="closeModal">
-        <div class="absolute inset-0 bg-black/50 backdrop-blur-sm"></div>
+        <div class="absolute inset-0 bg-background-main/50 backdrop-blur-sm"></div>
         <div
-          class="relative bg-surface-light dark:bg-surface-dark w-full md:max-w-lg md:rounded-3xl rounded-t-3xl shadow-2xl border-t md:border border-gray-200 dark:border-gray-700 max-h-[85vh] md:max-h-[90vh] flex flex-col"
+          class="relative bg-surface-main w-full md:max-w-lg md:rounded-3xl rounded-t-3xl shadow-soft border-t md:border border-primary max-h-[85vh] md:max-h-[90vh] flex flex-col animate-in zoom-in"
           :style="{ paddingBottom: 'env(safe-area-inset-bottom)' }"
           @click.stop
         >
           <!-- Header -->
-          <div class="flex items-center justify-between p-4 md:p-6 border-b border-gray-100 dark:border-gray-800 flex-shrink-0">
-            <h3 class="text-lg md:text-2xl font-black flex items-center gap-2">
-              <CalendarSync  class=" text-primary text-2xl md:text-3xl"/>
+          <div class="flex items-center justify-between p-8 border-b-2 border-primary flex-shrink-0">
+            <h3 class="text-3xl font-black">
               {{ editingTemplate ? t('dailyCheckin.modal.edit') : t('dailyCheckin.modal.create') }}
             </h3>
-            <button
-              @click="closeModal"
-              class="p-1.5 md:p-2 rounded-lg md:rounded-xl text-text-sub-light hover:bg-gray-100 dark:hover:bg-gray-800 transition-all duration-200 active:scale-95"
-            >
-              <X  class=" text-xl md:text-2xl"/>
+            <button @click="closeModal" class="hover:rotate-90 transition-transform">
+              <X class="size-8"/>
             </button>
           </div>
 
           <!-- Form -->
-          <div class="flex flex-col gap-4 md:gap-5 p-4 md:p-6 overflow-y-auto flex-1">
+          <div class="flex flex-col gap-8 p-8 overflow-y-auto flex-1">
             <!-- Task Name -->
-            <div class="flex flex-col gap-1.5 md:gap-2">
-              <label class="text-[10px] md:text-xs font-bold text-text-sub-light uppercase tracking-widest px-1">{{ t('dailyCheckin.templateName') }}</label>
-              <input
-                v-model="formTitle"
-                type="text"
-                class="w-full bg-background-light dark:bg-background-dark border-2 border-transparent focus:border-primary rounded-xl p-3 md:p-4 font-bold transition-all outline-none text-sm md:text-base"
-                :placeholder="t('dailyCheckin.templateNamePlaceholder')"
-              >
+            <div class="flex flex-col gap-2">
+              <label class="text-[10px] font-black uppercase tracking-widest text-text-sub">{{ t('dailyCheckin.templateName') }}</label>
+              <input v-model="formTitle" type="text" class="input-mainline" :placeholder="t('dailyCheckin.templateNamePlaceholder')">
             </div>
 
             <!-- Subject & Points Row -->
-            <div class="grid grid-cols-2 gap-3 md:gap-4">
-              <div class="flex flex-col gap-1.5 md:gap-2">
-                <label class="text-[10px] md:text-xs font-bold text-text-sub-light uppercase tracking-widest px-1">{{ t('home.inputs.subject') }}</label>
-                <select v-model="formSubject" class="w-full bg-background-light dark:bg-background-dark border-2 border-transparent focus:border-primary rounded-xl p-3 md:p-4 font-bold transition-all outline-none text-sm md:text-base">
+            <div class="grid grid-cols-2 gap-6">
+              <div class="flex flex-col gap-2">
+                <label class="text-[10px] font-black uppercase tracking-widest text-text-sub">{{ t('home.inputs.subject') }}</label>
+                <select v-model="formSubject" class="input-mainline">
                   <option v-for="s in subjects" :key="s" :value="s">{{ t(`home.subjects.${s}`) }}</option>
                 </select>
               </div>
-              <div class="flex flex-col gap-1.5 md:gap-2">
-                <label class="text-[10px] md:text-xs font-bold text-text-sub-light uppercase tracking-widest px-1">{{ t('home.inputs.points') }}</label>
-                <input v-model.number="formPoints" type="number" class="w-full bg-background-light dark:bg-background-dark border-2 border-transparent focus:border-primary rounded-xl p-3 md:p-4 font-bold transition-all outline-none text-center text-sm md:text-base">
+              <div class="flex flex-col gap-2">
+                <label class="text-[10px] font-black uppercase tracking-widest text-text-sub">{{ t('home.inputs.points') }}</label>
+                <input v-model.number="formPoints" type="number" class="input-mainline text-center">
               </div>
             </div>
 
-            <!-- Schedule Type -->
-            <div class="flex flex-col gap-1.5 md:gap-2">
-              <label class="text-[10px] md:text-xs font-bold text-text-sub-light uppercase tracking-widest px-1">{{ t('dailyCheckin.schedule') }}</label>
-              <div class="grid grid-cols-4 gap-1.5 md:gap-2">
+            <!-- Frequency -->
+            <div class="flex flex-col gap-4">
+              <label class="text-[10px] font-black uppercase tracking-widest text-text-sub">{{ t('dailyCheckin.frequency') }}</label>
+              <div class="grid grid-cols-4 gap-2">
                 <button
                   v-for="type in scheduleTypes"
                   :key="type"
                   @click="formScheduleType = type"
-                  class="py-2 md:py-3 px-1 md:px-4 rounded-lg md:rounded-xl font-bold transition-all duration-200 active:scale-95 text-xs md:text-sm"
-                  :class="formScheduleType === type ? 'bg-primary text-black' : 'bg-background-light dark:bg-background-dark hover:bg-primary/10'"
+                  class="py-3 px-1 font-bold transition-all text-xs border-2 border-primary rounded-lg"
+                  :class="formScheduleType === type ? 'bg-primary text-background-main shadow-offset-green' : 'bg-surface-main text-primary hover:bg-primary/5'"
                 >
                   {{ t(`dailyCheckin.scheduleTypes.${type}`) }}
                 </button>
@@ -473,15 +467,15 @@ const formatSchedule = (template) => {
             </div>
 
             <!-- Custom Days -->
-            <div v-if="formScheduleType === 'custom'" class="flex flex-col gap-1.5 md:gap-2">
-              <label class="text-[10px] md:text-xs font-bold text-text-sub-light uppercase tracking-widest px-1">{{ t('dailyCheckin.selectDays') }}</label>
-              <div class="grid grid-cols-7 gap-1 md:gap-2">
+            <div v-if="formScheduleType === 'custom'" class="flex flex-col gap-2">
+              <label class="text-[10px] font-black uppercase tracking-widest text-text-sub">{{ t('dailyCheckin.selectDays') }}</label>
+              <div class="grid grid-cols-7 gap-2">
                 <button
                   v-for="day in weekDays"
                   :key="day.value"
                   @click="toggleDay(day.value)"
-                  class="py-2 md:py-2.5 rounded-lg md:rounded-xl font-bold transition-all duration-200 active:scale-95 text-xs md:text-sm"
-                  :class="formCustomDays.includes(day.value) ? 'bg-primary text-black' : 'bg-background-light dark:bg-background-dark hover:bg-primary/10'"
+                  class="py-2 font-bold transition-all text-xs border-2 border-primary rounded-lg"
+                  :class="formCustomDays.includes(day.value) ? 'bg-primary text-background-main shadow-offset-green' : 'bg-surface-main text-primary hover:bg-primary/5'"
                 >
                   {{ t(`dailyCheckin.days.${day.key}`) }}
                 </button>
@@ -489,22 +483,14 @@ const formatSchedule = (template) => {
             </div>
 
             <!-- Date Range -->
-            <div class="grid grid-cols-2 gap-3 md:gap-4">
-              <div class="flex flex-col gap-1.5 md:gap-2">
-                <label class="text-[10px] md:text-xs font-bold text-text-sub-light uppercase tracking-widest px-1">{{ t('dailyCheckin.startDate') }}</label>
-                <input
-                  v-model="formStartDate"
-                  type="date"
-                  class="w-full bg-background-light dark:bg-background-dark border-2 border-transparent focus:border-primary rounded-xl p-3 md:p-4 font-bold transition-all outline-none text-sm md:text-base"
-                >
+            <div class="grid grid-cols-2 gap-6">
+              <div class="flex flex-col gap-2">
+                <label class="text-[10px] font-black uppercase tracking-widest text-text-sub">{{ t('dailyCheckin.startDate') }}</label>
+                <input v-model="formStartDate" type="date" class="input-mainline">
               </div>
-              <div class="flex flex-col gap-1.5 md:gap-2">
-                <label class="text-[10px] md:text-xs font-bold text-text-sub-light uppercase tracking-widest px-1">{{ t('dailyCheckin.endDate') }}</label>
-                <input
-                  v-model="formEndDate"
-                  type="date"
-                  class="w-full bg-background-light dark:bg-background-dark border-2 border-transparent focus:border-primary rounded-xl p-3 md:p-4 font-bold transition-all outline-none text-sm md:text-base"
-                >
+              <div class="flex flex-col gap-2">
+                <label class="text-[10px] font-black uppercase tracking-widest text-text-sub">{{ t('dailyCheckin.endDate') }}</label>
+                <input v-model="formEndDate" type="date" class="input-mainline">
               </div>
             </div>
 
@@ -512,9 +498,9 @@ const formatSchedule = (template) => {
             <button
               @click="editingTemplate ? updateTemplate() : createTemplate()"
               :disabled="isLoading || !formTitle.trim()"
-              class="w-full bg-primary hover:bg-primary-dark text-white font-black py-3.5 md:py-4 rounded-xl md:rounded-2xl shadow-lg shadow-primary/20 transition-all active:scale-95 duration-200 uppercase tracking-widest text-xs md:text-sm mt-2 md:mt-4 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              class="btn-mainline w-full !py-4 flex items-center justify-center gap-2 mt-4"
             >
-              <RotateCw  v-if="isLoading" class=" animate-spin text-lg"/>
+              <RotateCw v-if="isLoading" class="animate-spin size-5"/>
               <span>{{ editingTemplate ? t('dailyCheckin.editBtn') : t('dailyCheckin.createBtn') }}</span>
             </button>
           </div>

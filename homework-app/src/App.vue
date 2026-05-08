@@ -1,206 +1,217 @@
 <script setup>
-import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
-import { db, liveQuery } from './db';
-import gsap from 'gsap';
+import { ref, computed, onMounted, onUnmounted, markRaw } from 'vue';
+import { 
+  Home, 
+  CalendarSync, 
+  Trophy, 
+  BarChart3, 
+  Settings, 
+  Zap, 
+  Sun, 
+  Moon, 
+  ChevronLeft, 
+  ChevronRight,
+  User,
+  LayoutDashboard,
+  Store,
+  History,
+  Menu,
+  X
+} from 'lucide-vue-next';
 import { useI18n } from 'vue-i18n';
-import { GraduationCap, User, Sun, CalendarDays, LineChart, Gift, Dices, Settings } from 'lucide-vue-next';
+import { db, liveQuery } from './db';
 
-// Components
+// Views
 import HomeView from './components/HomeView.vue';
-import AnalyticsView from './components/AnalyticsView.vue';
-import RewardStore from './components/RewardStore.vue';
-import SettingsView from './components/SettingsView.vue';
 import DailyCheckinView from './components/DailyCheckinView.vue';
+import RewardStore from './components/RewardStore.vue';
+import AnalyticsView from './components/AnalyticsView.vue';
 import MonopolyGame from './components/MonopolyGame.vue';
+import SettingsView from './components/SettingsView.vue';
 
 const { t, locale } = useI18n();
-const currentView = ref('home');
+
+const activeView = ref('home');
+const isDark = ref(false);
 const totalPoints = ref(0);
-const displayPoints = ref(0); // For GSAP animation
-const userName = ref('Hero');
+const isMobileMenuOpen = ref(false);
 
-// Live Query for Points
-const pointsSubscription = liveQuery(async () => {
-  try {
-    const allTasks = await db.tasks.toArray();
-    let spent = 0;
-    
-    if (db.redemptionLogs) {
-      const spentPointsLogs = await db.redemptionLogs.toArray();
-      spent = spentPointsLogs.reduce((sum, log) => sum + (log.spentPoints || 0), 0);
-    }
-    
-    const earned = allTasks
-      .filter(task => task.completed)
-      .reduce((sum, task) => sum + (Number(task.points) || 0), 0);
-      
-    return earned - spent;
-  } catch (err) {
-    console.warn('Points sync error:', err);
-    return 0;
+const navItems = [
+  { id: 'home', icon: markRaw(Home), label: 'app.nav.home' },
+  { id: 'checkin', icon: markRaw(CalendarSync), label: 'app.nav.checkin' },
+  { id: 'monopoly', icon: markRaw(Trophy), label: 'app.nav.adventure' },
+  { id: 'rewards', icon: markRaw(Store), label: 'app.nav.rewards' },
+  { id: 'analytics', icon: markRaw(BarChart3), label: 'app.nav.analytics' },
+  { id: 'settings', icon: markRaw(Settings), label: 'app.nav.settings' }
+];
+
+const currentViewComponent = computed(() => {
+  switch (activeView.value) {
+    case 'home': return HomeView;
+    case 'checkin': return DailyCheckinView;
+    case 'monopoly': return MonopolyGame;
+    case 'rewards': return RewardStore;
+    case 'analytics': return AnalyticsView;
+    case 'settings': return SettingsView;
+    default: return HomeView;
   }
-}).subscribe(value => {
-  totalPoints.value = value;
 });
 
-// GSAP Points Animation
-watch(totalPoints, (newValue) => {
-  gsap.to(displayPoints, {
-    value: newValue,
-    duration: 1.5,
-    ease: "power2.out",
-    snap: { value: 1 }
-  });
+// Load settings
+onMounted(async () => {
+  const darkSetting = await db.settings.get('darkMode');
+  isDark.value = darkSetting?.value === true;
+  updateDarkMode();
+
+  const langSetting = await db.settings.get('language');
+  if (langSetting) locale.value = langSetting.value;
 });
 
-// Live Query for Name & Language
-const settingsSubscription = liveQuery(() => db.settings.toArray())
-  .subscribe(results => {
-    const nameSetting = results.find(s => s.key === 'userName');
-    if (nameSetting) userName.value = nameSetting.value;
+const updateDarkMode = () => {
+  if (isDark.value) {
+    document.documentElement.classList.add('dark');
+  } else {
+    document.documentElement.classList.remove('dark');
+  }
+};
 
-    const langSetting = results.find(s => s.key === 'language');
-    if (langSetting && langSetting.value !== locale.value) {
-      locale.value = langSetting.value;
-    }
+const toggleDarkMode = async () => {
+  isDark.value = !isDark.value;
+  await db.settings.put({ id: 'darkMode', value: isDark.value });
+  updateDarkMode();
+};
+
+const pointsSubscription = liveQuery(() => db.tasks.toArray())
+  .subscribe(tasks => {
+    totalPoints.value = tasks.filter(t => t.completed).reduce((sum, t) => sum + (t.points || 0), 0);
   });
 
 onUnmounted(() => {
   pointsSubscription.unsubscribe();
-  settingsSubscription.unsubscribe();
-});
-
-const navItems = computed(() => [
-  { name: 'home', icon: Sun, label: t('app.nav.tasks') },
-  { name: 'checkin', icon: CalendarDays, label: t('dailyCheckin.title') },
-  { name: 'analytics', icon: LineChart, label: t('app.nav.analytics') },
-  { name: 'rewards', icon: Gift, label: t('app.nav.rewards') },
-  { name: 'monopoly', icon: Dices, label: t('monopoly.navTitle') },
-  { name: 'settings', icon: Settings, label: t('app.nav.settings') },
-]);
-
-// Theme handling (simplistic approach for now)
-const isDark = ref(window.matchMedia('(prefers-color-scheme: dark)').matches);
-onMounted(() => {
-  if (isDark.value) document.documentElement.classList.add('dark');
-  // Initialize display points
-  displayPoints.value = totalPoints.value;
 });
 </script>
 
 <template>
-  <div class="min-h-screen bg-background-light dark:bg-background-dark flex flex-col lg:flex-row font-display text-text-main-light dark:text-text-main-dark selection:bg-primary/20 transition-colors duration-200">
-    
-    <!-- Sidebar for Desktop -->
-    <aside class="hidden lg:flex w-72 flex-col justify-between bg-surface-light dark:bg-surface-dark border-r border-gray-100 dark:border-gray-800 p-6 h-screen sticky top-0">
-      <div class="flex flex-col gap-8">
-        <div class="flex items-center gap-3">
-          <div class="bg-primary rounded-xl size-10 shadow-lg shadow-primary/20 flex items-center justify-center text-white">
-            <GraduationCap class="w-6 h-6" />
+  <div class="min-h-screen bg-background-main text-text-main transition-colors duration-200">
+    <!-- Desktop Sidebar -->
+    <aside 
+      class="hidden md:flex flex-col w-64 bg-surface-main border-r-2 border-primary fixed h-screen z-50 transition-all duration-300"
+    >
+      <!-- Logo -->
+      <div class="p-8 mb-4">
+        <div class="flex items-center gap-3 group cursor-pointer" @click="activeView = 'home'">
+          <div class="size-12 bg-primary text-background-main rounded-xl flex items-center justify-center shadow-offset-green group-hover:rotate-12 transition-all">
+            <Zap class="size-7 fill-background-main" />
           </div>
-          <h1 class="text-xl font-black tracking-tight">{{ t('app.title') }} <span class="text-primary">{{ t('app.subtitle') }}</span></h1>
+          <span class="text-3xl font-black tracking-tighter text-primary">Homework</span>
         </div>
-        
-        <nav class="flex flex-col gap-2">
-          <button 
-            v-for="item in navItems" 
-            :key="item.name"
-            @click="currentView = item.name"
-            class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 font-bold group relative overflow-hidden text-left"
-            :class="currentView === item.name 
-              ? 'bg-primary/20 text-text-main-light dark:text-primary' 
-              : 'text-text-sub-light dark:text-text-sub-dark hover:bg-gray-50 dark:hover:bg-gray-800'"
-          >
-            <component :is="item.icon" class="w-6 h-6 transition-transform duration-300 group-hover:scale-110" :class="{ 'text-primary fill-primary': currentView === item.name }" />
-            <span>{{ item.label }}</span>
-            <div v-if="currentView === item.name" class="absolute right-0 top-1/2 -translate-y-1/2 w-1.5 h-6 bg-primary rounded-l-full"></div>
-          </button>
-        </nav>
       </div>
 
-      <!-- Sidebar Footer Profile -->
-      <div class="flex flex-col gap-4">
-        <div class="bg-surface-light dark:bg-gray-800 border border-gray-100 dark:border-gray-700 p-5 rounded-2xl shadow-sm relative overflow-hidden group">
-          <div class="absolute -right-6 -top-6 w-20 h-20 bg-primary/10 rounded-full blur-xl group-hover:bg-primary/20 transition-all"></div>
-          <p class="text-[10px] font-bold text-text-sub-light dark:text-text-sub-dark uppercase tracking-widest mb-1">{{ t('app.totalPoints') }}</p>
-          <div class="flex items-baseline gap-1">
-            <p class="text-3xl font-black text-primary transition-all duration-300" :class="{ 'scale-110': displayPoints !== totalPoints }">
-              {{ displayPoints }}
-            </p>
-            <span class="text-xs font-bold text-text-sub-light">pts</span>
-          </div>
+      <!-- Navigation -->
+      <nav class="flex-1 px-4 space-y-2">
+        <button 
+          v-for="item in navItems" 
+          :key="item.id"
+          @click="activeView = item.id"
+          class="w-full flex items-center gap-4 px-4 py-3 font-black text-sm uppercase tracking-widest transition-all rounded-xl border-2"
+          :class="activeView === item.id 
+            ? 'bg-primary text-background-main border-primary shadow-offset-green' 
+            : 'text-text-sub border-transparent hover:bg-primary/5 hover:text-primary'"
+        >
+          <component :is="item.icon" class="size-5" />
+          {{ t(item.label) }}
+        </button>
+      </nav>
+
+      <!-- Bottom Actions -->
+      <div class="p-6 border-t-2 border-primary/5 space-y-4">
+        <div class="flex items-center justify-between px-2">
+          <span class="text-[10px] font-black uppercase tracking-widest text-text-sub">{{ isDark ? t('common.night') : t('common.day') }}</span>
+          <button 
+            @click="toggleDarkMode"
+            class="size-10 border-2 border-primary rounded-xl flex items-center justify-center bg-surface-main shadow-offset-dark hover:shadow-none transition-all active:scale-95"
+          >
+            <Sun v-if="isDark" class="size-5" />
+            <Moon v-else class="size-5" />
+          </button>
         </div>
 
-        <div class="flex items-center gap-3 p-3 rounded-2xl bg-background-light/50 dark:bg-background-dark/50 border border-transparent hover:border-gray-100 dark:hover:border-gray-800 transition-all cursor-pointer">
-          <div class="size-10 rounded-full bg-primary/30 flex items-center justify-center text-primary-dark font-black overflow-hidden ring-2 ring-white dark:ring-gray-800">
-            <User class="w-6 h-6" />
+        <div class="p-4 bg-primary/5 rounded-2xl flex items-center gap-3">
+          <div class="size-8 bg-accent-amber text-primary rounded-lg flex items-center justify-center shadow-sm">
+            <Zap class="size-4 fill-primary" />
           </div>
-          <div class="flex flex-col overflow-hidden">
-            <p class="text-sm font-bold truncate">{{ userName }}</p>
-            <p class="text-[10px] font-bold text-text-sub-light dark:text-text-sub-dark uppercase">{{ t('app.offlineReady') }}</p>
+          <div>
+            <div class="text-[10px] font-black uppercase tracking-widest text-text-sub">{{ t('app.totalPoints') }}</div>
+            <div class="text-sm font-black text-primary">{{ totalPoints }}</div>
           </div>
         </div>
       </div>
     </aside>
 
     <!-- Mobile Header -->
-    <header class="lg:hidden bg-surface-light/80 dark:bg-surface-dark/80 backdrop-blur-md p-4 flex justify-between items-center sticky top-0 z-40 border-b border-gray-100 dark:border-gray-800 transition-colors">
+    <header class="md:hidden fixed top-0 inset-x-0 h-16 bg-surface-main border-b-2 border-primary flex items-center justify-between px-6 z-[60]">
       <div class="flex items-center gap-2">
-         <div class="size-8 bg-primary rounded-lg shadow-md flex items-center justify-center text-white">
-           <GraduationCap class="w-5 h-5 text-xl" />
-         </div>
-         <h1 class="text-lg font-black tracking-tight">{{ t('app.title') }}<span class="text-primary">{{ t('app.subtitle') }}</span></h1>
+        <div class="size-8 bg-primary text-background-main rounded-lg flex items-center justify-center shadow-offset-green">
+          <Zap class="size-5 fill-background-main" />
+        </div>
+        <span class="text-xl font-black tracking-tighter text-primary uppercase">Homework</span>
       </div>
-      <div class="bg-surface-light/50 dark:bg-surface-dark/50 backdrop-blur-md border border-gray-100 dark:border-gray-800 px-3 py-1.5 rounded-full flex items-center gap-2 shadow-sm">
-        <span class="text-xl font-black text-primary">{{ displayPoints }}</span>
-        <span class="text-[8px] font-black text-text-sub-light uppercase">pts</span>
+      <div class="flex items-center gap-4">
+        <button 
+          @click="toggleDarkMode"
+          class="p-2 text-primary"
+        >
+          <Sun v-if="isDark" class="size-6" />
+          <Moon v-else class="size-6" />
+        </button>
       </div>
     </header>
 
+    <!-- Mobile Bottom Nav -->
+    <nav class="md:hidden fixed bottom-0 inset-x-0 h-20 bg-surface-main border-t-2 border-primary flex items-center justify-around px-2 z-[60]">
+      <button 
+        v-for="item in navItems" 
+        :key="item.id"
+        @click="activeView = item.id"
+        class="flex flex-col items-center gap-1 p-2 transition-all"
+        :class="activeView === item.id ? 'text-primary' : 'text-text-sub opacity-50'"
+      >
+        <component :is="item.icon" class="size-6" :class="{ 'fill-primary/10': activeView === item.id }" />
+        <span class="text-[8px] font-black uppercase tracking-widest">{{ t(item.label) }}</span>
+      </button>
+    </nav>
+
     <!-- Main Content -->
-    <main class="flex-1 overflow-y-auto lg:h-screen relative w-full bg-background-light dark:bg-background-dark transition-colors duration-200">
-      <div class="p-4 pb-28 lg:p-10 lg:pb-10 max-w-5xl mx-auto min-h-full">
+    <main 
+      class="flex-1 md:ml-64 p-6 md:p-12 transition-all duration-300 min-h-screen"
+      :class="{ 'pb-32 pt-24 md:pt-12': true }"
+    >
+      <div class="max-w-6xl mx-auto">
         <Transition name="page" mode="out-in">
-          <component 
-            :key="currentView" 
-            :is="currentView === 'home' ? HomeView : currentView === 'checkin' ? DailyCheckinView : currentView === 'monopoly' ? MonopolyGame : currentView === 'analytics' ? AnalyticsView : currentView === 'rewards' ? RewardStore : SettingsView" 
-          />
+          <component :is="currentViewComponent" :key="activeView" />
         </Transition>
       </div>
     </main>
-
-    <!-- Mobile Bottom Nav -->
-    <nav class="lg:hidden fixed bottom-6 left-6 right-6 bg-surface-light/95 dark:bg-surface-dark/95 backdrop-blur-xl rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.1)] p-2 flex justify-between items-center z-50 border border-gray-100/50 dark:border-gray-800/50 transition-colors">
-       <button 
-          v-for="item in navItems" 
-          :key="item.name"
-          @click="currentView = item.name"
-          class="flex items-center justify-center w-full py-3 rounded-2xl transition-all duration-300 relative"
-          :class="currentView === item.name ? 'text-primary' : 'text-text-sub-light dark:text-text-sub-dark'"
-        >
-          <div class="absolute inset-x-2 inset-y-1 bg-primary/10 rounded-xl transition-all duration-300" :class="{ 'opacity-100 scale-100': currentView === item.name, 'opacity-0 scale-90': currentView !== item.name }"></div>
-          <div class="flex flex-col items-center relative z-10">
-            <component :is="item.icon" class="w-6 h-6" :class="{ 'text-primary fill-primary': currentView === item.name }" />
-            <span class="text-[10px] font-bold mt-0.5">{{ item.label }}</span>
-          </div>
-        </button>
-    </nav>
   </div>
 </template>
 
 <style>
-.page-enter-active,
-.page-leave-active {
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+.page-enter-active, .page-leave-active {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
-
 .page-enter-from {
   opacity: 0;
-  transform: translateY(12px) scale(0.99);
+  transform: translateY(10px);
 }
-
 .page-leave-to {
   opacity: 0;
-  transform: scale(0.99);
+  transform: translateY(-10px);
+}
+
+.fade-enter-active, .fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+.fade-enter-from, .fade-leave-to {
+  opacity: 0;
 }
 </style>

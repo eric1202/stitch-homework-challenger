@@ -3,7 +3,10 @@ export const en = {
         title: 'Homework',
         subtitle: 'Hero',
         nav: {
+            home: 'Home',
             tasks: 'Tasks',
+            checkin: 'Check-in',
+            adventure: 'Adventure',
             analytics: 'Analytics',
             rewards: 'Rewards',
             settings: 'Settings'
@@ -13,10 +16,31 @@ export const en = {
         points: 'Points',
         offlineReady: 'v1.0.0 • Offline Ready'
     },
+    common: {
+        today: 'Today',
+        tomorrow: 'Tomorrow',
+        cancel: 'Cancel',
+        confirm: 'Confirm',
+        save: 'Save',
+        ok: 'OK',
+        processing: 'Processing...',
+        loading: 'Loading...',
+        refreshing: 'Refreshing...',
+        pullToRefresh: 'Pull to refresh',
+        streak: 'Streak',
+        total: 'Total',
+        night: 'Night',
+        day: 'Day',
+        createFail: 'Failed to create: ',
+        updateFail: 'Failed to update: ',
+        deleteFail: 'Failed to delete: ',
+        refreshFail: 'Failed to refresh, please try again',
+        you: 'YOU'
+    },
     rewards: {
         title: 'Reward Store',
         manageTitle: 'Manage Rewards',
-        subtitle: 'Spend your hard-earned points on cool prizes! 🎁',
+        subtitle: 'Redeem your hard-earned points for exciting rewards. Maintain your streak to unlock exclusive items.',
         parentMode: 'Parent Mode',
         exitParentMode: 'Exit Parent Mode',
         addNew: 'Add New',
@@ -72,6 +96,7 @@ export const en = {
     },
     home: {
         title: "Today's Tasks",
+        subtitle: 'Manage your daily tasks with precision and focus. Every checkmark is a step towards mastery.',
         progress: 'Progress',
         noTasksTitle: 'No tasks for today',
         noTasksDesc: 'Add a new task to get started!',
@@ -79,6 +104,7 @@ export const en = {
         greeting: 'Hi {name},<br/>here is your mission! ',
         taskNameDisplay: 'Task Name',
         addTaskTitle: 'Add New Task',
+        addTaskError: 'Failed to add task, please try again',
         inputs: {
             taskName: 'Task Name',
             placeholder: 'e.g. Solve 10 Math Problems',
@@ -103,12 +129,18 @@ export const en = {
     },
     analytics: {
         title: 'Analytics',
-        subtitle: 'Track your progress over time',
+        subtitle: 'Track your progress and analyze your productivity over time. Data-driven insights to help you grow.',
         tipTitle: 'Hero Tip!',
         tipDesc: '{name}, your speed is increasing! Every mission completed gets you closer to greatness. 🚀',
         exportCsv: 'Export CSV',
         weekActivity: "This Week's Activity",
         history: 'History',
+        recentTasks: 'Recent Activity',
+        emptyTasks: 'No tasks found in history.',
+        statCompletedTasks: 'Completion Rate',
+        statTotalPoints: 'Total Points Earned',
+        statCurrentStreak: 'Current Daily Streak',
+        statTotalTasks: 'Total Tasks Created',
         table: {
             date: 'Date',
             task: 'Task',
@@ -125,7 +157,17 @@ export const en = {
     },
     settings: {
         title: 'Settings',
-        subtitle: 'Manage your data',
+        subtitle: 'Manage your profile, data, and system preferences. Everything is stored locally in your browser.',
+        language: 'Language',
+        exportData: 'Export Data',
+        exportDataDesc: 'Download a local backup of your tasks and settings.',
+        importData: 'Import Data',
+        importDataDesc: 'Restore your data from a JSON backup file.',
+        dangerZone: 'Danger Zone',
+        clearData: 'Reset Database',
+        clearDataDesc: 'Permanently delete all tasks, templates and settings from this browser.',
+        clearDataBtn: 'Wipe Everything',
+        clearDataConfirm: 'Are you sure you want to clear all data? This cannot be undone.',
         dataManagement: {
             title: 'Data Management',
             desc: 'Backup your progress or transfer it to another device.',
@@ -164,7 +206,10 @@ export const en = {
         round: 'rounds',
         score: 'Score',
         progress: 'Progress to Target',
-        backpack: 'Backpack',
+        inventory: {
+            title: 'Backpack',
+            empty: 'Empty'
+        },
         emptyBackpack: 'No items yet. Land on an item tile to collect!',
         ok: 'Got it!',
         quitBtn: 'Quit Adventure',
@@ -179,6 +224,8 @@ export const en = {
             confirm: 'Submit',
             cancel: 'Cancel',
             wrong: 'Wrong answer, try again! 🤔',
+            entry: 'Math Challenge',
+            success: 'Success! +{points} points! 🎉'
         },
         rules: {
             goal: 'Target Score',
@@ -264,11 +311,11 @@ export const en = {
             label: 'Your Name',
             placeholder: 'Enter your name...',
             required: 'Please enter a name to start',
-        }
+        },
     },
     dailyCheckin: {
         title: 'Daily Check-in',
-        subtitle: 'Manage recurring homework tasks',
+        subtitle: 'Set up recurring tasks to build long-term habits. Automated task generation ensures your schedule stays on track.',
         addNew: 'Add Template',
         noTemplates: 'No templates yet',
         noTemplatesDesc: 'Create a template to auto-generate tasks',
@@ -282,6 +329,7 @@ export const en = {
             weekends: 'Weekends',
             custom: 'Custom'
         },
+        frequency: 'Frequency',
         days: {
             sun: 'Sun',
             mon: 'Mon',
@@ -311,7 +359,10 @@ export const zh = {
         title: '作业',
         subtitle: '小英雄',
         nav: {
+            home: '主页',
             tasks: '今日作业',
+            checkin: '每日打卡',
+            adventure: '大冒险',
             analytics: '统计报表',
             rewards: '积分商城',
             settings: '设置管理'
@@ -321,10 +372,31 @@ export const zh = {
         points: '积分',
         offlineReady: 'v1.0.0 • 支持离线使用'
     },
+    common: {
+        today: '今天',
+        tomorrow: '明天',
+        cancel: '取消',
+        confirm: '确认',
+        save: '保存',
+        ok: '知道了',
+        processing: '处理中...',
+        loading: '加载中...',
+        refreshing: '刷新中...',
+        pullToRefresh: '下拉刷新',
+        streak: '连续打卡',
+        total: '累计总量',
+        night: '深夜模式',
+        day: '日间模式',
+        createFail: '创建失败: ',
+        updateFail: '更新失败: ',
+        deleteFail: '删除失败: ',
+        refreshFail: '刷新失败，请重试',
+        you: '你'
+    },
     rewards: {
         title: '积分商城',
         manageTitle: '管理礼品',
-        subtitle: '用你努力赚来的积分兑换愿望吧！🎁',
+        subtitle: '兑换你辛苦赚取的积分为激动人心的奖励。保持你的连胜记录以解锁专属道具。',
         parentMode: '家长模式',
         exitParentMode: '退出家长模式',
         addNew: '新增礼品',
@@ -379,7 +451,8 @@ export const zh = {
         noRewardsInCategory: '该分类下暂无礼品'
     },
     home: {
-        title: "今日作业",
+        title: '今日任务',
+        subtitle: '精准、专注地管理你的每日任务。每一个对勾都是迈向卓越的一步。',
         progress: '今日进度',
         noTasksTitle: '今天还没有作业哦',
         noTasksDesc: '快添加一项新任务开始吧！',
@@ -387,6 +460,7 @@ export const zh = {
         greeting: '你好 {name}，\n这是你的今日挑战！',
         taskNameDisplay: '任务名称',
         addTaskTitle: '添加新作业',
+        addTaskError: '添加任务失败，请重试',
         inputs: {
             taskName: '作业名称',
             placeholder: '例如：完成10道数学题',
@@ -411,12 +485,18 @@ export const zh = {
     },
     analytics: {
         title: '统计报表',
-        subtitle: '记录你的每一次进步',
+        subtitle: '追踪你的进度并分析长期的生产力。数据驱动的见解助你成长。',
         tipTitle: '小英雄提示！',
         tipDesc: '{name}，你的完成效率正在提高！每一次挑战都让你离伟大更近一步。🚀',
         exportCsv: '导出表格',
         weekActivity: "本周表现",
         history: '历史记录',
+        recentTasks: '最近活动',
+        emptyTasks: '暂无历史记录。',
+        statCompletedTasks: '任务完成率',
+        statTotalPoints: '累计获得积分',
+        statCurrentStreak: '当前连续打卡',
+        statTotalTasks: '累计创建任务',
         table: {
             date: '日期',
             task: '任务',
@@ -433,7 +513,17 @@ export const zh = {
     },
     settings: {
         title: '设置管理',
-        subtitle: '管理你的数据',
+        subtitle: '管理你的个人资料、数据和系统偏好。所有内容都保存在你的浏览器本地。',
+        language: '语言设置',
+        exportData: '导出数据',
+        exportDataDesc: '下载任务和设置的本地备份。',
+        importData: '导入数据',
+        importDataDesc: '从 JSON 备份文件恢复数据。',
+        dangerZone: '危险区域',
+        clearData: '重置数据库',
+        clearDataDesc: '永久删除此浏览器中的所有任务、模板和设置。',
+        clearDataBtn: '清除所有内容',
+        clearDataConfirm: '你确定要清除所有数据吗？此操作无法撤销。',
         dataManagement: {
             title: '数据管理',
             desc: '备份你的进度，或将其转移到其他设备。',
@@ -472,7 +562,10 @@ export const zh = {
         round: '回合',
         score: '积分',
         progress: '目标进度',
-        backpack: '背包',
+        inventory: {
+            title: '背包',
+            empty: '空'
+        },
         emptyBackpack: '还没有道具，踩到道具格就能获得哦！',
         ok: '知道了！',
         quitBtn: '退出冒险',
@@ -487,6 +580,8 @@ export const zh = {
             confirm: '提交',
             cancel: '取消',
             wrong: '答错了，再想想！🤔',
+            entry: '数学挑战',
+            success: '挑战成功！+{points} 积分！🎉'
         },
         rules: {
             goal: '目标积分',
@@ -572,11 +667,11 @@ export const zh = {
             label: '玩家姓名',
             placeholder: '请输入你的名字...',
             required: '请输入名字后再开始冒险',
-        }
+        },
     },
     dailyCheckin: {
         title: '每日打卡',
-        subtitle: '管理周期性作业任务',
+        subtitle: '设置重复性任务以建立长期习惯。自动生成的任务确保你的计划按部就班。',
         addNew: '新增模板',
         noTemplates: '暂无打卡模板',
         noTemplatesDesc: '创建模板后可自动生成周期任务',
@@ -590,6 +685,7 @@ export const zh = {
             weekends: '周末',
             custom: '自定义'
         },
+        frequency: '重复频率',
         days: {
             sun: '周日',
             mon: '周一',

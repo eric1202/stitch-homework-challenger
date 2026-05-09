@@ -147,15 +147,15 @@ const exportData = () => {
 </script>
 
 <template>
-  <div class="flex flex-col gap-12 pb-20">
+  <div class="flex flex-col gap-6 md:gap-12 pb-20">
     <!-- Header -->
-    <header class="flex flex-col md:flex-row md:items-end justify-between gap-8">
+    <header class="flex flex-col md:flex-row md:items-end justify-between gap-4 md:gap-8">
       <div class="flex flex-col gap-4">
         <span class="badge-mainline w-fit">Insights</span>
-        <h1 class="text-5xl md:text-7xl font-black text-primary leading-[0.9] -ml-1">
+        <h1 class="text-3xl md:text-7xl font-black text-primary leading-[0.9] -ml-0.5 md:-ml-1">
           {{ t('analytics.title') }}
         </h1>
-        <p class="text-lg font-medium text-text-sub max-w-xl leading-relaxed">
+        <p class="text-sm md:text-lg font-medium text-text-sub max-w-xl leading-relaxed">
           {{ t('analytics.subtitle') }}
         </p>
       </div>
@@ -170,49 +170,49 @@ const exportData = () => {
     </header>
 
     <!-- Hero Stats Row -->
-    <div class="grid grid-cols-2 lg:grid-cols-4 gap-6">
-      <div class="card-mainline !p-8 !bg-accent-green !text-background-main !shadow-none rotate-1">
-        <div class="flex items-center justify-between mb-4">
-          <Target class="size-8 opacity-40" />
-          <span class="text-[10px] font-black uppercase tracking-widest opacity-60">{{ t('home.progress') }}</span>
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
+      <div class="card-mainline !p-4 md:!p-8 !bg-accent-green !text-background-main !shadow-none rotate-1">
+        <div class="flex items-center justify-between mb-2 md:mb-4">
+          <Target class="size-5 md:size-8 opacity-40" />
+          <span class="text-[8px] md:text-[10px] font-black uppercase tracking-widest opacity-60">{{ t('home.progress') }}</span>
         </div>
-        <p class="text-5xl font-black leading-none">{{ stats.completionRate }}%</p>
-        <p class="mt-4 text-xs font-bold opacity-60">{{ t('analytics.statCompletedTasks') }}</p>
+        <p class="text-3xl md:text-5xl font-black leading-none">{{ stats.completionRate }}%</p>
+        <p class="mt-2 md:mt-4 text-[10px] md:text-xs font-bold opacity-60">{{ t('analytics.statCompletedTasks') }}</p>
       </div>
 
-      <div class="card-mainline !p-8 !bg-accent-amber !text-primary !shadow-none -rotate-1">
-        <div class="flex items-center justify-between mb-4">
-          <Zap class="size-8 opacity-40" />
-          <span class="text-[10px] font-black uppercase tracking-widest opacity-60">{{ t('app.points') }}</span>
+      <div class="card-mainline !p-4 md:!p-8 !bg-accent-amber !text-primary !shadow-none -rotate-1">
+        <div class="flex items-center justify-between mb-2 md:mb-4">
+          <Zap class="size-5 md:size-8 opacity-40" />
+          <span class="text-[8px] md:text-[10px] font-black uppercase tracking-widest opacity-60">{{ t('app.points') }}</span>
         </div>
-        <p class="text-5xl font-black leading-none">{{ stats.totalPoints }}</p>
-        <p class="mt-4 text-xs font-bold opacity-60">{{ t('analytics.statTotalPoints') }}</p>
+        <p class="text-3xl md:text-5xl font-black leading-none">{{ stats.totalPoints }}</p>
+        <p class="mt-2 md:mt-4 text-[10px] md:text-xs font-bold opacity-60">{{ t('analytics.statTotalPoints') }}</p>
       </div>
 
-      <div class="card-mainline !p-8 !bg-accent-cyan !text-background-main !shadow-none rotate-1">
-        <div class="flex items-center justify-between mb-4">
-          <Calendar class="size-8 opacity-40" />
-          <span class="text-[10px] font-black uppercase tracking-widest opacity-60">{{ t('common.streak') }}</span>
+      <div class="card-mainline !p-4 md:!p-8 !bg-accent-cyan !text-background-main !shadow-none rotate-1">
+        <div class="flex items-center justify-between mb-2 md:mb-4">
+          <Calendar class="size-5 md:size-8 opacity-40" />
+          <span class="text-[8px] md:text-[10px] font-black uppercase tracking-widest opacity-60">{{ t('common.streak') }}</span>
         </div>
-        <p class="text-5xl font-black leading-none">{{ stats.currentStreak }}</p>
-        <p class="mt-4 text-xs font-bold opacity-60">{{ t('analytics.statCurrentStreak') }}</p>
+        <p class="text-3xl md:text-5xl font-black leading-none">{{ stats.currentStreak }}</p>
+        <p class="mt-2 md:mt-4 text-[10px] md:text-xs font-bold opacity-60">{{ t('analytics.statCurrentStreak') }}</p>
       </div>
 
-      <div class="card-mainline !p-8 !bg-primary !text-background-main !shadow-none -rotate-1">
-        <div class="flex items-center justify-between mb-4">
-          <CheckSquare class="size-8 opacity-40" />
-          <span class="text-[10px] font-black uppercase tracking-widest opacity-60">{{ t('common.total') }}</span>
+      <div class="card-mainline !p-4 md:!p-8 !bg-primary !text-background-main !shadow-none -rotate-1">
+        <div class="flex items-center justify-between mb-2 md:mb-4">
+          <CheckSquare class="size-5 md:size-8 opacity-40" />
+          <span class="text-[8px] md:text-[10px] font-black uppercase tracking-widest opacity-60">{{ t('common.total') }}</span>
         </div>
-        <p class="text-5xl font-black leading-none">{{ stats.totalTasks }}</p>
-        <p class="mt-4 text-xs font-bold opacity-60">{{ t('analytics.statTotalTasks') }}</p>
+        <p class="text-3xl md:text-5xl font-black leading-none">{{ stats.totalTasks }}</p>
+        <p class="mt-2 md:mt-4 text-[10px] md:text-xs font-bold opacity-60">{{ t('analytics.statTotalTasks') }}</p>
       </div>
     </div>
 
     <!-- Chart Grid -->
-    <div class="card-mainline !p-10">
-      <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
+    <div class="card-mainline !p-4 md:!p-10">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 md:gap-6 mb-6 md:mb-12">
         <div>
-          <h3 class="text-3xl font-black text-primary">{{ t('analytics.weekActivity') }}</h3>
+          <h3 class="text-xl md:text-3xl font-black text-primary">{{ t('analytics.weekActivity') }}</h3>
           <p class="text-text-sub font-bold">{{ t('analytics.subtitle') }}</p>
         </div>
         <div class="flex items-center gap-4">
@@ -222,7 +222,7 @@ const exportData = () => {
           </div>
         </div>
       </div>
-      <div class="h-[400px]">
+      <div class="h-[250px] md:h-[400px]">
         <Bar :data="chartData" :options="chartOptions" />
       </div>
     </div>
@@ -231,7 +231,7 @@ const exportData = () => {
     <div class="flex flex-col gap-6">
       <div class="flex items-center gap-4">
         <span class="badge-mainline !bg-primary !text-background-main">History</span>
-        <h3 class="text-3xl font-black">{{ t('analytics.recentTasks') }}</h3>
+        <h3 class="text-xl md:text-3xl font-black">{{ t('analytics.recentTasks') }}</h3>
       </div>
       
       <div class="card-mainline !p-0 overflow-hidden">

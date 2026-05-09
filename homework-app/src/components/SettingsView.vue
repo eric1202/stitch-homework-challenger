@@ -98,14 +98,14 @@ const clearAllData = async () => {
 </script>
 
 <template>
-  <div class="flex flex-col gap-12 pb-20 max-w-5xl mx-auto">
+  <div class="flex flex-col gap-6 md:gap-12 pb-20 max-w-5xl mx-auto">
     <!-- Header -->
     <header class="flex flex-col gap-4">
       <span class="badge-mainline w-fit">Configuration</span>
-      <h1 class="text-5xl md:text-7xl font-black text-primary leading-[0.9] -ml-1">
+      <h1 class="text-3xl md:text-7xl font-black text-primary leading-[0.9] -ml-0.5 md:-ml-1">
         {{ t('settings.title') }}
       </h1>
-      <p class="text-lg font-medium text-text-sub max-w-xl leading-relaxed">
+      <p class="text-sm md:text-lg font-medium text-text-sub max-w-xl leading-relaxed">
         {{ t('settings.subtitle') }}
       </p>
     </header>
@@ -113,12 +113,12 @@ const clearAllData = async () => {
     <div class="grid grid-cols-1 gap-8">
       
       <!-- User Account Section -->
-      <section class="card-mainline !p-8 flex flex-col md:flex-row items-center gap-8 bg-accent-green/5">
-        <div class="size-24 border-4 border-primary rounded-full flex items-center justify-center bg-surface-main shadow-offset-dark shrink-0">
-           <User class="size-12 text-primary" />
+      <section class="card-mainline !p-4 md:!p-8 flex flex-col md:flex-row items-center gap-4 md:gap-8 bg-accent-green/5">
+        <div class="size-16 md:size-24 border-4 border-primary rounded-full flex items-center justify-center bg-surface-main shadow-offset-dark shrink-0">
+           <User class="size-8 md:size-12 text-primary" />
         </div>
         <div class="flex flex-col gap-2 flex-1 text-center md:text-left">
-          <h2 class="text-4xl font-black text-primary">{{ userName }}</h2>
+          <h2 class="text-2xl md:text-4xl font-black text-primary">{{ userName }}</h2>
           <div class="flex items-center gap-3 justify-center md:justify-start">
             <span class="badge-mainline !bg-accent-green !text-background-main">Explorer</span>
             <span class="text-xs font-black text-text-sub uppercase tracking-widest">{{ t('app.nav.points') }}: {{ totalPoints }}</span>
@@ -159,26 +159,26 @@ const clearAllData = async () => {
         <div class="grid md:grid-cols-2 gap-6">
           <button 
             @click="exportData"
-            class="btn-mainline-secondary !p-8 flex items-center gap-6 group hover:!bg-primary hover:!text-background-main"
+            class="btn-mainline-secondary !p-4 md:!p-8 flex items-center gap-4 md:gap-6 group hover:!bg-primary hover:!text-background-main"
           >
-            <div class="size-14 border-2 border-primary rounded-xl flex items-center justify-center bg-surface-main shadow-offset-dark group-hover:shadow-none group-hover:rotate-12 transition-all">
-              <Database class="size-7 text-primary" />
+            <div class="size-10 md:size-14 border-2 border-primary rounded-xl flex items-center justify-center bg-surface-main shadow-offset-dark group-hover:shadow-none group-hover:rotate-12 transition-all">
+              <Database class="size-5 md:size-7 text-primary" />
             </div>
             <div class="text-left">
-              <h4 class="text-xl font-black">{{ t('settings.exportData') }}</h4>
+              <h4 class="text-base md:text-xl font-black">{{ t('settings.exportData') }}</h4>
               <p class="text-xs font-bold text-text-sub">{{ t('settings.exportDataDesc') }}</p>
             </div>
           </button>
 
           <button 
             @click="triggerImport"
-            class="btn-mainline-secondary !p-8 flex items-center gap-6 group hover:!bg-primary hover:!text-background-main"
+            class="btn-mainline-secondary !p-4 md:!p-8 flex items-center gap-4 md:gap-6 group hover:!bg-primary hover:!text-background-main"
           >
-            <div class="size-14 border-2 border-primary rounded-xl flex items-center justify-center bg-surface-main shadow-offset-dark group-hover:shadow-none group-hover:rotate-12 transition-all">
-              <Edit3 class="size-7 text-primary" />
+            <div class="size-10 md:size-14 border-2 border-primary rounded-xl flex items-center justify-center bg-surface-main shadow-offset-dark group-hover:shadow-none group-hover:rotate-12 transition-all">
+              <Edit3 class="size-5 md:size-7 text-primary" />
             </div>
             <div class="text-left">
-              <h4 class="text-xl font-black">{{ t('settings.importData') }}</h4>
+              <h4 class="text-base md:text-xl font-black">{{ t('settings.importData') }}</h4>
               <p class="text-xs font-bold text-text-sub">{{ t('settings.importDataDesc') }}</p>
             </div>
           </button>
@@ -186,12 +186,12 @@ const clearAllData = async () => {
       </section>
 
       <!-- Danger Zone -->
-      <section class="card-mainline !p-8 !bg-accent-red/10 !border-accent-red/20 !shadow-none">
-        <div class="flex items-center gap-4 mb-8">
+      <section class="card-mainline !p-4 md:!p-8 !bg-accent-red/10 !border-accent-red/20 !shadow-none">
+        <div class="flex items-center gap-3 md:gap-4 mb-4 md:mb-8">
           <div class="size-10 bg-accent-red text-background-main rounded-lg flex items-center justify-center">
             <Trash2 class="size-6" />
           </div>
-          <h3 class="text-2xl font-black text-accent-red">
+          <h3 class="text-xl md:text-2xl font-black text-accent-red">
             {{ t('settings.dangerZone') }}
           </h3>
         </div>
@@ -217,9 +217,9 @@ const clearAllData = async () => {
       <div v-if="isEditingName" class="fixed inset-0 z-[100] flex items-center justify-center bg-background-main/20 backdrop-blur-[2px] p-4" @click="isEditingName = false">
         <div class="card-mainline max-w-md w-full animate-rise flex flex-col gap-8 !p-0 overflow-hidden shadow-[20px_20px_0_var(--border)]" @click.stop>
           <header class="flex justify-between items-center border-b-2 border-primary p-8">
-            <h3 class="text-3xl font-black">{{ t('settings.dataManagement.editProfile') }}</h3>
+            <h3 class="text-xl md:text-3xl font-black">{{ t('settings.dataManagement.editProfile') }}</h3>
             <button @click="isEditingName = false" class="hover:rotate-90 transition-transform">
-              <X class="size-8" />
+              <X class="size-6 md:size-8" />
             </button>
           </header>
 

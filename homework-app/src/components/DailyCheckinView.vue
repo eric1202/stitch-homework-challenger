@@ -302,14 +302,14 @@ const formatSchedule = (template) => {
 <template>
   <div class="flex flex-col gap-4 md:gap-8 pb-24 md:pb-10">
     <!-- Header -->
-    <header class="flex flex-col gap-8 mb-8">
+    <header class="flex flex-col gap-4 md:gap-8 mb-4 md:mb-8">
       <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div class="flex flex-col gap-4">
           <span class="badge-mainline w-fit">Automation</span>
-          <h1 class="text-5xl md:text-7xl font-black text-primary leading-[0.9] -ml-1">
+          <h1 class="text-3xl md:text-7xl font-black text-primary leading-[0.9] -ml-0.5 md:-ml-1">
             {{ t('dailyCheckin.title') }}
           </h1>
-          <p class="text-lg md:text-xl font-medium text-text-sub max-w-xl leading-relaxed">
+          <p class="text-sm md:text-xl font-medium text-text-sub max-w-xl leading-relaxed">
             {{ t('dailyCheckin.subtitle') }}
           </p>
         </div>
@@ -318,10 +318,10 @@ const formatSchedule = (template) => {
           <button
             @click="refreshTemplates"
             :disabled="isRefreshing"
-            class="btn-mainline-secondary !p-4 !shadow-none hover:rotate-12"
+            class="btn-mainline-secondary !p-2 md:!p-4 !shadow-none hover:rotate-12"
           >
             <RotateCw 
-              class="size-6 transition-transform duration-200"
+              class="size-5 md:size-6 transition-transform duration-200"
               :class="{ 'animate-spin': isRefreshing }"
             />
           </button>
@@ -354,11 +354,11 @@ const formatSchedule = (template) => {
       <div
         v-for="group in groupedTemplates"
         :key="group.subject"
-        class="flex flex-col gap-6 p-6 rounded-3xl border-2 border-primary/10 transition-all hover:border-primary/30"
+        class="flex flex-col gap-4 md:gap-6 p-3 md:p-6 rounded-2xl md:rounded-3xl border-2 border-primary/10 transition-all hover:border-primary/30"
         :class="[subjectColors[group.subject]?.split(' ').filter(c => c.startsWith('bg-') || c.includes('/30')).join(' ') || 'bg-surface-main']"
       >
         <div class="flex items-center gap-4 border-b-2 border-primary pb-2">
-          <h4 class="text-xl font-black uppercase tracking-widest text-primary">
+          <h4 class="text-base md:text-xl font-black uppercase tracking-widest text-primary">
             {{ t(`home.subjects.${group.subject}`) }}
           </h4>
           <span class="text-xs font-black text-text-sub opacity-50 uppercase tracking-widest">{{ group.templates.length }} {{ t('app.nav.tasks') }}</span>
@@ -369,10 +369,10 @@ const formatSchedule = (template) => {
             <div
               v-for="tpl in group.templates"
               :key="tpl.id"
-              class="group flex items-center gap-6 card-mainline !p-6 hover:shadow-offset-green"
+              class="group flex items-center gap-3 md:gap-6 card-mainline !p-3 md:!p-6 hover:shadow-offset-green"
             >
               <div class="flex-1 min-w-0">
-                <h4 class="text-2xl font-black text-primary group-hover:text-accent-green transition-colors leading-none truncate mb-2">
+                <h4 class="text-lg md:text-2xl font-black text-primary group-hover:text-accent-green transition-colors leading-none truncate mb-1 md:mb-2">
                   {{ tpl.title }}
                 </h4>
                 <div class="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs font-black uppercase tracking-widest text-text-sub">
@@ -404,9 +404,9 @@ const formatSchedule = (template) => {
     <!-- Mobile Floating Add Button -->
     <button
       @click="openCreateModal"
-      class="md:hidden fixed bottom-24 right-6 size-16 btn-mainline !rounded-full !p-0 flex items-center justify-center z-50 !shadow-offset-green"
+      class="md:hidden fixed bottom-16 right-4 size-12 btn-mainline !rounded-full !p-0 flex items-center justify-center z-50 !shadow-offset-green"
     >
-      <Plus  class="size-8"/>
+      <Plus  class="size-6"/>
     </button>
 
     <!-- Create/Edit Modal -->
@@ -419,17 +419,17 @@ const formatSchedule = (template) => {
           @click.stop
         >
           <!-- Header -->
-          <div class="flex items-center justify-between p-8 border-b-2 border-primary flex-shrink-0">
-            <h3 class="text-3xl font-black">
+          <div class="flex items-center justify-between p-4 md:p-8 border-b-2 border-primary flex-shrink-0">
+            <h3 class="text-xl md:text-3xl font-black">
               {{ editingTemplate ? t('dailyCheckin.modal.edit') : t('dailyCheckin.modal.create') }}
             </h3>
             <button @click="closeModal" class="hover:rotate-90 transition-transform">
-              <X class="size-8"/>
+              <X class="size-6 md:size-8"/>
             </button>
           </div>
 
           <!-- Form -->
-          <div class="flex flex-col gap-8 p-8 overflow-y-auto flex-1">
+          <div class="flex flex-col gap-4 md:gap-8 p-4 md:p-8 overflow-y-auto flex-1">
             <!-- Task Name -->
             <div class="flex flex-col gap-2">
               <label class="text-[10px] font-black uppercase tracking-widest text-text-sub">{{ t('dailyCheckin.templateName') }}</label>

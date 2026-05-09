@@ -78,26 +78,31 @@
 
   /* Mainline Button Style */
   .btn-mainline {
-    @apply relative px-6 py-3 font-bold transition-all duration-150 border-2 border-primary bg-primary text-background-main shadow-offset-green hover:-translate-y-0.5 hover:shadow-[6px_6px_0_#00a878] active:translate-y-px active:shadow-[2px_2px_0_#00a878] disabled:opacity-50 disabled:translate-y-0 disabled:shadow-none;
+    @apply relative px-4 py-2 text-sm font-bold transition-all duration-150 border-2 border-primary bg-primary text-background-main shadow-offset-green hover:-translate-y-0.5 hover:shadow-[6px_6px_0_#00a878] active:translate-y-px active:shadow-[2px_2px_0_#00a878] disabled:opacity-50 disabled:translate-y-0 disabled:shadow-none;
+    @apply md:px-6 md:py-3 md:text-base;
   }
 
   .btn-mainline-secondary {
-    @apply relative px-6 py-3 font-bold transition-all duration-150 border-2 border-primary bg-surface-main text-text-main shadow-offset-dark hover:-translate-y-0.5 hover:shadow-[6px_6px_0_var(--border)] active:translate-y-px active:shadow-[2px_2px_0_var(--border)];
+    @apply relative px-4 py-2 text-sm font-bold transition-all duration-150 border-2 border-primary bg-surface-main text-text-main shadow-offset-dark hover:-translate-y-0.5 hover:shadow-[6px_6px_0_var(--border)] active:translate-y-px active:shadow-[2px_2px_0_var(--border)];
+    @apply md:px-6 md:py-3 md:text-base;
   }
 
   /* Mainline Card Style */
   .card-mainline {
-    @apply bg-surface-main border-2 border-primary p-6 rounded-lg shadow-offset-dark transition-all;
+    @apply bg-surface-main border-2 border-primary p-4 rounded-lg shadow-offset-dark transition-all;
+    @apply md:p-6;
   }
 
   /* Badge Style */
   .badge-mainline {
-    @apply inline-flex items-center px-2 py-0.5 rounded-sm bg-accent-amber text-primary text-[10px] font-black uppercase tracking-wider;
+    @apply inline-flex items-center px-1.5 py-0.5 rounded-sm bg-accent-amber text-primary text-[9px] font-black uppercase tracking-wider;
+    @apply md:px-2 md:text-[10px];
   }
 
   /* Input Style */
   .input-mainline {
-    @apply w-full bg-surface-main border-2 border-primary p-4 font-bold outline-none text-text-main transition-all focus:shadow-[4px_4px_0_var(--border)];
+    @apply w-full bg-surface-main border-2 border-primary p-2.5 text-sm font-bold outline-none text-text-main transition-all focus:shadow-[4px_4px_0_var(--border)];
+    @apply md:p-4 md:text-base;
   }
 
   .badge-green { @apply !bg-accent-green !text-background-main; }

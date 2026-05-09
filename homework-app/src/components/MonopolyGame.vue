@@ -700,47 +700,47 @@ const gradeLabel = computed(() => {
   <div class="monopoly-game select-none">
     <!-- ==================== START SCREEN ==================== -->
     <Transition name="fade">
-      <div v-if="gamePhase === 'start'" class="flex flex-col items-center justify-center min-h-[70vh] gap-12 text-center px-4 max-w-4xl mx-auto py-12">
+      <div v-if="gamePhase === 'start'" class="flex flex-col items-center justify-center min-h-[60vh] md:min-h-[70vh] gap-6 md:gap-12 text-center px-4 max-w-4xl mx-auto py-6 md:py-12">
         <!-- Logo -->
         <div class="flex flex-col items-center gap-6">
           <div class="badge-mainline">Adventure</div>
-          <h1 class="text-6xl md:text-8xl font-black text-primary leading-[0.9] -ml-1">
+          <h1 class="text-4xl md:text-8xl font-black text-primary leading-[0.9] -ml-1">
             {{ t('monopoly.title') }}
           </h1>
-          <p class="text-xl md:text-2xl font-medium text-text-sub max-w-xl leading-relaxed">
+          <p class="text-base md:text-2xl font-medium text-text-sub max-w-xl leading-relaxed">
             {{ t('monopoly.subtitle') }}
           </p>
         </div>
 
         <!-- Rules cards -->
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-6 w-full">
-          <div class="card-mainline !p-6 flex flex-col gap-3 group hover:rotate-1">
-            <div class="text-3xl transition-transform group-hover:scale-125 group-hover:-rotate-12">🎯</div>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6 w-full">
+          <div class="card-mainline !p-3 md:!p-6 flex flex-col gap-2 md:gap-3 group hover:rotate-1">
+            <div class="text-2xl md:text-3xl transition-transform group-hover:scale-125 group-hover:-rotate-12">🎯</div>
             <div class="text-left">
               <p class="text-[10px] font-black text-text-sub uppercase tracking-widest">{{ t('monopoly.rules.goal') }}</p>
-              <p class="text-xl font-black text-primary mt-1">{{ TARGET_SCORE }} pts</p>
+              <p class="text-base md:text-xl font-black text-primary mt-1">{{ TARGET_SCORE }} pts</p>
             </div>
           </div>
-          <div class="card-mainline !p-6 flex flex-col gap-3 group hover:-rotate-1">
-            <div class="text-3xl transition-transform group-hover:scale-125 group-hover:rotate-12">⏱️</div>
+          <div class="card-mainline !p-3 md:!p-6 flex flex-col gap-2 md:gap-3 group hover:-rotate-1">
+            <div class="text-2xl md:text-3xl transition-transform group-hover:scale-125 group-hover:rotate-12">⏱️</div>
             <div class="text-left">
               <p class="text-[10px] font-black text-text-sub uppercase tracking-widest">{{ t('monopoly.rules.rounds') }}</p>
-              <p class="text-xl font-black text-primary mt-1">{{ MAX_ROUNDS }} {{ t('monopoly.round') }}</p>
+              <p class="text-base md:text-xl font-black text-primary mt-1">{{ MAX_ROUNDS }} {{ t('monopoly.round') }}</p>
             </div>
           </div>
-          <div class="card-mainline !p-6 flex flex-col gap-3 group hover:rotate-1">
-            <div class="text-3xl transition-transform group-hover:scale-125 group-hover:-rotate-12">🎒</div>
+          <div class="card-mainline !p-3 md:!p-6 flex flex-col gap-2 md:gap-3 group hover:rotate-1">
+            <div class="text-2xl md:text-3xl transition-transform group-hover:scale-125 group-hover:-rotate-12">🎒</div>
             <div class="text-left">
               <p class="text-[10px] font-black text-text-sub uppercase tracking-widest">{{ t('monopoly.rules.items') }}</p>
-              <p class="text-xl font-black text-primary mt-1">8 {{ t('monopoly.rules.types') }}</p>
+              <p class="text-base md:text-xl font-black text-primary mt-1">8 {{ t('monopoly.rules.types') }}</p>
             </div>
           </div>
-          <div class="card-mainline !p-6 flex flex-col gap-3 group hover:-rotate-1">
-            <div class="text-3xl transition-transform group-hover:scale-125 group-hover:rotate-12">⚡</div>
+          <div class="card-mainline !p-3 md:!p-6 flex flex-col gap-2 md:gap-3 group hover:-rotate-1">
+            <div class="text-2xl md:text-3xl transition-transform group-hover:scale-125 group-hover:rotate-12">⚡</div>
             <div class="text-left">
               <p class="text-[10px] font-black text-text-sub uppercase tracking-widest">{{ t('monopoly.rules.events') }}</p>
               <p class="text-[10px] font-black text-text-sub uppercase tracking-widest">{{ t('monopoly.rules.events') }}</p>
-              <p class="text-xl font-black text-primary mt-1">15 {{ t('monopoly.rules.random') }}</p>
+              <p class="text-base md:text-xl font-black text-primary mt-1">15 {{ t('monopoly.rules.random') }}</p>
             </div>
           </div>
         </div>
@@ -755,13 +755,13 @@ const gradeLabel = computed(() => {
               v-model="username"
               type="text"
               :placeholder="t('monopoly.username.placeholder')"
-              class="input-mainline text-center text-xl"
+              class="input-mainline text-center text-base md:text-xl"
             />
           </div>
 
           <button
             @click="onStartClick"
-            class="btn-mainline w-full !py-5 text-xl group"
+            class="btn-mainline w-full !py-3 md:!py-5 text-base md:text-xl group"
           >
             <span class="inline-block transition-transform group-hover:translate-x-1">{{ t('monopoly.startBtn') }} 🚀</span>
           </button>
@@ -900,14 +900,14 @@ const gradeLabel = computed(() => {
 
     <!-- ==================== GAME BOARD ==================== -->
     <Transition name="fade">
-      <div v-if="gamePhase === 'playing'" class="flex flex-col gap-4">
+      <div v-if="gamePhase === 'playing'" class="flex flex-col gap-3 md:gap-4">
         <!-- Top HUD -->
-        <div class="flex items-center gap-4 mb-8">
-            <div class="size-12 bg-primary text-background-main rounded-xl flex items-center justify-center shadow-offset-green">
-              <Zap class="size-7" />
+        <div class="flex items-center gap-3 md:gap-4 mb-3 md:mb-8">
+            <div class="size-8 md:size-12 bg-primary text-background-main rounded-xl flex items-center justify-center shadow-offset-green">
+              <Zap class="size-4 md:size-7" />
             </div>
             <div>
-              <h2 class="text-3xl font-black text-primary uppercase tracking-tighter">Stitch Adventure</h2>
+              <h2 class="text-xl md:text-3xl font-black text-primary uppercase tracking-tighter">Stitch Adventure</h2>
               <div class="flex items-center gap-2">
                 <span class="badge-mainline">Season 1</span>
                 <span class="text-[10px] font-black text-text-sub uppercase tracking-widest">{{ t('monopoly.roundsLeft', { count: MAX_ROUNDS - round + 1 }) }}</span>
@@ -915,20 +915,20 @@ const gradeLabel = computed(() => {
             </div>
         </div>
 
-        <div class="grid grid-cols-2 gap-4">
-            <div class="card-mainline !p-5 !bg-accent-amber/5 !shadow-none rotate-1">
+        <div class="grid grid-cols-2 gap-2 md:gap-4">
+            <div class="card-mainline !p-3 md:!p-5 !bg-accent-amber/5 !shadow-none rotate-1">
               <div class="flex items-center gap-3 mb-2">
                 <Zap class="size-5 text-accent-amber fill-accent-amber" />
                 <span class="text-[10px] font-black uppercase tracking-widest text-text-sub">Score</span>
               </div>
-              <div class="text-4xl font-black text-primary">{{ player.score }}</div>
+              <div class="text-2xl md:text-4xl font-black text-primary">{{ player.score }}</div>
             </div>
-            <div class="card-mainline !p-5 !bg-accent-cyan/5 !shadow-none -rotate-1">
+            <div class="card-mainline !p-3 md:!p-5 !bg-accent-cyan/5 !shadow-none -rotate-1">
               <div class="flex items-center gap-3 mb-2">
                 <LayoutDashboard class="size-5 text-accent-cyan" />
                 <span class="text-[10px] font-black uppercase tracking-widest text-text-sub">Items</span>
               </div>
-              <div class="text-4xl font-black text-primary">{{ player.items.length }}</div>
+              <div class="text-2xl md:text-4xl font-black text-primary">{{ player.items.length }}</div>
             </div>
         </div>
 
@@ -1049,7 +1049,7 @@ const gradeLabel = computed(() => {
         <!-- ==================== BACKPACK PANEL ==================== -->
         <div class="card-mainline !p-6 !shadow-none">
             <div class="flex items-center justify-between mb-4">
-              <h3 class="text-xl font-black text-primary uppercase tracking-widest">{{ t('monopoly.inventory.title') }}</h3>
+              <h3 class="text-base md:text-xl font-black text-primary uppercase tracking-widest">{{ t('monopoly.inventory.title') }}</h3>
               <span class="badge-mainline">{{ player.items.length }}/5</span>
             </div>
             

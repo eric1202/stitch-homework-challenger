@@ -329,7 +329,7 @@ const deleteTask = async (id) => {
 </script>
 
 <template>
-  <div class="flex flex-col gap-8 pb-10">
+  <div class="flex flex-col gap-4 md:gap-8 pb-6 md:pb-10">
     <!-- Initial Loading Overlay -->
     <Transition name="fade">
       <div v-if="isInitialLoading" class="fixed inset-0 z-[100] bg-background-main dark:bg-background-main flex flex-col items-center justify-center gap-6">
@@ -350,18 +350,18 @@ const deleteTask = async (id) => {
       </div>
     </Transition>
     <!-- Hero Section -->
-    <header class="flex flex-col gap-8 mb-4">
+    <header class="flex flex-col gap-4 md:gap-8 mb-2 md:mb-4">
       <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div class="flex flex-col gap-4">
           <span class="badge-mainline w-fit">Daily Challenge</span>
-          <h1 class="text-5xl md:text-7xl font-black text-primary leading-[0.9] -ml-1">
+          <h1 class="text-3xl md:text-7xl font-black text-primary leading-[0.9] -ml-0.5 md:-ml-1">
             {{ t('home.greeting', { name: userName }).split('<br/>')[0] }}
           </h1>
-          <p class="text-lg md:text-xl font-medium text-text-sub max-w-xl leading-relaxed">
+          <p class="text-sm md:text-xl font-medium text-text-sub max-w-xl leading-relaxed">
             {{ t('home.subtitle') }}
           </p>
           
-          <div class="flex items-center gap-2 flex-wrap mt-2">
+          <div class="flex items-center gap-2 flex-wrap mt-1 md:mt-2">
             <div class="flex items-center gap-1 border-2 border-primary rounded-xl p-1 bg-surface-main shadow-offset-dark">
               <button 
                 @click="changeDate(-1)"
@@ -441,15 +441,15 @@ const deleteTask = async (id) => {
     <!-- Progress Card -->
     <section v-if="tasks.length > 0" class="card-mainline !p-0 overflow-hidden">
       <div class="flex flex-col md:flex-row">
-        <div class="flex-1 p-8 border-b-2 md:border-b-0 md:border-r-2 border-primary bg-accent-green/5">
-          <span class="badge-mainline mb-4">Analytics</span>
-          <h3 class="text-4xl font-black mb-2">{{ t('home.progress') }}</h3>
+        <div class="flex-1 p-4 md:p-8 border-b-2 md:border-b-0 md:border-r-2 border-primary bg-accent-green/5">
+          <span class="badge-mainline mb-2 md:mb-4">Analytics</span>
+          <h3 class="text-2xl md:text-4xl font-black mb-1 md:mb-2">{{ t('home.progress') }}</h3>
           <p class="text-text-sub font-medium max-w-sm">
             {{ tasks.filter(t => t.completed).length === tasks.length ? 'Outstanding performance! All tasks are cleared.' : 'Focus on the remaining goals to complete your session.' }}
           </p>
         </div>
-        <div class="w-full md:w-64 p-8 flex flex-col items-center justify-center bg-surface-main">
-          <div class="text-6xl font-black text-primary leading-none mb-2">
+        <div class="w-full md:w-64 p-4 md:p-8 flex flex-col items-center justify-center bg-surface-main">
+          <div class="text-4xl md:text-6xl font-black text-primary leading-none mb-1 md:mb-2">
             {{ tasks.length === 0 ? 0 : Math.round((tasks.filter(t => t.completed).length / tasks.length) * 100) }}%
           </div>
           <div class="text-xs font-black uppercase tracking-widest text-text-sub">{{ t('analytics.status.completed') }}</div>
@@ -460,9 +460,9 @@ const deleteTask = async (id) => {
     <!-- Add Task Form -->
     <Transition name="fade">
       <div v-if="isAddingFormOpen" class="card-mainline !bg-accent-amber/5 animate-rise">
-        <div class="flex flex-col gap-8">
+        <div class="flex flex-col gap-4 md:gap-8">
           <div class="flex items-center justify-between">
-            <h3 class="text-3xl font-black">{{ t('home.addTaskTitle') }}</h3>
+            <h3 class="text-xl md:text-3xl font-black">{{ t('home.addTaskTitle') }}</h3>
             <div class="flex items-center gap-4">
                <button @click="isBatchMode = !isBatchMode" class="text-xs font-black uppercase tracking-widest hover:underline">
                  {{ isBatchMode ? 'Switch to Single' : 'Bulk Import' }}
@@ -470,7 +470,7 @@ const deleteTask = async (id) => {
             </div>
           </div>
 
-          <div class="grid md:grid-cols-12 gap-6">
+          <div class="grid md:grid-cols-12 gap-3 md:gap-6">
             <div class="md:col-span-12 flex flex-col gap-2">
               <label class="text-[10px] font-black uppercase tracking-widest text-text-sub">{{ t('home.inputs.taskName') }}</label>
               <textarea v-if="isBatchMode" v-model="newTaskTitle" rows="4" class="input-mainline resize-none" placeholder="1. Task A\n2. Task B..."></textarea>
@@ -503,7 +503,7 @@ const deleteTask = async (id) => {
     </Transition>
 
     <!-- Task List -->
-    <section class="flex flex-col gap-3 md:gap-5" ref="taskListRef">
+    <section class="flex flex-col gap-2 md:gap-5" ref="taskListRef">
       <!-- Pull to Refresh Indicator -->
       <div 
         v-if="pullDistance > 0 || isRefreshing"
@@ -523,10 +523,10 @@ const deleteTask = async (id) => {
         </div>
       </div>
       
-      <div class="flex items-center justify-between mb-8">
-        <div class="flex items-center gap-4">
+      <div class="flex items-center justify-between mb-3 md:mb-8">
+        <div class="flex items-center gap-2 md:gap-4">
           <span class="badge-mainline">Tasks</span>
-          <h2 class="text-4xl font-black">{{ t('home.title') }}</h2>
+          <h2 class="text-2xl md:text-4xl font-black">{{ t('home.title') }}</h2>
         </div>
         <button 
           @click="refreshTasks"
@@ -556,8 +556,8 @@ const deleteTask = async (id) => {
         :key="group.subject" 
         class="flex flex-col gap-6"
       >
-        <div class="flex items-center gap-4 border-b-2 border-primary pb-2">
-          <h4 class="text-xl font-black uppercase tracking-widest text-primary">
+        <div class="flex items-center gap-2 md:gap-4 border-b-2 border-primary pb-1 md:pb-2">
+          <h4 class="text-base md:text-xl font-black uppercase tracking-widest text-primary">
             {{ t(`home.subjects.${group.subject}`) }}
           </h4>
           <span class="text-xs font-black text-text-sub opacity-50">{{ group.tasks.length }} {{ t('app.nav.tasks') }}</span>
@@ -568,7 +568,7 @@ const deleteTask = async (id) => {
             <div 
               v-for="task in group.tasks" 
               :key="task.id"
-              class="group flex items-center gap-6 card-mainline !p-4 hover:shadow-offset-green"
+              class="group flex items-center gap-3 md:gap-6 card-mainline !p-3 md:!p-4 hover:shadow-offset-green"
               :class="{ 'opacity-60 grayscale-[0.5] !shadow-none !border-primary/20': task.completed }"
             >
               <div class="relative flex items-center justify-center flex-shrink-0">
@@ -577,19 +577,19 @@ const deleteTask = async (id) => {
                   :checked="task.completed" 
                   @change="toggleTask(task)"
                   :disabled="isLocked && task.completed"
-                  class="custom-checkbox appearance-none size-8 border-2 border-primary rounded-sm checked:bg-primary transition-all cursor-pointer"
+                  class="custom-checkbox appearance-none size-6 md:size-8 border-2 border-primary rounded-sm checked:bg-primary transition-all cursor-pointer"
                 >
               </div>
 
               <div class="flex-1 flex items-center justify-between gap-4 min-w-0">
-                <h4 class="flex-1 text-xl font-bold text-text-main group-hover:text-accent-green transition-colors leading-snug" :class="{ 'line-through opacity-70': task.completed }">
+                <h4 class="flex-1 text-sm md:text-xl font-bold text-text-main group-hover:text-accent-green transition-colors leading-snug" :class="{ 'line-through opacity-70': task.completed }">
                   {{ task.title }}
                 </h4>
 
                 <div class="flex items-center gap-4 flex-shrink-0">
-                  <span class="text-sm font-black text-text-sub whitespace-nowrap">+{{ task.points }} pts</span>
+                  <span class="text-xs md:text-sm font-black text-text-sub whitespace-nowrap">+{{ task.points }} pts</span>
                   <button @click="deleteTask(task.id)" class="text-text-sub hover:text-accent-red transition-colors">
-                    <Trash2 class="size-5" />
+                    <Trash2 class="size-4 md:size-5" />
                   </button>
                 </div>
               </div>
@@ -633,9 +633,9 @@ const deleteTask = async (id) => {
     <!-- Mobile Floating Add Button -->
     <button 
       @click="isAddingFormOpen = true"
-      class="md:hidden fixed bottom-24 right-6 size-16 btn-mainline !rounded-full !p-0 flex items-center justify-center z-50 !shadow-offset-green"
+      class="md:hidden fixed bottom-16 right-4 size-12 btn-mainline !rounded-full !p-0 flex items-center justify-center z-50 !shadow-offset-green"
     >
-      <Plus  class="size-8"/>
+      <Plus  class="size-6"/>
     </button>
   </div>
 </template>

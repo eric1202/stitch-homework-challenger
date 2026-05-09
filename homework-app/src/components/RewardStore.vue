@@ -359,16 +359,16 @@ const formatTime = (ts) => {
 </script>
 
 <template>
-  <div class="flex flex-col gap-8 pb-10">
+  <div class="flex flex-col gap-4 md:gap-8 pb-6 md:pb-10">
     <!-- Header -->
-    <header class="flex flex-col gap-8 mb-4">
+    <header class="flex flex-col gap-4 md:gap-8 mb-2 md:mb-4">
       <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div class="flex flex-col gap-4">
           <span class="badge-mainline w-fit">Marketplace</span>
-          <h1 class="text-5xl md:text-7xl font-black text-primary leading-[0.9] -ml-1">
+          <h1 class="text-3xl md:text-7xl font-black text-primary leading-[0.9] -ml-0.5 md:-ml-1">
             {{ isAdmin ? t('rewards.manageTitle') : t('rewards.title') }}
           </h1>
-          <p class="text-lg md:text-xl font-medium text-text-sub max-w-xl leading-relaxed">
+          <p class="text-sm md:text-xl font-medium text-text-sub max-w-xl leading-relaxed">
             {{ t('rewards.subtitle') }}
           </p>
         </div>
@@ -396,15 +396,15 @@ const formatTime = (ts) => {
     </header>
 
     <!-- Points Banner -->
-    <div class="card-mainline !p-8 bg-accent-green/5 flex items-center justify-between group">
+    <div class="card-mainline !p-4 md:!p-8 bg-accent-green/5 flex items-center justify-between group">
       <div class="flex flex-col gap-2">
         <p class="text-[10px] font-black uppercase tracking-widest text-text-sub">{{ t('rewards.availableBalance') }}</p>
         <div class="flex items-baseline gap-2">
-          <span class="text-6xl font-black text-primary leading-none">{{ totalPoints }}</span>
-          <span class="text-xl font-black text-primary uppercase">pts</span>
+          <span class="text-4xl md:text-6xl font-black text-primary leading-none">{{ totalPoints }}</span>
+          <span class="text-lg md:text-xl font-black text-primary uppercase">pts</span>
         </div>
       </div>
-      <History class="size-16 text-primary opacity-20 group-hover:rotate-12 transition-transform" />
+      <History class="size-10 md:size-16 text-primary opacity-20 group-hover:rotate-12 transition-transform" />
     </div>
 
     <!-- Rewards Grid -->
@@ -428,8 +428,8 @@ const formatTime = (ts) => {
         </div>
       </div>
       
-      <div class="flex items-center justify-between mb-8 border-b-2 border-primary pb-2">
-        <h3 class="text-3xl font-black text-primary">
+      <div class="flex items-center justify-between mb-4 md:mb-8 border-b-2 border-primary pb-1 md:pb-2">
+        <h3 class="text-xl md:text-3xl font-black text-primary">
           {{ t('rewards.rewardsList') || 'Rewards' }}
         </h3>
         <button 
@@ -483,18 +483,18 @@ const formatTime = (ts) => {
         v-else
         name="list"
         tag="div"
-        class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
+        class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-6"
       >
         <div 
           v-for="reward in filteredRewards" 
           :key="reward.id"
-          class="card-mainline !p-6 flex flex-col gap-6 group hover:shadow-offset-green"
+          class="card-mainline !p-3 md:!p-6 flex flex-col gap-3 md:gap-6 group hover:shadow-offset-green"
           :class="{ 'opacity-50 grayscale': isExpired(reward.expiry_date) || reward.stock <= 0 }"
         >
           <!-- Expiry/Stock Badger -->
           <div class="flex justify-between items-start">
-            <div class="size-14 border-2 border-primary rounded-xl flex items-center justify-center bg-surface-main shadow-offset-dark group-hover:bg-accent-green group-hover:text-background-main transition-all">
-              <component :is="getIconComponent(reward.icon)" class="size-6" />
+            <div class="size-10 md:size-14 border-2 border-primary rounded-xl flex items-center justify-center bg-surface-main shadow-offset-dark group-hover:bg-accent-green group-hover:text-background-main transition-all">
+              <component :is="getIconComponent(reward.icon)" class="size-5 md:size-6" />
             </div>
             <div class="flex flex-col items-end gap-1">
               <span v-if="isExpired(reward.expiry_date)" class="badge-mainline !bg-accent-red !text-background-main">{{ t('rewards.expired') }}</span>
@@ -505,9 +505,9 @@ const formatTime = (ts) => {
 
           <!-- Content -->
           <div class="flex-1">
-            <h4 class="text-xl font-black text-primary leading-tight mb-2 truncate">{{ reward.title }}</h4>
-            <div class="flex items-center gap-2">
-              <span class="text-2xl font-black text-primary">{{ reward.points }}</span>
+            <h4 class="text-base md:text-xl font-black text-primary leading-tight mb-1 md:mb-2 truncate">{{ reward.title }}</h4>
+            <div class="flex items-center gap-1 md:gap-2">
+              <span class="text-xl md:text-2xl font-black text-primary">{{ reward.points }}</span>
               <span class="text-[10px] font-black uppercase tracking-widest text-text-sub">pts</span>
             </div>
           </div>
@@ -539,20 +539,20 @@ const formatTime = (ts) => {
     </section>
 
     <!-- Redemption Logs -->
-    <section class="mt-8 border-t border-border-main pt-12">
-      <div class="flex items-center gap-3 mb-8">
-        <History class="text-primary w-8 h-8" />
-        <h3 class="text-2xl font-black">{{ t('rewards.history') }}</h3>
+    <section class="mt-4 md:mt-8 border-t border-border-main pt-6 md:pt-12">
+      <div class="flex items-center gap-2 md:gap-3 mb-4 md:mb-8">
+        <History class="text-primary w-6 h-6 md:w-8 md:h-8" />
+        <h3 class="text-xl md:text-2xl font-black">{{ t('rewards.history') }}</h3>
       </div>
 
       <div class="card-mainline !p-0 overflow-hidden bg-surface-main">
         <table class="w-full text-left">
           <thead>
             <tr class="bg-primary text-background-main border-b-2 border-primary">
-              <th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest">{{ t('rewards.table.reward') }}</th>
-              <th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest">{{ t('rewards.table.cost') }}</th>
-              <th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest">{{ t('rewards.table.date') }}</th>
-              <th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-right">{{ t('rewards.table.status') }}</th>
+              <th class="px-3 md:px-6 py-2 md:py-4 text-[9px] md:text-[10px] font-black uppercase tracking-widest">{{ t('rewards.table.reward') }}</th>
+              <th class="px-3 md:px-6 py-2 md:py-4 text-[9px] md:text-[10px] font-black uppercase tracking-widest">{{ t('rewards.table.cost') }}</th>
+              <th class="px-3 md:px-6 py-2 md:py-4 text-[9px] md:text-[10px] font-black uppercase tracking-widest hidden sm:table-cell">{{ t('rewards.table.date') }}</th>
+              <th class="px-3 md:px-6 py-2 md:py-4 text-[9px] md:text-[10px] font-black uppercase tracking-widest text-right">{{ t('rewards.table.status') }}</th>
             </tr>
           </thead>
           <tbody class="divide-y-2 divide-primary/5">
@@ -560,14 +560,14 @@ const formatTime = (ts) => {
               <td colspan="4" class="px-6 py-12 text-center text-text-sub font-black italic">{{ t('rewards.emptyHistory') }}</td>
             </tr>
             <tr v-for="log in logs" :key="log.id" class="group hover:bg-primary/5 transition-colors">
-              <td class="px-6 py-6">
-                <span class="font-black text-primary">{{ log.reward_title }}</span>
+              <td class="px-3 md:px-6 py-3 md:py-6">
+                <span class="font-black text-primary text-sm md:text-base">{{ log.reward_title }}</span>
               </td>
-              <td class="px-6 py-6">
-                <span class="font-black text-accent-amber">-{{ log.spent_points }} pts</span>
+              <td class="px-3 md:px-6 py-3 md:py-6">
+                <span class="font-black text-accent-amber text-sm md:text-base">-{{ log.spent_points }} pts</span>
               </td>
-              <td class="px-6 py-6 text-xs font-black text-text-sub uppercase tracking-widest">{{ formatTime(log.timestamp) }}</td>
-              <td class="px-6 py-6 text-right">
+              <td class="px-3 md:px-6 py-3 md:py-6 text-[10px] md:text-xs font-black text-text-sub uppercase tracking-widest hidden sm:table-cell">{{ formatTime(log.timestamp) }}</td>
+              <td class="px-3 md:px-6 py-3 md:py-6 text-right">
                 <span class="badge-mainline !bg-accent-green/10 !text-accent-green">
                   {{ t('rewards.table.success') }}
                 </span>
@@ -584,14 +584,14 @@ const formatTime = (ts) => {
         class="card-mainline max-w-lg w-full animate-rise flex flex-col !p-0 overflow-hidden bg-surface-main shadow-[20px_20px_0_var(--border)]"
         @click.stop
       >
-        <header class="flex justify-between items-center border-b-2 border-primary p-8">
-          <h3 class="text-3xl font-black">{{ showEditModal ? t('rewards.modal.edit') : t('rewards.modal.create') }}</h3>
+        <header class="flex justify-between items-center border-b-2 border-primary p-4 md:p-8">
+          <h3 class="text-xl md:text-3xl font-black">{{ showEditModal ? t('rewards.modal.edit') : t('rewards.modal.create') }}</h3>
           <button @click="showAddModal = false; showEditModal = false" class="hover:rotate-90 transition-transform">
-            <X class="size-8" />
+            <X class="size-6 md:size-8" />
           </button>
         </header>
 
-        <div class="p-8 flex flex-col gap-8 overflow-y-auto max-h-[60vh]">
+        <div class="p-4 md:p-8 flex flex-col gap-4 md:gap-8 overflow-y-auto max-h-[60vh]">
           <!-- Title -->
           <div class="flex flex-col gap-2">
             <label class="text-[10px] font-black uppercase tracking-widest text-text-sub">{{ t('rewards.modal.name') }}</label>

@@ -149,42 +149,42 @@ onUnmounted(() => {
     </aside>
 
     <!-- Mobile Header -->
-    <header class="md:hidden fixed top-0 inset-x-0 h-16 bg-surface-main border-b-2 border-primary flex items-center justify-between px-6 z-[60]">
-      <div class="flex items-center gap-2">
-        <div class="size-8 bg-primary text-background-main rounded-lg flex items-center justify-center shadow-offset-green">
-          <Zap class="size-5 fill-background-main" />
+    <header class="md:hidden fixed top-0 inset-x-0 h-12 bg-surface-main border-b-2 border-primary flex items-center justify-between px-4 z-[60]">
+      <div class="flex items-center gap-1.5">
+        <div class="size-7 bg-primary text-background-main rounded-lg flex items-center justify-center shadow-offset-green">
+          <Zap class="size-4 fill-background-main" />
         </div>
-        <span class="text-xl font-black tracking-tighter text-primary uppercase">Homework</span>
+        <span class="text-base font-black tracking-tighter text-primary uppercase">Homework</span>
       </div>
-      <div class="flex items-center gap-4">
+      <div class="flex items-center gap-3">
         <button 
           @click="toggleDarkMode"
-          class="p-2 text-primary"
+          class="p-1.5 text-primary"
         >
-          <Sun v-if="isDark" class="size-6" />
-          <Moon v-else class="size-6" />
+          <Sun v-if="isDark" class="size-5" />
+          <Moon v-else class="size-5" />
         </button>
       </div>
     </header>
 
     <!-- Mobile Bottom Nav -->
-    <nav class="md:hidden fixed bottom-0 inset-x-0 h-20 bg-surface-main border-t-2 border-primary flex items-center justify-around px-2 z-[60]">
+    <nav class="md:hidden fixed bottom-0 inset-x-0 h-14 bg-surface-main border-t-2 border-primary flex items-center justify-around px-1 z-[60]" style="padding-bottom: env(safe-area-inset-bottom)">
       <button 
         v-for="item in navItems" 
         :key="item.id"
         @click="activeView = item.id"
-        class="flex flex-col items-center gap-1 p-2 transition-all"
+        class="flex flex-col items-center gap-0.5 p-1.5 transition-all"
         :class="activeView === item.id ? 'text-primary' : 'text-text-sub opacity-50'"
       >
-        <component :is="item.icon" class="size-6" :class="{ 'fill-primary/10': activeView === item.id }" />
-        <span class="text-[8px] font-black uppercase tracking-widest">{{ t(item.label) }}</span>
+        <component :is="item.icon" class="size-5" :class="{ 'fill-primary/10': activeView === item.id }" />
+        <span class="text-[7px] font-black uppercase tracking-wider">{{ t(item.label) }}</span>
       </button>
     </nav>
 
     <!-- Main Content -->
     <main 
-      class="flex-1 md:ml-64 p-6 md:p-12 transition-all duration-300 min-h-screen"
-      :class="{ 'pb-32 pt-24 md:pt-12': true }"
+      class="flex-1 md:ml-64 px-3 py-2 md:p-12 transition-all duration-300 min-h-screen"
+      :class="{ 'pb-20 pt-14 md:pb-12 md:pt-12': true }"
     >
       <div class="max-w-6xl mx-auto">
         <Transition name="page" mode="out-in">

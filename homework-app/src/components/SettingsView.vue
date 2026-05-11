@@ -42,7 +42,7 @@ onUnmounted(() => {
 
 const changeLanguage = (newLocale) => {
   locale.value = newLocale;
-  db.settings.put({ id: 'language', value: newLocale });
+  db.settings.put({ key: 'language', value: newLocale });
 };
 
 const saveName = async () => {

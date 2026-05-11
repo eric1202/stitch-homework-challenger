@@ -7,8 +7,7 @@ import {
   BarChart3, 
   Settings, 
   Zap, 
-  Sun, 
-  Moon, 
+  Palette,
   ChevronLeft, 
   ChevronRight,
   User,
@@ -32,7 +31,7 @@ import SettingsView from './components/SettingsView.vue';
 const { t, locale } = useI18n();
 
 const activeView = ref('home');
-const isDark = ref(false);
+const theme = ref('mainline'); // 'mainline' | 'legacy'
 const totalPoints = ref(0);
 const isMobileMenuOpen = ref(false);
 
@@ -59,26 +58,23 @@ const currentViewComponent = computed(() => {
 
 // Load settings
 onMounted(async () => {
-  const darkSetting = await db.settings.get('darkMode');
-  isDark.value = darkSetting?.value === true;
-  updateDarkMode();
+  const themeSetting = await db.settings.get('theme');
+  theme.value = themeSetting?.value || 'mainline';
+  applyTheme();
 
   const langSetting = await db.settings.get('language');
   if (langSetting) locale.value = langSetting.value;
 });
 
-const updateDarkMode = () => {
-  if (isDark.value) {
-    document.documentElement.classList.add('dark');
-  } else {
-    document.documentElement.classList.remove('dark');
-  }
+const applyTheme = () => {
+  document.documentElement.classList.remove('dark', 'legacy');
+  if (theme.value === 'legacy') document.documentElement.classList.add('legacy');
 };
 
-const toggleDarkMode = async () => {
-  isDark.value = !isDark.value;
-  await db.settings.put({ id: 'darkMode', value: isDark.value });
-  updateDarkMode();
+const toggleTheme = async () => {
+  theme.value = theme.value === 'mainline' ? 'legacy' : 'mainline';
+  await db.settings.put({ key: 'theme', value: theme.value });
+  applyTheme();
 };
 
 const pointsSubscription = liveQuery(() => db.tasks.toArray())
@@ -126,13 +122,12 @@ onUnmounted(() => {
       <!-- Bottom Actions -->
       <div class="p-6 border-t-2 border-primary/5 space-y-4">
         <div class="flex items-center justify-between px-2">
-          <span class="text-[10px] font-black uppercase tracking-widest text-text-sub">{{ isDark ? t('common.night') : t('common.day') }}</span>
-          <button 
-            @click="toggleDarkMode"
+          <span class="text-[10px] font-black uppercase tracking-widest text-text-sub">{{ theme === 'legacy' ? 'Legacy' : 'Mainline' }}</span>
+          <button
+            @click="toggleTheme"
             class="size-10 border-2 border-primary rounded-xl flex items-center justify-center bg-surface-main shadow-offset-dark hover:shadow-none transition-all active:scale-95"
           >
-            <Sun v-if="isDark" class="size-5" />
-            <Moon v-else class="size-5" />
+            <Palette class="size-5" />
           </button>
         </div>
 
@@ -157,12 +152,11 @@ onUnmounted(() => {
         <span class="text-base font-black tracking-tighter text-primary uppercase">Homework</span>
       </div>
       <div class="flex items-center gap-3">
-        <button 
-          @click="toggleDarkMode"
+        <button
+          @click="toggleTheme"
           class="p-1.5 text-primary"
         >
-          <Sun v-if="isDark" class="size-5" />
-          <Moon v-else class="size-5" />
+          <Palette class="size-5" />
         </button>
       </div>
     </header>

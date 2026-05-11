@@ -57,6 +57,77 @@
   --border: #f7f5ef;
 }
 
+.legacy {
+  --primary: #8080ff;
+  --background: #f8fafc;
+  --surface: #ffffff;
+  --text-main: #0f172a;
+  --text-sub: #475569;
+  --border: #e2e8f0;
+  --shadow-offset-dark: 0 2px 8px rgba(0,0,0,0.08);
+  --shadow-offset-green: 0 4px 14px rgba(128,128,255,0.35);
+}
+
+.legacy .card-mainline {
+  border-radius: 1rem;
+  border-width: 1px;
+  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.07), 0 2px 4px -2px rgba(0,0,0,0.05);
+}
+
+.legacy .btn-mainline {
+  border-radius: 0.75rem;
+  border-width: 0;
+  color: #ffffff;
+  box-shadow: 0 4px 14px rgba(128,128,255,0.35);
+}
+
+.legacy .btn-mainline:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(128,128,255,0.45) !important;
+}
+
+.legacy .btn-mainline:active {
+  box-shadow: 0 2px 8px rgba(128,128,255,0.25) !important;
+}
+
+.legacy .btn-mainline-secondary {
+  border-radius: 0.75rem;
+  border-width: 1px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+
+.legacy .input-mainline {
+  border-radius: 0.5rem;
+  border-width: 1px;
+}
+
+.legacy .badge-mainline {
+  border-radius: 9999px;
+}
+
+.legacy .badge-green,
+.legacy .badge-cyan,
+.legacy .badge-red {
+  color: #ffffff !important;
+}
+
+.legacy h1, .legacy h2, .legacy h3,
+.legacy h4, .legacy h5, .legacy h6 {
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+.legacy .shadow-offset-dark,
+.legacy .shadow-offset-green,
+.legacy [class*="shadow-offset"] {
+  --tw-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  box-shadow: var(--tw-inset-shadow),var(--tw-inset-ring-shadow),var(--tw-ring-offset-shadow),var(--tw-ring-shadow),var(--tw-shadow);
+}
+
+.legacy .hover\:shadow-offset-green:hover {
+  --tw-shadow: 0 4px 14px rgba(128,128,255,0.3);
+  box-shadow: var(--tw-inset-shadow),var(--tw-inset-ring-shadow),var(--tw-ring-offset-shadow),var(--tw-ring-shadow),var(--tw-shadow);
+}
+
 @layer base {
   body {
     @apply font-body bg-background-main text-text-main transition-colors duration-200;
@@ -67,9 +138,15 @@
   }
 
   .dark body {
-    background-image: 
+    background-image:
       linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
       linear-gradient(180deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+  }
+
+  .legacy body {
+    background-image:
+      linear-gradient(90deg, rgba(128, 128, 255, 0.05) 1px, transparent 1px),
+      linear-gradient(180deg, rgba(128, 128, 255, 0.05) 1px, transparent 1px);
   }
 
   h1, h2, h3, h4, h5, h6 {

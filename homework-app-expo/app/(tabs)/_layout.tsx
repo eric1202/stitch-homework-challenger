@@ -34,7 +34,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: t('app.nav.tasks'),
+          title: t('app.nav.home'),
           tabBarIcon: ({ color }) => <Sun size={24} color={color} />,
         }}
       />
@@ -62,7 +62,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="monopoly"
         options={{
-          title: t('monopoly.navTitle'),
+          title: t('app.nav.monopoly'),
           tabBarIcon: ({ color }) => <Dices size={24} color={color} />,
         }}
       />

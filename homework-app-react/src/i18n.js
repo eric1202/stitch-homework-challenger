@@ -1,6 +1,6 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
-import { en, zh } from './locales';
+import { getI18nextResources } from '@homework/shared';
 
 const userLang = navigator.language || navigator.userLanguage;
 const defaultLocale = userLang.startsWith('zh') ? 'zh' : 'en';
@@ -8,10 +8,7 @@ const defaultLocale = userLang.startsWith('zh') ? 'zh' : 'en';
 i18n
   .use(initReactI18next)
   .init({
-    resources: {
-      en: { translation: en },
-      zh: { translation: zh }
-    },
+    resources: getI18nextResources(),
     lng: defaultLocale,
     fallbackLng: 'en',
     interpolation: {

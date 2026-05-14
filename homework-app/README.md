@@ -62,7 +62,7 @@ Homework Hero is a premium, offline-first homework management application design
 
 - `src/components/`: UI screens (Home, Analytics, Settings).
 - `src/db.js`: Database schema and configuration.
-- `src/locales.js`: Localization strings for EN and ZH.
+- Shared localization strings now live in `../packages/shared/locales.js`.
 - `src/utils/`: Helper functions for date formatting and CSV export.
 
 ---

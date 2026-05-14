@@ -38,7 +38,7 @@ const isMobileMenuOpen = ref(false);
 const navItems = [
   { id: 'home', icon: markRaw(Home), label: 'app.nav.home' },
   { id: 'checkin', icon: markRaw(CalendarSync), label: 'app.nav.checkin' },
-  { id: 'monopoly', icon: markRaw(Trophy), label: 'app.nav.adventure' },
+  { id: 'monopoly', icon: markRaw(Trophy), label: 'app.nav.monopoly' },
   { id: 'rewards', icon: markRaw(Store), label: 'app.nav.rewards' },
   { id: 'analytics', icon: markRaw(BarChart3), label: 'app.nav.analytics' },
   { id: 'settings', icon: markRaw(Settings), label: 'app.nav.settings' }

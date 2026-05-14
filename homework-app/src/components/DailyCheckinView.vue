@@ -361,7 +361,7 @@ const formatSchedule = (template) => {
           <h4 class="text-base md:text-xl font-black uppercase tracking-widest text-primary">
             {{ t(`home.subjects.${group.subject}`) }}
           </h4>
-          <span class="text-xs font-black text-text-sub opacity-50 uppercase tracking-widest">{{ group.templates.length }} {{ t('app.nav.tasks') }}</span>
+          <span class="text-xs font-black text-text-sub opacity-50 uppercase tracking-widest">{{ group.templates.length }} {{ t('app.nav.home') }}</span>
         </div>
 
         <div class="flex flex-col gap-2 md:gap-3">

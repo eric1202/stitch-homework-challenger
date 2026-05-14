@@ -12,11 +12,11 @@ export default function Sidebar({ totalPoints, userName }) {
   const pathname = usePathname();
 
   const navItems = [
-    { name: '/', icon: Sun, label: t('app.nav.tasks') },
+    { name: '/', icon: Sun, label: t('app.nav.home') },
     { name: '/checkin', icon: CalendarDays, label: t('dailyCheckin.title') },
     { name: '/analytics', icon: LineChart, label: t('app.nav.analytics') },
     { name: '/rewards', icon: Gift, label: t('app.nav.rewards') },
-    { name: '/monopoly', icon: Dices, label: t('monopoly.navTitle') },
+    { name: '/monopoly', icon: Dices, label: t('app.nav.monopoly') },
     { name: '/settings', icon: Settings, label: t('app.nav.settings') },
   ];
 

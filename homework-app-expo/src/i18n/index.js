@@ -1,14 +1,11 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
-import { en, zh } from '../services/locales';
+import { getI18nextResources } from '@homework/shared';
 
 i18n
   .use(initReactI18next)
   .init({
-    resources: {
-      en: { translation: en },
-      zh: { translation: zh },
-    },
+    resources: getI18nextResources(),
     lng: 'en', // Default language
     fallbackLng: 'en',
     interpolation: {

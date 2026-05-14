@@ -121,7 +121,7 @@ const clearAllData = async () => {
           <h2 class="text-2xl md:text-4xl font-black text-primary">{{ userName }}</h2>
           <div class="flex items-center gap-3 justify-center md:justify-start">
             <span class="badge-mainline !bg-accent-green !text-background-main">Explorer</span>
-            <span class="text-xs font-black text-text-sub uppercase tracking-widest">{{ t('app.nav.points') }}: {{ totalPoints }}</span>
+            <span class="text-xs font-black text-text-sub uppercase tracking-widest">{{ t('app.points') }}: {{ totalPoints }}</span>
           </div>
           <button 
             @click="isEditingName = true; editNameValue = userName"

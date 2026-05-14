@@ -294,7 +294,7 @@ export default function HomeView() {
               <div className="h-full bg-primary rounded-full transition-all duration-700 ease-out shadow-[0_0_12px_rgba(37,99,235,0.4)]" style={{ width: `${progressPercent}%` }}></div>
             </div>
             <div className="flex justify-between text-xs md:text-sm font-bold text-text-sub-light dark:text-text-sub-dark uppercase tracking-wider">
-              <span>{tasks.length} {t('app.nav.tasks')}</span>
+              <span>{tasks.length} {t('app.nav.home')}</span>
               <span>{completedCount} of {tasks.length} {t('analytics.status.completed')}</span>
             </div>
           </div>
@@ -371,7 +371,7 @@ export default function HomeView() {
                 <span className={`size-1.5 md:size-3 rounded-full shadow-sm ${subjectColors[group.subject]?.split(' ')[0].replace('text-', 'bg-')}`}></span>
                 {t(`home.subjects.${group.subject}`)}
               </h4>
-              <span className="text-[9px] md:text-xs font-bold opacity-50">{group.tasks.length} {t('app.nav.tasks')}</span>
+              <span className="text-[9px] md:text-xs font-bold opacity-50">{group.tasks.length} {t('app.nav.home')}</span>
             </div>
 
             <div className="flex flex-col gap-1.5 md:gap-3">

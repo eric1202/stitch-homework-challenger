@@ -1,5 +1,5 @@
 import { createI18n } from 'vue-i18n';
-import { en, zh } from './locales';
+import { getVueMessages } from '@homework/shared';
 
 // Detect browser language or default to Chinese as per request context implication (user asked for Chinese), 
 // but usually we default to English or auto-detect. 
@@ -11,8 +11,5 @@ export const i18n = createI18n({
     legacy: false, // Use Composition API mode
     locale: defaultLocale,
     fallbackLocale: 'en',
-    messages: {
-        en,
-        zh
-    }
+    messages: getVueMessages()
 });

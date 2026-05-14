@@ -90,11 +90,11 @@ export default function App() {
   }, []);
 
   const navItems = useMemo(() => [
-    { name: 'home', icon: Sun, label: t('app.nav.tasks') },
+    { name: 'home', icon: Sun, label: t('app.nav.home') },
     { name: 'checkin', icon: CalendarDays, label: t('dailyCheckin.title') },
     { name: 'analytics', icon: LineChart, label: t('app.nav.analytics') },
     { name: 'rewards', icon: Gift, label: t('app.nav.rewards') },
-    { name: 'monopoly', icon: Dices, label: t('monopoly.navTitle') },
+    { name: 'monopoly', icon: Dices, label: t('app.nav.monopoly') },
     { name: 'settings', icon: Settings, label: t('app.nav.settings') },
   ], [t]);
 

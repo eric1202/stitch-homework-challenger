@@ -281,7 +281,7 @@ export default function DailyCheckinView() {
                 <span className={`size-2 md:size-3 rounded-full shadow-sm ${subjectColors[group.subject]?.split(' ')[0].replace('text-', 'bg-')}`}></span>
                 {t(`home.subjects.${group.subject}`)}
               </h4>
-              <span className="text-[10px] md:text-xs font-bold opacity-50 uppercase tracking-widest">{group.templates.length} {t('app.nav.tasks')}</span>
+              <span className="text-[10px] md:text-xs font-bold opacity-50 uppercase tracking-widest">{group.templates.length} {t('app.nav.home')}</span>
             </div>
 
             <div className="flex flex-col gap-2 md:gap-3">

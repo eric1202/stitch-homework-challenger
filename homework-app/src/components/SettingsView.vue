@@ -78,10 +78,10 @@ const triggerImport = () => {
       if (data.tasks) await db.tasks.bulkPut(data.tasks);
       if (data.templates) await db.templates.bulkPut(data.templates);
       if (data.settings) await db.settings.bulkPut(data.settings);
-      alert('Data imported successfully!');
+      alert(t('settings.alerts.importSuccess', { count: data.tasks?.length || 0 }));
       window.location.reload();
     } catch (err) {
-      alert('Invalid backup file');
+      alert(t('settings.alerts.invalidFormat'));
     }
   };
   input.click();

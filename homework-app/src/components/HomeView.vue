@@ -64,6 +64,20 @@ const subjectColors = {
   Other: 'text-subject-other bg-subject-other/10 dark:bg-subject-other/20',
 };
 
+// Raw hex values for inline styles (Tailwind dynamic class names won't work)
+const subjectHex = {
+  Chinese: '#d44d3e',
+  Math: '#3aa6b9',
+  English: '#00a878',
+  Science: '#f2b84b',
+  Art: '#ff6b6b',
+  Reading: '#4facfe',
+  Sports: '#ff9f43',
+  Other: '#5f6258',
+};
+
+const getSubjectHex = (subject) => subjectHex[subject] || subjectHex.Other;
+
 const tasks = ref([]);
 const userName = ref('Hero');
 let tasksSub = null;
@@ -353,7 +367,7 @@ const deleteTask = async (id) => {
     <header class="flex flex-col gap-4 md:gap-8 mb-2 md:mb-4">
       <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div class="flex flex-col gap-4">
-          <span class="badge-mainline w-fit">Daily Challenge</span>
+          <span class="badge-mainline w-fit">{{ t('home.heroBadge') }}</span>
           <h1 class="text-3xl md:text-7xl font-black text-primary leading-[0.9] -ml-0.5 md:-ml-1">
             {{ t('home.greeting', { name: userName }).split('<br/>')[0] }}
           </h1>
@@ -413,7 +427,7 @@ const deleteTask = async (id) => {
         <div class="card-mainline max-w-md w-full animate-rise" @click.stop>
           <!-- Header -->
           <div class="flex items-center justify-between mb-8">
-            <h3 class="text-3xl font-black">Select Date</h3>
+            <h3 class="text-3xl font-black">{{ t('home.dateModalTitle') }}</h3>
             <button @click="closeDatePicker" class="hover:rotate-90 transition-transform">
               <X class="size-6"/>
             </button>
@@ -442,10 +456,10 @@ const deleteTask = async (id) => {
     <section v-if="tasks.length > 0" class="card-mainline !p-0 overflow-hidden">
       <div class="flex flex-col md:flex-row">
         <div class="flex-1 p-4 md:p-8 border-b-2 md:border-b-0 md:border-r-2 border-primary bg-accent-green/5">
-          <span class="badge-mainline mb-2 md:mb-4">Analytics</span>
+          <span class="badge-mainline mb-2 md:mb-4">{{ t('home.progressBadge') }}</span>
           <h3 class="text-2xl md:text-4xl font-black mb-1 md:mb-2">{{ t('home.progress') }}</h3>
           <p class="text-text-sub font-medium max-w-sm">
-            {{ tasks.filter(t => t.completed).length === tasks.length ? 'Outstanding performance! All tasks are cleared.' : 'Focus on the remaining goals to complete your session.' }}
+            {{ tasks.filter(t => t.completed).length === tasks.length ? t('home.progressDone') : t('home.progressPending') }}
           </p>
         </div>
         <div class="w-full md:w-64 p-4 md:p-8 flex flex-col items-center justify-center bg-surface-main">
@@ -465,7 +479,7 @@ const deleteTask = async (id) => {
             <h3 class="text-xl md:text-3xl font-black">{{ t('home.addTaskTitle') }}</h3>
             <div class="flex items-center gap-4">
                <button @click="isBatchMode = !isBatchMode" class="text-xs font-black uppercase tracking-widest hover:underline">
-                 {{ isBatchMode ? 'Switch to Single' : 'Bulk Import' }}
+                 {{ isBatchMode ? t('home.batchToggleOff') : t('home.batchToggleOn') }}
                </button>
             </div>
           </div>
@@ -473,7 +487,7 @@ const deleteTask = async (id) => {
           <div class="grid md:grid-cols-12 gap-3 md:gap-6">
             <div class="md:col-span-12 flex flex-col gap-2">
               <label class="text-[10px] font-black uppercase tracking-widest text-text-sub">{{ t('home.inputs.taskName') }}</label>
-              <textarea v-if="isBatchMode" v-model="newTaskTitle" rows="4" class="input-mainline resize-none" placeholder="1. Task A\n2. Task B..."></textarea>
+              <textarea v-if="isBatchMode" v-model="newTaskTitle" rows="4" class="input-mainline resize-none" :placeholder="t('home.batchPlaceholder')"></textarea>
               <input v-else v-model="newTaskTitle" type="text" class="input-mainline" :placeholder="t('home.inputs.placeholder')">
             </div>
 
@@ -525,7 +539,7 @@ const deleteTask = async (id) => {
       
       <div class="flex items-center justify-between mb-3 md:mb-8">
         <div class="flex items-center gap-2 md:gap-4">
-          <span class="badge-mainline">Tasks</span>
+          <span class="badge-mainline">{{ t('home.listBadge') }}</span>
           <h2 class="text-2xl md:text-4xl font-black">{{ t('home.title') }}</h2>
         </div>
         <button 
@@ -554,43 +568,70 @@ const deleteTask = async (id) => {
       <div 
         v-for="group in groupedTasks" 
         :key="group.subject" 
-        class="flex flex-col gap-6"
+        class="flex flex-col gap-4"
       >
-        <div class="flex items-center gap-2 md:gap-4 border-b-2 border-primary pb-1 md:pb-2">
-          <h4 class="text-base md:text-xl font-black uppercase tracking-widest text-primary">
+        <!-- Subject Group Header -->
+        <div 
+          class="flex items-center gap-2 md:gap-3 pb-1.5 md:pb-2 border-b-[3px]"
+          :style="{ borderColor: getSubjectHex(group.subject) }"
+        >
+          <span 
+            class="inline-block size-2.5 md:size-3 rounded-full flex-shrink-0" 
+            :style="{ backgroundColor: getSubjectHex(group.subject) }"
+          ></span>
+          <h4 
+            class="text-base md:text-xl font-black uppercase tracking-widest"
+            :style="{ color: getSubjectHex(group.subject) }"
+          >
             {{ t(`home.subjects.${group.subject}`) }}
           </h4>
-          <span class="text-xs font-black text-text-sub opacity-50">{{ group.tasks.length }} {{ t('app.nav.tasks') }}</span>
+          <span 
+            class="text-[10px] md:text-xs font-black px-1.5 py-0.5 rounded-sm"
+            :style="{ backgroundColor: getSubjectHex(group.subject) + '18', color: getSubjectHex(group.subject) }"
+          >{{ group.tasks.length }}</span>
         </div>
         
+        <!-- Task Cards -->
         <div class="flex flex-col gap-1.5 md:gap-3">
           <TransitionGroup name="list">
             <div 
               v-for="task in group.tasks" 
               :key="task.id"
-              class="group flex items-center gap-3 md:gap-6 card-mainline !p-3 md:!p-4 hover:shadow-offset-green"
+              class="group flex items-center gap-3 md:gap-6 card-mainline !p-0 overflow-hidden"
               :class="{ 'opacity-60 grayscale-[0.5] !shadow-none !border-primary/20': task.completed }"
             >
-              <div class="relative flex items-center justify-center flex-shrink-0">
-                <input 
-                  type="checkbox" 
-                  :checked="task.completed" 
-                  @change="toggleTask(task)"
-                  :disabled="isLocked && task.completed"
-                  class="custom-checkbox appearance-none size-6 md:size-8 border-2 border-primary rounded-sm checked:bg-primary transition-all cursor-pointer"
-                >
-              </div>
+              <!-- Colored left accent bar -->
+              <div 
+                class="self-stretch w-1 md:w-1.5 flex-shrink-0 transition-all"
+                :style="{ backgroundColor: task.completed ? 'transparent' : getSubjectHex(group.subject) }"
+              ></div>
 
-              <div class="flex-1 flex items-center justify-between gap-4 min-w-0">
-                <h4 class="flex-1 text-sm md:text-xl font-bold text-text-main group-hover:text-accent-green transition-colors leading-snug" :class="{ 'line-through opacity-70': task.completed }">
-                  {{ task.title }}
-                </h4>
+              <div class="flex items-center gap-3 md:gap-6 flex-1 py-3 pr-3 md:py-4 md:pr-4">
+                <div class="relative flex items-center justify-center flex-shrink-0">
+                  <input 
+                    type="checkbox" 
+                    :checked="task.completed" 
+                    @change="toggleTask(task)"
+                    :disabled="isLocked && task.completed"
+                    class="custom-checkbox appearance-none size-6 md:size-8 border-2 rounded-sm transition-all cursor-pointer"
+                    :style="{ borderColor: getSubjectHex(group.subject), backgroundColor: task.completed ? getSubjectHex(group.subject) : 'transparent' }"
+                  >
+                </div>
 
-                <div class="flex items-center gap-4 flex-shrink-0">
-                  <span class="text-xs md:text-sm font-black text-text-sub whitespace-nowrap">+{{ task.points }} pts</span>
-                  <button @click="deleteTask(task.id)" class="text-text-sub hover:text-accent-red transition-colors">
-                    <Trash2 class="size-4 md:size-5" />
-                  </button>
+                <div class="flex-1 flex items-center justify-between gap-4 min-w-0">
+                  <h4 class="flex-1 text-sm md:text-xl font-bold text-text-main transition-colors leading-snug" :class="{ 'line-through opacity-70': task.completed }">
+                    {{ task.title }}
+                  </h4>
+
+                  <div class="flex items-center gap-4 flex-shrink-0">
+                    <span 
+                      class="text-xs md:text-sm font-black whitespace-nowrap"
+                      :style="{ color: getSubjectHex(group.subject) }"
+                    >+{{ task.points }} pts</span>
+                    <button @click="deleteTask(task.id)" class="text-text-sub hover:text-accent-red transition-colors">
+                      <Trash2 class="size-4 md:size-5" />
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -606,7 +647,7 @@ const deleteTask = async (id) => {
         <div class="card-mainline max-w-md w-full animate-rise flex flex-col" @click.stop>
           <!-- Header -->
           <div class="flex items-center justify-between mb-8">
-            <h3 class="text-3xl font-black">Confirm Batch</h3>
+            <h3 class="text-3xl font-black">{{ t('home.batchConfirmTitle') }}</h3>
             <button @click="isBatchConfirmModalOpen = false" class="hover:rotate-90 transition-transform">
               <X class="size-6"/>
             </button>
@@ -624,7 +665,7 @@ const deleteTask = async (id) => {
 
           <button @click="confirmBatchAdd" :disabled="isAddingTask" class="btn-mainline w-full !py-4 flex items-center justify-center gap-2">
             <RotateCw v-if="isAddingTask" class="animate-spin size-4" />
-            <span>{{ isAddingTask ? 'Processing...' : 'Confirm Bulk Add' }}</span>
+            <span>{{ isAddingTask ? t('common.processing') : t('home.batchConfirmAction') }}</span>
           </button>
         </div>
       </div>

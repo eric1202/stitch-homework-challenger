@@ -229,10 +229,15 @@ const addTask = async () => {
 };
 
 const confirmBatchAdd = async () => {
+  const validTasks = batchParsedTasks.value.filter(t => t.trim().length > 0);
+  if (validTasks.length === 0) {
+    isBatchConfirmModalOpen.value = false;
+    return;
+  }
   isAddingTask.value = true;
   try {
-    for (const title of batchParsedTasks.value) {
-      const str = `${newTaskSubject.value}-${title}`;
+    for (const title of validTasks) {
+      const str = `${newTaskSubject.value}-${title.trim()}`;
       let hash = 0;
       for (let i = 0; i < str.length; i++) {
         hash = (hash << 5) - hash + str.charCodeAt(i);
@@ -241,7 +246,7 @@ const confirmBatchAdd = async () => {
       const pts = (Math.abs(hash) % 26) + 10;
       
       await db.tasks.add({
-        title: title, 
+        title: title.trim(), 
         subject: newTaskSubject.value, 
         points: pts,
         completed: false, 
@@ -653,13 +658,24 @@ const deleteTask = async (id) => {
             </button>
           </div>
 
-          <div class="flex-1 overflow-y-auto mb-8 flex flex-col gap-4">
+          <div class="flex-1 overflow-y-auto mb-8 flex flex-col gap-3 max-h-[60vh] pr-2">
             <div 
               v-for="(task, idx) in batchParsedTasks" 
               :key="idx" 
-              class="p-4 border-2 border-primary/10 rounded-lg bg-primary/5 font-bold"
+              class="flex items-center gap-3 p-3 border-2 border-primary/10 rounded-lg bg-primary/5 focus-within:border-primary focus-within:bg-primary/10 transition-all group"
             >
-              {{ idx + 1 }}. {{ task }}
+              <span class="font-black text-text-sub/40 w-5 text-right flex-shrink-0">{{ idx + 1 }}.</span>
+              <input 
+                v-model="batchParsedTasks[idx]" 
+                class="flex-1 bg-transparent font-bold text-text-main outline-none min-w-0"
+              />
+              <button @click="batchParsedTasks.splice(idx, 1)" class="p-2 text-text-sub opacity-0 group-hover:opacity-100 hover:text-accent-red hover:bg-accent-red/10 rounded-lg transition-all focus:opacity-100 flex-shrink-0">
+                <Trash2 class="size-4" />
+              </button>
+            </div>
+            
+            <div v-if="batchParsedTasks.length === 0" class="py-8 text-center text-text-sub font-bold opacity-50 border-2 border-dashed border-primary/20 rounded-lg">
+              {{ t('home.noTasksDesc') || 'No tasks' }}
             </div>
           </div>
 

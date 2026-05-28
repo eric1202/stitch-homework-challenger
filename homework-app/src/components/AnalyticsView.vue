@@ -171,7 +171,7 @@ const exportData = () => {
 
     <!-- Hero Stats Row -->
     <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
-      <div class="card-mainline !p-4 md:!p-8 !bg-accent-green !text-background-main !shadow-none rotate-1">
+      <div class="card-mainline legacy-analytics-stat legacy-analytics-stat--mint !p-4 md:!p-8 !bg-accent-green !text-primary !shadow-none rotate-1">
         <div class="flex items-center justify-between mb-2 md:mb-4">
           <Target class="size-5 md:size-8 opacity-40" />
           <span class="text-[8px] md:text-[10px] font-black uppercase tracking-widest opacity-60">{{ t('home.progress') }}</span>
@@ -180,7 +180,7 @@ const exportData = () => {
         <p class="mt-2 md:mt-4 text-[10px] md:text-xs font-bold opacity-60">{{ t('analytics.statCompletedTasks') }}</p>
       </div>
 
-      <div class="card-mainline !p-4 md:!p-8 !bg-accent-amber !text-primary !shadow-none -rotate-1">
+      <div class="card-mainline legacy-analytics-stat legacy-analytics-stat--sun !p-4 md:!p-8 !bg-accent-amber !text-primary !shadow-none -rotate-1">
         <div class="flex items-center justify-between mb-2 md:mb-4">
           <Zap class="size-5 md:size-8 opacity-40" />
           <span class="text-[8px] md:text-[10px] font-black uppercase tracking-widest opacity-60">{{ t('app.points') }}</span>
@@ -189,7 +189,7 @@ const exportData = () => {
         <p class="mt-2 md:mt-4 text-[10px] md:text-xs font-bold opacity-60">{{ t('analytics.statTotalPoints') }}</p>
       </div>
 
-      <div class="card-mainline !p-4 md:!p-8 !bg-accent-cyan !text-background-main !shadow-none rotate-1">
+      <div class="card-mainline legacy-analytics-stat legacy-analytics-stat--sky !p-4 md:!p-8 !bg-accent-cyan !text-primary !shadow-none rotate-1">
         <div class="flex items-center justify-between mb-2 md:mb-4">
           <Calendar class="size-5 md:size-8 opacity-40" />
           <span class="text-[8px] md:text-[10px] font-black uppercase tracking-widest opacity-60">{{ t('common.streak') }}</span>
@@ -198,7 +198,7 @@ const exportData = () => {
         <p class="mt-2 md:mt-4 text-[10px] md:text-xs font-bold opacity-60">{{ t('analytics.statCurrentStreak') }}</p>
       </div>
 
-      <div class="card-mainline !p-4 md:!p-8 !bg-primary !text-background-main !shadow-none -rotate-1">
+      <div class="card-mainline legacy-analytics-stat legacy-analytics-stat--deep !p-4 md:!p-8 !bg-accent-red !text-primary !shadow-none -rotate-1">
         <div class="flex items-center justify-between mb-2 md:mb-4">
           <CheckSquare class="size-5 md:size-8 opacity-40" />
           <span class="text-[8px] md:text-[10px] font-black uppercase tracking-widest opacity-60">{{ t('common.total') }}</span>
@@ -234,7 +234,7 @@ const exportData = () => {
         <h3 class="text-xl md:text-3xl font-black">{{ t('analytics.recentTasks') }}</h3>
       </div>
       
-      <div class="card-mainline !p-0 overflow-hidden">
+      <div class="card-mainline legacy-analytics-table !p-0 overflow-hidden">
         <div class="overflow-x-auto">
           <table class="w-full text-left">
             <thead>
@@ -255,7 +255,7 @@ const exportData = () => {
                 <td class="px-6 py-4 text-sm font-black text-text-sub">{{ task.date }}</td>
                 <td class="px-6 py-4 text-sm font-black text-primary">{{ task.title }}</td>
                 <td class="px-6 py-4">
-                  <span class="badge-mainline !bg-accent-green/10 !text-accent-green !shadow-none">{{ t(`home.subjects.${task.subject}`) }}</span>
+                  <span class="badge-mainline legacy-analytics-history-badge !bg-accent-green/10 !text-accent-green !shadow-none">{{ t(`home.subjects.${task.subject}`) }}</span>
                 </td>
                 <td class="px-6 py-4 text-sm font-black text-primary">+{{ task.points }}</td>
                 <td class="px-6 py-4 text-right">

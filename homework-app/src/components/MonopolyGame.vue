@@ -714,28 +714,28 @@ const gradeLabel = computed(() => {
 
         <!-- Rules cards -->
         <div class="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6 w-full">
-          <div class="card-mainline !p-3 md:!p-6 flex flex-col gap-2 md:gap-3 group hover:rotate-1">
+          <div class="card-mainline legacy-monopoly-rule !p-3 md:!p-6 flex flex-col gap-2 md:gap-3 group hover:rotate-1">
             <div class="text-2xl md:text-3xl transition-transform group-hover:scale-125 group-hover:-rotate-12">🎯</div>
             <div class="text-left">
               <p class="text-[10px] font-black text-text-sub uppercase tracking-widest">{{ t('monopoly.rules.goal') }}</p>
               <p class="text-base md:text-xl font-black text-primary mt-1">{{ TARGET_SCORE }} pts</p>
             </div>
           </div>
-          <div class="card-mainline !p-3 md:!p-6 flex flex-col gap-2 md:gap-3 group hover:-rotate-1">
+          <div class="card-mainline legacy-monopoly-rule !p-3 md:!p-6 flex flex-col gap-2 md:gap-3 group hover:-rotate-1">
             <div class="text-2xl md:text-3xl transition-transform group-hover:scale-125 group-hover:rotate-12">⏱️</div>
             <div class="text-left">
               <p class="text-[10px] font-black text-text-sub uppercase tracking-widest">{{ t('monopoly.rules.rounds') }}</p>
               <p class="text-base md:text-xl font-black text-primary mt-1">{{ MAX_ROUNDS }} {{ t('monopoly.round') }}</p>
             </div>
           </div>
-          <div class="card-mainline !p-3 md:!p-6 flex flex-col gap-2 md:gap-3 group hover:rotate-1">
+          <div class="card-mainline legacy-monopoly-rule !p-3 md:!p-6 flex flex-col gap-2 md:gap-3 group hover:rotate-1">
             <div class="text-2xl md:text-3xl transition-transform group-hover:scale-125 group-hover:-rotate-12">🎒</div>
             <div class="text-left">
               <p class="text-[10px] font-black text-text-sub uppercase tracking-widest">{{ t('monopoly.rules.items') }}</p>
               <p class="text-base md:text-xl font-black text-primary mt-1">8 {{ t('monopoly.rules.types') }}</p>
             </div>
           </div>
-          <div class="card-mainline !p-3 md:!p-6 flex flex-col gap-2 md:gap-3 group hover:-rotate-1">
+          <div class="card-mainline legacy-monopoly-rule !p-3 md:!p-6 flex flex-col gap-2 md:gap-3 group hover:-rotate-1">
             <div class="text-2xl md:text-3xl transition-transform group-hover:scale-125 group-hover:rotate-12">⚡</div>
             <div class="text-left">
               <p class="text-[10px] font-black text-text-sub uppercase tracking-widest">{{ t('monopoly.rules.events') }}</p>
@@ -994,7 +994,7 @@ const gradeLabel = computed(() => {
               <button
                 @click="rollDice"
                 :disabled="isRolling || isMoving || showEvent"
-                class="bg-primary text-background-main font-black text-sm lg:text-base px-6 lg:px-8 py-2.5 lg:py-3 rounded-xl shadow-lg shadow-primary/30 hover:scale-105 active:scale-95 transition-all duration-300 disabled:opacity-50"
+                class="legacy-monopoly-board-cta bg-primary text-background-main font-black text-sm lg:text-base px-6 lg:px-8 py-2.5 lg:py-3 rounded-xl shadow-lg shadow-primary/30 hover:scale-105 active:scale-95 transition-all duration-300 disabled:opacity-50"
               >
                 <span v-if="isRolling" class="inline-flex items-center gap-1">
                   <span class="animate-spin">🎲</span> ...
@@ -1006,7 +1006,7 @@ const gradeLabel = computed(() => {
               <button
                 @click="onMathChallengeClick"
                 :disabled="isRolling || isMoving || showEvent"
-                class="bg-surface-main text-primary border-2 border-primary/20 hover:border-primary/50 font-black text-[10px] lg:text-xs px-4 py-2 rounded-xl transition-all duration-300 flex items-center justify-center gap-1.5 active:scale-95 disabled:opacity-50"
+                class="legacy-monopoly-secondary-cta bg-surface-main text-primary border-2 border-primary/20 hover:border-primary/50 font-black text-[10px] lg:text-xs px-4 py-2 rounded-xl transition-all duration-300 flex items-center justify-center gap-1.5 active:scale-95 disabled:opacity-50"
               >
                 <span>🧮 {{ t('monopoly.mathQuiz.entry') }}</span>
               </button>
@@ -1047,7 +1047,7 @@ const gradeLabel = computed(() => {
         </div>
 
         <!-- ==================== BACKPACK PANEL ==================== -->
-        <div class="card-mainline !p-6 !shadow-none">
+        <div class="card-mainline legacy-inventory-card !p-6 !shadow-none">
             <div class="flex items-center justify-between mb-4">
               <h3 class="text-base md:text-xl font-black text-primary uppercase tracking-widest">{{ t('monopoly.inventory.title') }}</h3>
               <span class="badge-mainline">{{ player.items.length }}/5</span>
@@ -1081,7 +1081,7 @@ const gradeLabel = computed(() => {
               <p class="text-base lg:text-lg font-bold leading-relaxed mb-5">{{ eventMessage }}</p>
               <button
                 @click="dismissEvent"
-                class="bg-primary text-background-main font-black px-8 py-3 rounded-xl shadow-lg hover:scale-105 active:scale-95 transition-all"
+                class="legacy-event-cta bg-primary text-background-main font-black px-8 py-3 rounded-xl shadow-lg hover:scale-105 active:scale-95 transition-all"
               >
                 {{ t('monopoly.ok') }}
               </button>
@@ -1106,7 +1106,7 @@ const gradeLabel = computed(() => {
         </div>
 
         <!-- Score display -->
-        <div class="card-mainline !p-10 !bg-primary !text-background-main !shadow-none rotate-1 w-full max-w-sm">
+        <div class="card-mainline legacy-gameover-score !p-10 !bg-primary !text-background-main !shadow-none rotate-1 w-full max-w-sm">
           <div class="text-6xl font-black mb-2">{{ player.score }}</div>
           <p class="text-xs font-black uppercase tracking-widest opacity-60">{{ t('monopoly.finalScore') }}</p>
           <div class="mt-6 text-4xl font-black opacity-90">
@@ -1116,19 +1116,19 @@ const gradeLabel = computed(() => {
 
         <!-- Stats -->
         <div class="grid grid-cols-2 gap-4 w-full max-w-sm">
-          <div class="card-mainline !p-4 !shadow-none text-left bg-surface-main">
+          <div class="card-mainline legacy-summary-stat !p-4 !shadow-none text-left bg-surface-main">
             <p class="text-[10px] font-black text-text-sub uppercase tracking-widest mb-1">{{ t('monopoly.stats.rounds') }}</p>
             <p class="text-2xl font-black text-primary">{{ round - 1 }}</p>
           </div>
-          <div class="card-mainline !p-4 !shadow-none text-left bg-surface-main">
+          <div class="card-mainline legacy-summary-stat !p-4 !shadow-none text-left bg-surface-main">
             <p class="text-[10px] font-black text-text-sub uppercase tracking-widest mb-1">{{ t('monopoly.stats.laps') }}</p>
             <p class="text-2xl font-black text-primary">{{ gameStats.lapsCompleted }}</p>
           </div>
-          <div class="card-mainline !p-4 !shadow-none text-left bg-surface-main">
+          <div class="card-mainline legacy-summary-stat !p-4 !shadow-none text-left bg-surface-main">
             <p class="text-[10px] font-black text-text-sub uppercase tracking-widest mb-1">{{ t('monopoly.stats.itemsUsed') }}</p>
             <p class="text-2xl font-black text-primary">{{ gameStats.itemsUsed }}</p>
           </div>
-          <div class="card-mainline !p-4 !shadow-none text-left bg-surface-main">
+          <div class="card-mainline legacy-summary-stat !p-4 !shadow-none text-left bg-surface-main">
             <p class="text-[10px] font-black text-text-sub uppercase tracking-widest mb-1">{{ t('monopoly.stats.bestRound') }}</p>
             <p class="text-2xl font-black text-primary">+{{ gameStats.maxScoreInOneRound }}</p>
           </div>

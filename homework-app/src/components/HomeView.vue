@@ -458,9 +458,9 @@ const deleteTask = async (id) => {
     </Transition>
 
     <!-- Progress Card -->
-    <section v-if="tasks.length > 0" class="card-mainline !p-0 overflow-hidden">
+    <section v-if="tasks.length > 0" class="card-mainline legacy-progress-card !p-0 overflow-hidden">
       <div class="flex flex-col md:flex-row">
-        <div class="flex-1 p-4 md:p-8 border-b-2 md:border-b-0 md:border-r-2 border-primary bg-accent-green/5">
+        <div class="legacy-progress-copy flex-1 p-4 md:p-8 border-b-2 md:border-b-0 md:border-r-2 border-primary bg-accent-green/5">
           <span class="badge-mainline mb-2 md:mb-4">{{ t('home.progressBadge') }}</span>
           <h3 class="text-2xl md:text-4xl font-black mb-1 md:mb-2">{{ t('home.progress') }}</h3>
           <p class="text-text-sub font-medium max-w-sm">
@@ -478,7 +478,7 @@ const deleteTask = async (id) => {
 
     <!-- Add Task Form -->
     <Transition name="fade">
-      <div v-if="isAddingFormOpen" class="card-mainline !bg-accent-amber/5 animate-rise">
+      <div v-if="isAddingFormOpen" class="card-mainline legacy-task-form !bg-accent-amber/5 animate-rise">
         <div class="flex flex-col gap-4 md:gap-8">
           <div class="flex items-center justify-between">
             <h3 class="text-xl md:text-3xl font-black">{{ t('home.addTaskTitle') }}</h3>
@@ -690,7 +690,7 @@ const deleteTask = async (id) => {
     <!-- Mobile Floating Add Button -->
     <button 
       @click="isAddingFormOpen = true"
-      class="md:hidden fixed bottom-16 right-4 size-12 btn-mainline !rounded-full !p-0 flex items-center justify-center z-50 !shadow-offset-green"
+      class="md:hidden fixed bottom-16 right-4 size-12 btn-mainline legacy-floating-cta !rounded-full !p-0 flex items-center justify-center z-50 !shadow-offset-green"
     >
       <Plus  class="size-6"/>
     </button>

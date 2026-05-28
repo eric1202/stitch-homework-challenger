@@ -113,7 +113,7 @@ const clearAllData = async () => {
     <div class="grid grid-cols-1 gap-8">
       
       <!-- User Account Section -->
-      <section class="card-mainline !p-4 md:!p-8 flex flex-col md:flex-row items-center gap-4 md:gap-8 bg-accent-green/5">
+      <section class="card-mainline legacy-profile-card !p-4 md:!p-8 flex flex-col md:flex-row items-center gap-4 md:gap-8 bg-accent-green/5">
         <div class="size-16 md:size-24 border-4 border-primary rounded-full flex items-center justify-center bg-surface-main shadow-offset-dark shrink-0">
            <User class="size-8 md:size-12 text-primary" />
         </div>
@@ -159,9 +159,9 @@ const clearAllData = async () => {
         <div class="grid md:grid-cols-2 gap-6">
           <button 
             @click="exportData"
-            class="btn-mainline-secondary !p-4 md:!p-8 flex items-center gap-4 md:gap-6 group hover:!bg-primary hover:!text-background-main"
+            class="btn-mainline-secondary legacy-tool-card !p-4 md:!p-8 flex items-center gap-4 md:gap-6 group hover:!bg-primary hover:!text-background-main"
           >
-            <div class="size-10 md:size-14 border-2 border-primary rounded-xl flex items-center justify-center bg-surface-main shadow-offset-dark group-hover:shadow-none group-hover:rotate-12 transition-all">
+            <div class="legacy-tool-icon size-10 md:size-14 border-2 border-primary rounded-xl flex items-center justify-center bg-surface-main shadow-offset-dark group-hover:shadow-none group-hover:rotate-12 transition-all">
               <Database class="size-5 md:size-7 text-primary" />
             </div>
             <div class="text-left">
@@ -172,9 +172,9 @@ const clearAllData = async () => {
 
           <button 
             @click="triggerImport"
-            class="btn-mainline-secondary !p-4 md:!p-8 flex items-center gap-4 md:gap-6 group hover:!bg-primary hover:!text-background-main"
+            class="btn-mainline-secondary legacy-tool-card !p-4 md:!p-8 flex items-center gap-4 md:gap-6 group hover:!bg-primary hover:!text-background-main"
           >
-            <div class="size-10 md:size-14 border-2 border-primary rounded-xl flex items-center justify-center bg-surface-main shadow-offset-dark group-hover:shadow-none group-hover:rotate-12 transition-all">
+            <div class="legacy-tool-icon size-10 md:size-14 border-2 border-primary rounded-xl flex items-center justify-center bg-surface-main shadow-offset-dark group-hover:shadow-none group-hover:rotate-12 transition-all">
               <Edit3 class="size-5 md:size-7 text-primary" />
             </div>
             <div class="text-left">
@@ -186,7 +186,7 @@ const clearAllData = async () => {
       </section>
 
       <!-- Danger Zone -->
-      <section class="card-mainline !p-4 md:!p-8 !bg-accent-red/10 !border-accent-red/20 !shadow-none">
+      <section class="card-mainline legacy-danger-card !p-4 md:!p-8 !bg-accent-red/10 !border-accent-red/20 !shadow-none">
         <div class="flex items-center gap-3 md:gap-4 mb-4 md:mb-8">
           <div class="size-10 bg-accent-red text-background-main rounded-lg flex items-center justify-center">
             <Trash2 class="size-6" />

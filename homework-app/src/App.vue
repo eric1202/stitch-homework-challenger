@@ -34,6 +34,7 @@ const activeView = ref('home');
 const theme = ref('mainline'); // 'mainline' | 'legacy'
 const totalPoints = ref(0);
 const isMobileMenuOpen = ref(false);
+const isLegacyTheme = computed(() => theme.value === 'legacy');
 
 const navItems = [
   { id: 'home', icon: markRaw(Home), label: 'app.nav.home' },
@@ -88,15 +89,26 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="min-h-screen bg-background-main text-text-main transition-colors duration-200">
+  <div
+    class="min-h-screen bg-background-main text-text-main transition-colors duration-200"
+    :class="{ 'legacy-shell': isLegacyTheme }"
+  >
     <!-- Desktop Sidebar -->
     <aside 
-      class="hidden md:flex flex-col w-64 bg-surface-main border-r-2 border-primary fixed h-screen z-50 transition-all duration-300"
+      class="hidden md:flex flex-col w-64 fixed h-screen z-50 transition-all duration-300"
+      :class="isLegacyTheme
+        ? 'bg-white/82 backdrop-blur-xl border-r border-primary/10 shadow-[18px_0_40px_rgba(47,143,131,0.08)]'
+        : 'bg-surface-main border-r-2 border-primary'"
     >
       <!-- Logo -->
       <div class="p-8 mb-4">
         <div class="flex items-center gap-3 group cursor-pointer" @click="activeView = 'home'">
-          <div class="size-12 bg-primary text-background-main rounded-xl flex items-center justify-center shadow-offset-green group-hover:rotate-12 transition-all">
+          <div
+            class="size-12 bg-primary text-background-main flex items-center justify-center transition-all"
+            :class="isLegacyTheme
+              ? 'rounded-[18px] shadow-[0_14px_28px_rgba(47,143,131,0.22)] group-hover:scale-[1.03]'
+              : 'rounded-xl shadow-offset-green group-hover:rotate-12'"
+          >
             <Zap class="size-7 fill-background-main" />
           </div>
           <span class="text-3xl font-black tracking-tighter text-primary">Homework</span>
@@ -109,10 +121,17 @@ onUnmounted(() => {
           v-for="item in navItems" 
           :key="item.id"
           @click="activeView = item.id"
-          class="w-full flex items-center gap-4 px-4 py-3 font-black text-sm uppercase tracking-widest transition-all rounded-xl border-2"
-          :class="activeView === item.id 
-            ? 'bg-primary text-background-main border-primary shadow-offset-green' 
-            : 'text-text-sub border-transparent hover:bg-primary/5 hover:text-primary'"
+          class="w-full flex items-center gap-4 px-4 py-3 font-black text-sm uppercase tracking-widest transition-all"
+          :class="[
+            isLegacyTheme ? 'legacy-nav-pill border' : 'rounded-xl border-2',
+            activeView === item.id
+              ? (isLegacyTheme
+                  ? 'is-active text-primary'
+                  : 'bg-primary text-background-main border-primary shadow-offset-green')
+              : (isLegacyTheme
+                  ? 'text-text-sub border-transparent'
+                  : 'text-text-sub border-transparent hover:bg-primary/5 hover:text-primary')
+          ]"
         >
           <component :is="item.icon" class="size-5" />
           {{ t(item.label) }}
@@ -120,19 +139,33 @@ onUnmounted(() => {
       </nav>
 
       <!-- Bottom Actions -->
-      <div class="p-6 border-t-2 border-primary/5 space-y-4">
+      <div
+        class="p-6 space-y-4"
+        :class="isLegacyTheme ? 'border-t border-primary/10' : 'border-t-2 border-primary/5'"
+      >
         <div class="flex items-center justify-between px-2">
           <span class="text-[10px] font-black uppercase tracking-widest text-text-sub">{{ theme === 'legacy' ? 'Legacy' : 'Mainline' }}</span>
           <button
             @click="toggleTheme"
-            class="size-10 border-2 border-primary rounded-xl flex items-center justify-center bg-surface-main shadow-offset-dark hover:shadow-none transition-all active:scale-95"
+            class="size-10 flex items-center justify-center transition-all active:scale-95"
+            :class="isLegacyTheme
+              ? 'legacy-icon-bubble border border-primary/10'
+              : 'border-2 border-primary rounded-xl bg-surface-main shadow-offset-dark hover:shadow-none'"
           >
             <Palette class="size-5" />
           </button>
         </div>
 
-        <div class="p-4 bg-primary/5 rounded-2xl flex items-center gap-3">
-          <div class="size-8 bg-accent-amber text-primary rounded-lg flex items-center justify-center shadow-sm">
+        <div
+          class="p-4 flex items-center gap-3"
+          :class="isLegacyTheme ? 'legacy-soft-panel rounded-[22px]' : 'bg-primary/5 rounded-2xl'"
+        >
+          <div
+            class="size-8 text-primary flex items-center justify-center shadow-sm"
+            :class="isLegacyTheme
+              ? 'legacy-icon-bubble'
+              : 'bg-accent-amber rounded-lg'"
+          >
             <Zap class="size-4 fill-primary" />
           </div>
           <div>
@@ -144,9 +177,19 @@ onUnmounted(() => {
     </aside>
 
     <!-- Mobile Header -->
-    <header class="md:hidden fixed top-0 inset-x-0 h-12 bg-surface-main border-b-2 border-primary flex items-center justify-between px-4 z-[60]">
+    <header
+      class="md:hidden fixed top-0 inset-x-0 h-12 flex items-center justify-between px-4 z-[60]"
+      :class="isLegacyTheme
+        ? 'bg-white/88 backdrop-blur-xl border-b border-primary/10 shadow-sm'
+        : 'bg-surface-main border-b-2 border-primary'"
+    >
       <div class="flex items-center gap-1.5">
-        <div class="size-7 bg-primary text-background-main rounded-lg flex items-center justify-center shadow-offset-green">
+        <div
+          class="size-7 bg-primary text-background-main flex items-center justify-center"
+          :class="isLegacyTheme
+            ? 'rounded-[14px] shadow-[0_10px_20px_rgba(47,143,131,0.22)]'
+            : 'rounded-lg shadow-offset-green'"
+        >
           <Zap class="size-4 fill-background-main" />
         </div>
         <span class="text-base font-black tracking-tighter text-primary uppercase">Homework</span>
@@ -154,7 +197,8 @@ onUnmounted(() => {
       <div class="flex items-center gap-3">
         <button
           @click="toggleTheme"
-          class="p-1.5 text-primary"
+          class="p-1.5 text-primary transition-all"
+          :class="isLegacyTheme ? 'legacy-icon-bubble px-2.5 py-1.5' : ''"
         >
           <Palette class="size-5" />
         </button>
@@ -162,13 +206,21 @@ onUnmounted(() => {
     </header>
 
     <!-- Mobile Bottom Nav -->
-    <nav class="md:hidden fixed bottom-0 inset-x-0 h-14 bg-surface-main border-t-2 border-primary flex items-center justify-around px-1 z-[60]" style="padding-bottom: env(safe-area-inset-bottom)">
+    <nav
+      class="md:hidden fixed bottom-0 inset-x-0 h-14 flex items-center justify-around px-1 z-[60]"
+      :class="isLegacyTheme
+        ? 'bg-white/92 backdrop-blur-xl border-t border-primary/10 shadow-[0_-8px_30px_rgba(47,143,131,0.08)]'
+        : 'bg-surface-main border-t-2 border-primary'"
+      style="padding-bottom: env(safe-area-inset-bottom)"
+    >
       <button 
         v-for="item in navItems" 
         :key="item.id"
         @click="activeView = item.id"
         class="flex flex-col items-center gap-0.5 p-1.5 transition-all"
-        :class="activeView === item.id ? 'text-primary' : 'text-text-sub opacity-50'"
+        :class="activeView === item.id
+          ? (isLegacyTheme ? 'text-primary bg-primary/8 px-3 py-1.5 rounded-full' : 'text-primary')
+          : 'text-text-sub opacity-50'"
       >
         <component :is="item.icon" class="size-5" :class="{ 'fill-primary/10': activeView === item.id }" />
         <span class="text-[7px] font-black uppercase tracking-wider">{{ t(item.label) }}</span>

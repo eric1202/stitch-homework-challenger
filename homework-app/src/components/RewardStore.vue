@@ -396,7 +396,7 @@ const formatTime = (ts) => {
     </header>
 
     <!-- Points Banner -->
-    <div class="card-mainline !p-4 md:!p-8 bg-accent-green/5 flex items-center justify-between group">
+    <div class="card-mainline legacy-points-banner !p-4 md:!p-8 bg-accent-green/5 flex items-center justify-between group">
       <div class="flex flex-col gap-2">
         <p class="text-[10px] font-black uppercase tracking-widest text-text-sub">{{ t('rewards.availableBalance') }}</p>
         <div class="flex items-baseline gap-2">
@@ -488,12 +488,12 @@ const formatTime = (ts) => {
         <div 
           v-for="reward in filteredRewards" 
           :key="reward.id"
-          class="card-mainline !p-3 md:!p-6 flex flex-col gap-3 md:gap-6 group hover:shadow-offset-green"
+          class="card-mainline legacy-reward-card !p-3 md:!p-6 flex flex-col gap-3 md:gap-6 group hover:shadow-offset-green"
           :class="{ 'opacity-50 grayscale': isExpired(reward.expiry_date) || reward.stock <= 0 }"
         >
           <!-- Expiry/Stock Badger -->
           <div class="flex justify-between items-start">
-            <div class="size-10 md:size-14 border-2 border-primary rounded-xl flex items-center justify-center bg-surface-main shadow-offset-dark group-hover:bg-accent-green group-hover:text-background-main transition-all">
+            <div class="legacy-reward-icon size-10 md:size-14 border-2 border-primary rounded-xl flex items-center justify-center bg-surface-main shadow-offset-dark group-hover:bg-accent-green group-hover:text-background-main transition-all">
               <component :is="getIconComponent(reward.icon)" class="size-5 md:size-6" />
             </div>
             <div class="flex flex-col items-end gap-1">
@@ -545,7 +545,7 @@ const formatTime = (ts) => {
         <h3 class="text-xl md:text-2xl font-black">{{ t('rewards.history') }}</h3>
       </div>
 
-      <div class="card-mainline !p-0 overflow-hidden bg-surface-main">
+      <div class="card-mainline legacy-history-table !p-0 overflow-hidden bg-surface-main">
         <table class="w-full text-left">
           <thead>
             <tr class="bg-primary text-background-main border-b-2 border-primary">

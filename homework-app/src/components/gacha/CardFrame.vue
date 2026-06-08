@@ -22,8 +22,15 @@
         ×{{ count }}
       </span>
 
-      <!-- Card Emoji -->
-      <div class="emoji-container my-auto flex items-center justify-center text-5xl md:text-6xl drop-shadow-md">
+      <div v-if="card.image" class="image-container my-auto w-full flex items-center justify-center px-1">
+        <img
+          :src="card.image"
+          :alt="isZh ? card.name.zh : card.name.en"
+          class="card-image"
+          draggable="false"
+        />
+      </div>
+      <div v-else class="emoji-container my-auto flex items-center justify-center text-5xl md:text-6xl drop-shadow-md">
         {{ card.emoji }}
       </div>
 
@@ -179,6 +186,22 @@ const handleClick = () => {
   text-shadow:
     0 8px 18px rgba(15, 23, 42, 0.22),
     0 2px 0 rgba(255, 255, 255, 0.16);
+}
+
+.image-container {
+  min-height: 0;
+}
+
+.card-image {
+  width: 100%;
+  max-height: 8.75rem;
+  object-fit: cover;
+  border-radius: 0.85rem;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  box-shadow:
+    0 10px 26px rgba(15, 23, 42, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  user-select: none;
 }
 
 .rarity-n {

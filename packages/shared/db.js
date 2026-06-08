@@ -207,6 +207,9 @@ export function createDb(getSupabase, events) {
         rewards: table('rewards'),
         redemptionLogs: table('redemption_logs'),
         dailyCheckinTemplates: table('daily_checkin_templates'),
+        userCards: table('user_cards'),
+        drawRecords: table('draw_records'),
+        pityStates: table('pity_states'),
 
         transaction: async (...args) => {
             const callback = args[args.length - 1]

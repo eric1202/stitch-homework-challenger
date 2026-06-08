@@ -15,7 +15,8 @@ import {
   Store,
   History,
   Menu,
-  X
+  X,
+  Gem
 } from 'lucide-vue-next';
 import { useI18n } from 'vue-i18n';
 import { db, liveQuery } from './db';
@@ -27,6 +28,7 @@ import RewardStore from './components/RewardStore.vue';
 import AnalyticsView from './components/AnalyticsView.vue';
 import MonopolyGame from './components/MonopolyGame.vue';
 import SettingsView from './components/SettingsView.vue';
+import GachaView from './components/gacha/GachaView.vue';
 
 const { t, locale } = useI18n();
 
@@ -40,6 +42,7 @@ const navItems = [
   { id: 'home', icon: markRaw(Home), label: 'app.nav.home' },
   { id: 'checkin', icon: markRaw(CalendarSync), label: 'app.nav.checkin' },
   { id: 'monopoly', icon: markRaw(Trophy), label: 'app.nav.monopoly' },
+  { id: 'gacha', icon: markRaw(Gem), label: 'app.nav.gacha' },
   { id: 'rewards', icon: markRaw(Store), label: 'app.nav.rewards' },
   { id: 'analytics', icon: markRaw(BarChart3), label: 'app.nav.analytics' },
   { id: 'settings', icon: markRaw(Settings), label: 'app.nav.settings' }
@@ -50,6 +53,7 @@ const currentViewComponent = computed(() => {
     case 'home': return HomeView;
     case 'checkin': return DailyCheckinView;
     case 'monopoly': return MonopolyGame;
+    case 'gacha': return GachaView;
     case 'rewards': return RewardStore;
     case 'analytics': return AnalyticsView;
     case 'settings': return SettingsView;

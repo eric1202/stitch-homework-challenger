@@ -380,3 +380,59 @@
 .animate-rise {
   animation: fadeInRise 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
+
+/* ===== Gacha Card System ===== */
+@layer base {
+  /* Rarity border colors */
+  .rarity-n  { --rarity-color: #8b8b8b; --rarity-glow: transparent; }
+  .rarity-r  { --rarity-color: #3aa6b9; --rarity-glow: rgba(58,166,185,0.3); }
+  .rarity-sr { --rarity-color: #9b59b6; --rarity-glow: rgba(155,89,182,0.4); }
+  .rarity-ssr { --rarity-color: #f2b84b; --rarity-glow: rgba(242,184,75,0.5); }
+
+  /* Gacha button styling */
+  .shadow-offset-amber {
+    box-shadow: 4px 4px 0 0 #b45309;
+  }
+  .shadow-offset-amber:hover {
+    transform: translateY(-2px);
+    box-shadow: 6px 6px 0 0 #b45309;
+  }
+  .shadow-offset-amber:active {
+    transform: translateY(1px);
+    box-shadow: 2px 2px 0 0 #b45309;
+  }
+
+  .card-frame {
+    position: relative;
+    border-width: 2px;
+    border-style: solid;
+    border-radius: 1rem;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    border-color: var(--rarity-color);
+  }
+  
+  .card-frame.is-locked {
+    filter: grayscale(100%);
+    opacity: 0.4;
+  }
+}
+
+/* Card flip animation */
+@keyframes cardFlip {
+  0%   { transform: perspective(800px) rotateY(0); }
+  50%  { transform: perspective(800px) rotateY(90deg); }
+  100% { transform: perspective(800px) rotateY(0); }
+}
+
+/* SSR shimmer effect */
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.card-ssr-shimmer {
+  background: linear-gradient(90deg, transparent 30%, rgba(255,215,0,0.15) 50%, transparent 70%);
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite;
+}
